@@ -11,43 +11,59 @@ const svg = d3.select("#clev_dot")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 var dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
+
+let selectedVariable = "commonname" //default
+
 dataCSV.then(function(data) {
-    const x = d3.scaleLinear()
-        .domain([0,100])
-        .range([0, width]);
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
 
-    const y = d3.scaleBand()
-        .range([0, height])
-        .domain(data.map(function(d) { return d.commonname; })).padding(1);
-    svg.append("g")
-        .call(d3.axisLeft(y))
+    function get_counts(varName) {
+        return d3.rollup(
+            data,
+            v => v.length,
+            d => d[selectedVariable]
+        ); 
+    }
+    let counts = get_counts(selectedVariable)
 
-    const counts = d3.rollup(
-        data,
-        v => v.length,
-        d => d.commonname
-    );
+    function updateVis() {
+        const x = d3.scaleLinear()
+            .domain([0,100])
+            .range([0, width]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
 
-    svg.selectAll("lines")
-        .data(data)
-        .enter()
-        .append("line")
-            .attr("x1", function(d) { return 0; })
-            .attr("x2", function(d) { return x(counts.get(d.commonname)); })
-            .attr("y1", function(d) { return y(d.commonname); })
-            .attr("y2", function(d) { return y(d.commonname); })
-            .attr("stroke", "grey")
-            .attr("stroke-width", "1px")
+        const y = d3.scaleBand()
+            .range([0, height])
+            .domain(data.map(function(d) { return d[selectedVariable]; })).padding(1);
+        svg.append("g")
+            .call(d3.axisLeft(y))
 
-    svg.selectAll("circles")
-        .data(data)
-        .enter()
-        .append("circle")
-            .attr("cx", function(d) { return x(counts.get(d.commonname)); })
-            .attr("cy", function(d) { return y(d.commonname); })
-            .attr("r", "6")
-            .style("fill", "#d13100ff")
+        svg.selectAll("lines")
+            .data(data)
+            .enter()
+            .append("line")
+                .attr("x1", function(d) { return 0; })
+                .attr("x2", function(d) { return x(counts.get(d[selectedVariable])); })
+                .attr("y1", function(d) { return y(d[selectedVariable]); })
+                .attr("y2", function(d) { return y(d[selectedVariable]); })
+                .attr("stroke", "grey")
+                .attr("stroke-width", "1px")
+
+        svg.selectAll("circles")
+            .data(data)
+            .enter()
+            .append("circle")
+                .attr("cx", function(d) { return x(counts.get(d[selectedVariable])); })
+                .attr("cy", function(d) { return y(d[selectedVariable]); })
+                .attr("r", "6")
+                .style("fill", "#d13100ff")
+    }
+    
+    d3.select("#col_select").on("change", function() {
+        selectedVariable = this.value;
+        counts = get_counts(selectedVariable);
+        updateVis();
+    });
+    updateVis();
 });
