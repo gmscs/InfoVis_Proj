@@ -33,7 +33,10 @@ dataCSV.then(function (data) {
         .style("border-width", "1px")
         .style("border-radius", "5px")
         .style("padding", "10px")
-        .style("width", "200px")
+        .style("width", "15px")
+        .style("position", "absolute")
+        .style("pointer-events", "none")
+        .style("background-color", "white")
 
     var mouseover = function (d) {
         tooltip.style("opacity", 1);
@@ -44,7 +47,9 @@ dataCSV.then(function (data) {
     }
 
     var mousemove = (event, d) => {
-        tooltip.html(d[selectedVariable] + ", " + counts.get(d[selectedVariable]));
+        tooltip.html(counts.get(d[selectedVariable]))
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY) + "px");
     }
 
     function updateVis() {
