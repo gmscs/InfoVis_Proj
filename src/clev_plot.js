@@ -38,7 +38,7 @@ dataCSV.then(function (data) {
         .style("background-color", "rgba(255, 255, 255, 0.5)")
 
     var mouseover = function (d) {
-        tooltip.style("opacity", 1);
+        tooltip.style("opacity", 2).style("s");
     }
 
     var mouseleave = function (d) {
@@ -51,9 +51,14 @@ dataCSV.then(function (data) {
         .style("top", (event.pageY) + "px");
     }
 
+    svg.append("g")
+        .attr("class","x axis")
+        .attr("transform", `translate(0,${height})`);
+
+    svg.append("g")
+        .attr("class","y axis");
+
     function updateVis() {
-        svg.selectAll(".x.axis").remove();
-        svg.selectAll(".y.axis").remove();
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
@@ -61,18 +66,18 @@ dataCSV.then(function (data) {
         const x = d3.scaleLinear()
             .domain([0, maxCount])
             .range([0, width]);
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x))
+        svg.select(".x.axis")
+            .transition()
+            .duration(2000)
+            .call(d3.axisBottom(x));
 
         const y = d3.scaleBand()
             .range([0, height])
             .domain(data.map(function (d) { return d[selectedVariable]; })).padding(1);
-        svg.append("g")
-            .attr("class", "y axis")
-            //.attr("transform", "translate(" + margin.left + ", 0)")
-            .call(d3.axisLeft(y))
+        svg.select(".y.axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(y));
 
         svg.selectAll("line")
             .data(data, d => `${d[selectedVariable]}`)
