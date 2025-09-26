@@ -9,3 +9,8 @@ print(column_name, "\n")
 print(unique_count, "\n")
 print(unique_values)
 
+unique_values.sort()
+
+# ...existing code...
+for val in unique_values:
+    print(f'<option value="{val}">{val}</option>')
