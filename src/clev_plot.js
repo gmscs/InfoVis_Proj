@@ -69,7 +69,11 @@ dataCSV.then(function (data) {
         svg.select(".x.axis")
             .transition()
             .duration(2000)
-            .call(d3.axisBottom(x));
+            .call(
+                d3.axisBottom(x)
+                  .ticks(Math.min(maxCount, 10))             
+                  .tickFormat(d3.format("d")) 
+              );
 
         const y = d3.scaleBand()
             .range([0, height])
