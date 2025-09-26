@@ -90,7 +90,7 @@ dataCSV.then(function (data) {
                 exit => exit.remove()
             )
             .transition()
-            .duration(200)
+            .duration(1000)
             .attr("x1", 0)
             .attr("x2", function (d) { return x(counts.get(d[selectedVariable])); })
             .attr("y1", function (d) { return y(d[selectedVariable]); })
@@ -110,7 +110,7 @@ dataCSV.then(function (data) {
                 exit => exit.remove()
             )
             .transition()
-            .duration(200)
+            .duration(1000)
             .attr("cx", function (d) { return x(counts.get(d[selectedVariable])); })
             .attr("cy", function (d) { return y(d[selectedVariable]); });
     }
