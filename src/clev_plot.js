@@ -52,13 +52,17 @@ dataCSV.then(function (data) {
     }
 
     function updateVis() {
+        svg.selectAll(".x.axis").remove();
+        svg.selectAll(".y.axis").remove();
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(selectedVariable, countryFilter);
+        const maxCount = d3.max(Array.from(counts.values()));
         
         const x = d3.scaleLinear()
-            .domain([0, 100])
+            .domain([0, maxCount])
             .range([0, width]);
         svg.append("g")
+            .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x))
 
@@ -66,6 +70,8 @@ dataCSV.then(function (data) {
             .range([0, height])
             .domain(data.map(function (d) { return d[selectedVariable]; })).padding(1);
         svg.append("g")
+            .attr("class", "y axis")
+            //.attr("transform", "translate(" + margin.left + ", 0)")
             .call(d3.axisLeft(y))
 
         svg.selectAll("line")
