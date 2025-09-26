@@ -20,8 +20,14 @@ let selectedCountry = "global"
 dataCSV.then(function (data) {
 
     function get_counts(varName, filter) {
+        const allKeys = Array.from(new Set(data.map(d => d[varName])));
         const filteredData = filter ? data.filter(filter) : data;
-        return d3.rollup(filteredData, v => v.length, d => d[varName]);
+
+        const countMap = d3.rollup(filteredData, v => v.length, d => d[varName]);
+        const counts = new Map();
+
+        allKeys.forEach(key => { counts.set(key, countMap.get(key) || 0 )});
+        return counts;
     }
     let counts = get_counts(selectedVariable)
 
