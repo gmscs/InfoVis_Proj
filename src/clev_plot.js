@@ -1,4 +1,4 @@
-const margin = { top: 30, right: 30, left: 200, bottom: 30 };
+const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 
 const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
@@ -20,7 +20,7 @@ dataCSV.then(function (data) {
 
     function get_counts(varName, filter) {
         const filteredData = filter ? data.filter(filter) : data;
-        return d3.rollup(filteredData, v => v.length, d => d[selectedVariable]);
+        return d3.rollup(filteredData, v => v.length, d => d[varName]);
     }
     let counts = get_counts(selectedVariable)
 
@@ -46,7 +46,8 @@ dataCSV.then(function (data) {
     }
 
     var mousemove = (event, d) => {
-        tooltip.html(counts.get(d[selectedVariable]))
+        const key = typeof d === "string" ? d : d[selectedVariable];
+        tooltip.html(counts.get(key))
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY) + "px");
     }
@@ -75,48 +76,49 @@ dataCSV.then(function (data) {
                   .tickFormat(d3.format("d")) 
               );
 
+        const visibleCategories = Array.from(counts.entries())
+              .filter(([k, v]) => v > 0)
+              .map(([k]) => k);
+
         const y = d3.scaleBand()
             .range([0, height])
-            .domain(data.map(function (d) { return d[selectedVariable]; })).padding(1);
+            .domain(visibleCategories).padding(1);
+
         svg.select(".y.axis")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(y));
 
-        svg.selectAll("line")
-            .data(data, d => `${d[selectedVariable]}`)
+            svg.selectAll(".stem")
+            .data(visibleCategories, d => d)
             .join(
-                enter => enter
-                    .append("line")
-                    .attr("stroke", "grey")
-                    .attr("stroke-width", "1px"),
-                update => update,
-                exit => exit.remove()
+              enter => enter.append("line").attr("class","stem").attr("stroke","grey").attr("stroke-width","1px"),
+              update => update,
+              exit => exit.remove()
             )
-            .transition()
-            .duration(1000)
+            .transition().duration(1000)
             .attr("x1", 0)
-            .attr("x2", function (d) { return x(counts.get(d[selectedVariable])); })
-            .attr("y1", function (d) { return y(d[selectedVariable]); })
-            .attr("y2", function (d) { return y(d[selectedVariable]); });
-
-        svg.selectAll("circle")
-            .data(data, d => `${d[selectedVariable]}`)
+            .attr("x2", d => x(counts.get(d) || 0))
+            .attr("y1", d => y(d) + y.bandwidth()/2)
+            .attr("y2", d => y(d) + y.bandwidth()/2);
+          
+        svg.selectAll(".dot")
+            .data(visibleCategories, d => d)
             .join(
-                enter => enter
-                    .append("circle")
-                    .attr("r", "6")
-                    .style("fill", "#d13100ff")
-                    .on("mouseover", mouseover)
-                    .on("mousemove", mousemove)
-                    .on("mouseleave", mouseleave),
-                update => update,
-                exit => exit.remove()
+              enter => enter.append("circle")
+                            .attr("class","dot")
+                            .attr("r", 6)
+                            .style("fill", "#d13100ff")
+                            .on("mouseover", mouseover)
+                            .on("mousemove", mousemove)
+                            .on("mouseleave", mouseleave),
+              update => update,
+              exit => exit.remove()
             )
-            .transition()
-            .duration(1000)
-            .attr("cx", function (d) { return x(counts.get(d[selectedVariable])); })
-            .attr("cy", function (d) { return y(d[selectedVariable]); });
+            .transition().duration(1000)
+            .attr("cx", d => x(counts.get(d) || 0))
+            .attr("cy", d => y(d) + y.bandwidth()/2);
+            
     }
 
     d3.select("#col_select").on("change", function () {
