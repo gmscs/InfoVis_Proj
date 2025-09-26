@@ -1,3 +1,4 @@
+
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 
 const width = 800 - margin.left - margin.right;
@@ -76,9 +77,35 @@ dataCSV.then(function (data) {
                   .tickFormat(d3.format("d")) 
               );
 
-        const visibleCategories = Array.from(counts.entries())
-              .filter(([k, v]) => v > 0)
-              .map(([k]) => k);
+        function getVisibleCategories(varName, countsMap) {
+            if (varName === "commonname" || varName === "habitat") {
+                return Array.from(countsMap.entries())
+                    .filter(([k, v]) => v > 0)
+                    .map(([k]) => k)
+                    .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
+            }
+            else if (varName === "country") {
+                return Array.from(countsMap.keys())
+                .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
+            }
+            else {
+                let order;
+                if (varName === "age") {
+                    order = ["Adult", "Subadult", "Juvenile", "Hatchling"];
+                }
+                if (varName === "sex") {
+                    order = ["Male", "Female", "Unknown"];
+                }
+                if (varName === "conservation") {
+                    order = ["Critically Endangered", "Endangered", 
+                                    "Vulnerable", "Least Concern", "Data Deficient"];
+                }
+                return Array.from(countsMap.keys())
+                .sort((a, b) => order.indexOf(a) - order.indexOf(b));
+            }
+        };
+        
+        const visibleCategories = getVisibleCategories(selectedVariable, counts);
 
         const y = d3.scaleBand()
             .range([0, height])
@@ -118,11 +145,12 @@ dataCSV.then(function (data) {
             .transition().duration(1000)
             .attr("cx", d => x(counts.get(d) || 0))
             .attr("cy", d => y(d) + y.bandwidth()/2);
-            
+
     }
 
     d3.select("#col_select").on("change", function () {
         selectedVariable = this.value;
+        console.log(selectedVariable);
         updateVis();
     });
 
