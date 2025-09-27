@@ -9,15 +9,11 @@ export function get_counts(data, varName, filter = null) {
     return counts;
 }
 
-export function get_counts_by_country(data, varName) {
-    const countsByVar = get_counts(data, varName);
+export function get_counts_by_country(data) {
     const countsByCountry = new Map();
-
     data.forEach(row => {
         const country = row.country;
-        const varValue = row[varName];
-        const count = countsByVar.get(varValue) || 0;
-        countsByCountry.set(country, (countsByCountry.get(country) || 0) + count);
+        countsByCountry.set(country, (countsByCountry.get(country) || 0) + 1);
     });
     return countsByCountry;
 }

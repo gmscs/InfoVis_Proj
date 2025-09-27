@@ -58,23 +58,29 @@ Promise.all([
                 const count = counts.get(key)
                 return colorScale(count)
             })
-        .on("mouseover", function(event, d) {
-            const countryName = d.properties.name;
-            const count = counts.get(countryName) || 0;
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", 2).style("s");
-            tooltip.html(`${countryName}<br>${count}`);
-        })
-        .on("mousemove", function(event) {
-            tooltip.style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 10) + "px");
-        })
-        .on("mouseout", function() {
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });
+            
+            .on("mouseover", function(event, d) {
+                const countryName = d.properties.name;
+                const count = counts.get(countryName) || 0;
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 2).style("s");
+                tooltip.html(`${countryName}<br>${count}`);
+            })
+            .on("mousemove", function(event) {
+                tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mouseout", function() {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
+            .on("click", function(event, d) {
+                const countryName = d.properties.name;
+                d3.select("#country_select").property("value", countryName);
+                d3.select("#country_select").dispatch("change");
+            });
     }
     updateMap(selectedVariable);
 
