@@ -23,6 +23,19 @@ Promise.all([
     csvData = csvRows;
     counts = get_counts_by_country(csvData, selectedVariable);
 
+    var tooltip = d3.select("#map")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("width", "50px")
+        .style("position", "absolute")
+        .style("pointer-events", "none")
+        .style("background-color", "rgba(255, 255, 255)")
+
     const colorDomain = Array.from(counts.values()).sort((a, b) => a - b);
     const colorScale = d3.scaleThreshold()
     .domain(colorDomain.filter((d, i) => i % Math.ceil(colorDomain.length / 5) === 0))
@@ -44,7 +57,24 @@ Promise.all([
                 const key = d.properties.name;
                 const count = counts.get(key)
                 return colorScale(count)
-            });
+            })
+        .on("mouseover", function(event, d) {
+            const countryName = d.properties.name;
+            const count = counts.get(countryName) || 0;
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 2).style("s");
+            tooltip.html(`${countryName}<br>${count}`);
+        })
+        .on("mousemove", function(event) {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", function() {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
     }
     updateMap(selectedVariable);
 
