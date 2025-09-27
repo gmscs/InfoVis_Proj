@@ -1,13 +1,15 @@
-
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
-
 const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
+const padding = 50;
+
+const dropdown = document.getElementById("col_select");
+let selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
 
 const svg = d3.select("#clev_dot")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom + padding)
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
@@ -66,10 +68,35 @@ dataCSV.then(function (data) {
     svg.append("g")
         .attr("class","y axis");
 
+    svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", width / 2)
+        .attr("y", height + 30)
+        .attr("dy", ".75em")
+        .text("Observations");
+
+    function updateYLabel() {
+        const dropdown = document.getElementById("col_select");
+        const selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
+
+        svg.selectAll(".y.label")
+            .data([selectedOptionText])
+            .join("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("x", -width/3)
+            .attr("y", -height/2)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text(d => d);
+        }   
+
     function updateVis() {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
+        selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
@@ -117,12 +144,12 @@ dataCSV.then(function (data) {
             .range([0, height])
             .domain(visibleCategories).padding(1);
 
-        svg.select(".y.axis")
+        svg.selectAll(".y.axis")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(y));
 
-            svg.selectAll(".stem")
+        svg.selectAll(".stem")
             .data(visibleCategories, d => d)
             .join(
               enter => enter.append("line").attr("class","stem").attr("stroke","grey").attr("stroke-width","1px"),
@@ -156,8 +183,8 @@ dataCSV.then(function (data) {
 
     d3.select("#col_select").on("change", function () {
         selectedVariable = this.value;
-        console.log(selectedVariable);
         updateVis();
+        updateYLabel();
     });
 
     d3.select("#country_select").on("change", function () {
@@ -165,4 +192,5 @@ dataCSV.then(function (data) {
         updateVis();
     });
     updateVis();
+    updateYLabel();
 });
