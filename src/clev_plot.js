@@ -1,3 +1,5 @@
+import {get_counts} from "./aux.js";
+
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
@@ -20,18 +22,7 @@ let selectedVariable = "commonname"
 let selectedCountry = "global"
 
 dataCSV.then(function (data) {
-
-    function get_counts(varName, filter) {
-        const allKeys = Array.from(new Set(data.map(d => d[varName])));
-        const filteredData = filter ? data.filter(filter) : data;
-
-        const countMap = d3.rollup(filteredData, v => v.length, d => d[varName]);
-        const counts = new Map();
-
-        allKeys.forEach(key => { counts.set(key, countMap.get(key) || 0 )});
-        return counts;
-    }
-    let counts = get_counts(selectedVariable)
+    let counts = get_counts(data, selectedVariable)
 
     var tooltip = d3.select("#clev_dot")
         .append("div")
@@ -94,7 +85,7 @@ dataCSV.then(function (data) {
 
     function updateVis() {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        counts = get_counts(selectedVariable, countryFilter);
+        counts = get_counts(data, selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
         selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
         
@@ -181,13 +172,13 @@ dataCSV.then(function (data) {
 
     }
 
-    d3.select("#col_select").on("change", function () {
+    document.getElementById("col_select").addEventListener("change", function () {
         selectedVariable = this.value;
         updateVis();
         updateYLabel();
     });
 
-    d3.select("#country_select").on("change", function () {
+    document.getElementById("country_select").addEventListener("change", function () {
         selectedCountry = this.value;
         updateVis();
     });
