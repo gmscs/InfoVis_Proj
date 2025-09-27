@@ -1,4 +1,4 @@
-import {get_counts_by_country} from "./aux.js";
+import {font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 20, bottom: 30 };
 
@@ -23,18 +23,7 @@ Promise.all([
     csvData = csvRows;
     counts = get_counts_by_country(csvData, selectedVariable);
 
-    var tooltip = d3.select("#map")
-        .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("border", "solid")
-        .style("border-width", "1px")
-        .style("border-radius", "5px")
-        .style("padding", "10px")
-        .style("width", "50px")
-        .style("position", "absolute")
-        .style("pointer-events", "none")
-        .style("background-color", "rgba(255, 255, 255)")
+    const tooltip = create_tooltip("#map");
 
     const colorDomain = Array.from(counts.values()).sort((a, b) => a - b);
     const colorScale = d3.scaleThreshold()
@@ -56,7 +45,6 @@ Promise.all([
             .attr("fill", function (d) {
                 const key = d.properties.name;
                 const count = counts.get(key);
-                console.log(count);
                 return count === (0 || undefined) ? "#c0c0c0ff" : colorScale(count);
             })
             
@@ -67,6 +55,10 @@ Promise.all([
                     .duration(200)
                     .style("opacity", 2).style("s");
                 tooltip.html(`${countryName}<br>${count}`);
+
+                const text = tooltip.node().textContent;
+                const textWidth = get_text_width(text, font);
+                tooltip.style("width", `${textWidth + font_padding}px`)
             })
             .on("mousemove", function(event) {
                 tooltip.style("left", (event.pageX + 10) + "px")

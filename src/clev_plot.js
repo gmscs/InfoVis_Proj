@@ -1,4 +1,4 @@
-import {get_counts} from "./aux.js";
+import {shared_color, create_tooltip, get_counts} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 const width = 800 - margin.left - margin.right;
@@ -24,18 +24,7 @@ let selectedCountry = "global"
 dataCSV.then(function (data) {
     let counts = get_counts(data, selectedVariable)
 
-    var tooltip = d3.select("#clev_dot")
-        .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("border", "solid")
-        .style("border-width", "1px")
-        .style("border-radius", "5px")
-        .style("padding", "10px")
-        .style("width", "15px")
-        .style("position", "absolute")
-        .style("pointer-events", "none")
-        .style("background-color", "rgba(255, 255, 255, 0.5)")
+    const tooltip = create_tooltip("#clev_dot");
 
     var mouseover = function (d) {
         tooltip.style("opacity", 2).style("s");
@@ -159,7 +148,7 @@ dataCSV.then(function (data) {
               enter => enter.append("circle")
                             .attr("class","dot")
                             .attr("r", 6)
-                            .style("fill", "#d13100ff")
+                            .style("fill", shared_color)
                             .on("mouseover", mouseover)
                             .on("mousemove", mousemove)
                             .on("mouseleave", mouseleave),
