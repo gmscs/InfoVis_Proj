@@ -55,8 +55,9 @@ Promise.all([
             .attr("d", path)
             .attr("fill", function (d) {
                 const key = d.properties.name;
-                const count = counts.get(key)
-                return colorScale(count)
+                const count = counts.get(key);
+                console.log(count);
+                return count === (0 || undefined) ? "#c0c0c0ff" : colorScale(count);
             })
             
             .on("mouseover", function(event, d) {
