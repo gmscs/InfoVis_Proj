@@ -1,6 +1,6 @@
 import {get_counts_by_country} from "./aux.js";
 
-const margin = { top: 30, right: 30, left: 250, bottom: 30 };
+const margin = { top: 30, right: 30, left: 20, bottom: 30 };
 
 const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
@@ -41,8 +41,8 @@ Promise.all([
             .join("path")
             .attr("d", path)
             .attr("fill", function (d) {
-                const key = d.properties.code;
-                const count = counts.get(csvData, varName)
+                const key = d.properties.name;
+                const count = counts.get(key)
                 return colorScale(count)
             });
     }
