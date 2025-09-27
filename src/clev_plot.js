@@ -151,7 +151,14 @@ dataCSV.then(function (data) {
                             .style("fill", shared_color)
                             .on("mouseover", mouseover)
                             .on("mousemove", mousemove)
-                            .on("mouseleave", mouseleave),
+                            .on("mouseleave", mouseleave)
+                            .on("click", function(event, d) {
+                                const filterVal = d;
+                                const filterEvent = new CustomEvent("filterByValue", {
+                                    detail: { value: filterVal, attribute: selectedVariable}
+                                });
+                                window.dispatchEvent(filterEvent);
+                            }),
               update => update,
               exit => exit.remove()
             )

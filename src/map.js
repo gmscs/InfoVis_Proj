@@ -33,8 +33,7 @@ Promise.all([
     const proj = d3.geoMercator().fitSize([width, height], geo);
     const path = d3.geoPath().projection(proj);
 
-    function updateMap(varName) {        
-        counts = get_counts_by_country(csvData, varName);
+    function updateMap(counts) {           
         const newColors = Array.from(counts.values()).sort((a, b) => a - b);
         colorScale.domain(newColors.filter((d, i) => i % Math.ceil(newColors.length / 5) === 0));
 
@@ -75,11 +74,20 @@ Promise.all([
                 d3.select("#country_select").dispatch("change");
             });
     }
-    updateMap(selectedVariable);
+    updateMap(counts);
 
     document.getElementById("col_select").addEventListener("change", function () {
         selectedVariable = this.value;
-        updateMap(selectedVariable);
+        counts = get_counts_by_country(csvData, selectedVariable);
+        updateMap(counts);
     });
+
+    window.addEventListener("filterByValue", function(event) {
+        const { value, attribute } = event.detail;
+        const filteredData = csvData.filter(row => row[attribute] === value);
+
+        counts = get_counts_by_country(filteredData);
+        updateMap(counts);
+    })
 
 });
