@@ -43,3 +43,31 @@ export function create_tooltip(id) {
         .style("background-color", "rgba(255, 255, 255)");
     return tooltip;
 }
+
+export function get_visible_categories(varName, countsMap) {
+    if (varName === "commonname" || varName === "habitat") {
+        return Array.from(countsMap.entries())
+            .filter(([k, v]) => v > 0)
+            .map(([k]) => k)
+            .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
+    }
+    else if (varName === "country") {
+        return Array.from(countsMap.keys())
+        .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
+    }
+    else {
+        let order;
+        if (varName === "age") {
+            order = ["Adult", "Subadult", "Juvenile", "Hatchling"];
+        }
+        if (varName === "sex") {
+            order = ["Male", "Female", "Unknown"];
+        }
+        if (varName === "conservation") {
+            order = ["Critically Endangered", "Endangered", 
+                            "Vulnerable", "Least Concern", "Data Deficient"];
+        }
+        return Array.from(countsMap.keys())
+        .sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    }
+};
