@@ -61,6 +61,7 @@
       <label id="filter_label">Active filter: None</label>
   </div>
     </div> 
+    <div class="cell" id="line"></div>
     <div class="cell" id="clev">
       <label><input type="radio" name="att" value="commonname" checked> Common Name</label>
       <label><input type="radio" name="att" value="age"> Age</label>
@@ -68,7 +69,6 @@
       <label><input type="radio" name="att" value="habitat"> Habitat</label>
       <label><input type="radio" name="att" value="conservation"> Conservation</label>
     </div>
-    <div class="cell" id="line"></div>
     <div class="cell" id="scatter"></div>
   </div>
 </body>
@@ -76,7 +76,7 @@
 <style>
   .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.7fr 1fr;
     grid-template-rows: 1fr 1fr;
     height: 97vh;
     width: 97vw;
