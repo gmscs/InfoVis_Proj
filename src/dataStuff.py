@@ -42,10 +42,22 @@ def standardize_country_names(df: pd.DataFrame) -> pd.DataFrame:
         "USA (Florida)": "United States of America",
         "Indonesia (Borneo)": "Indonesia",
         "Malaysia (Borneo)": "Malaysia",
-        "Congo (DRC)": "Democratic Republic of the Congo",
+        "Congo (DRC)": "Dem. Rep. Congo",
         "Indonesia (Papua)": "Indonesia",
         "Iran (historic)": "Iran",
+        "Central African Republic": "Central African Rep.",
+        "Congo Basin Countries": "Congo",
+        "Congo Basin Countries": "Eq. Guinea"
     }
+
+    congo_basin = df['country'] == "Congo Basin Countries"
+    congo_basin_copy = df[congo_basin].copy()
+    congo_basin1 = congo_basin_copy.copy()
+    congo_basin2 = congo_basin_copy.copy()
+    congo_basin1['country'] = "Congo"
+    congo_basin2['country'] = "Eq. Guinea"
+
+    df = pd.concat([df[~congo_basin], congo_basin1, congo_basin2])
     df['country'] = df['country'].replace(country_mapping)
     return df
 

@@ -6,7 +6,7 @@ Morelet's Crocodile,2.42,90.4,Adult,Male,01-11-2019,Mexico,Rivers,Least Concern
 Mugger Crocodile (Marsh Crocodile),3.75,269.4,Adult,Unknown,15-07-2019,India,Rivers,Vulnerable
 Mugger Crocodile (Marsh Crocodile),2.64,137.4,Adult,Male,08-06-2023,India,Reservoirs,Vulnerable
 Siamese Crocodile,2.85,157.7,Subadult,Male,10-12-2010,Thailand,Slow Rivers,Critically Endangered
-Congo Dwarf Crocodile,0.35,4.7,Juvenile,Unknown,03-08-2008,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,0.35,4.7,Juvenile,Unknown,03-08-2008,Central African Rep.,Forest Swamps,Data Deficient
 West African Crocodile,3.05,201.2,Adult,Male,16-04-2020,Sudan,Lakes,Least Concern
 Morelet's Crocodile,3.39,197.2,Adult,Male,21-05-2016,Mexico,Lagoons,Least Concern
 West African Dwarf Crocodile,1.22,15.8,Adult,Male,08-06-2018,Liberia,Small Streams,Vulnerable
@@ -21,7 +21,7 @@ Borneo Crocodile (disputed),1.07,31.1,Juvenile,Unknown,28-02-2017,Indonesia,Estu
 Saltwater Crocodile,1.55,350.9,Juvenile,Male,26-12-2017,Philippines,Estuaries,Least Concern
 Borneo Crocodile (disputed),2.52,89.6,Subadult,Unknown,24-09-2011,Malaysia,Estuarine Systems,Data Deficient
 Nile Crocodile,4.65,759.8,Adult,Male,16-04-2013,Tanzania,Lakes,Least Concern
-Congo Dwarf Crocodile,1.77,36.0,Adult,Male,07-12-2010,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.77,36.0,Adult,Male,07-12-2010,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Cuban Crocodile,2.44,107.9,Subadult,Male,27-01-2007,Cuba,Swamps,Critically Endangered
 Nile Crocodile,3.18,342.1,Juvenile,Male,28-03-2017,Kenya,Marshes,Least Concern
 Cuban Crocodile,0.34,42.4,Hatchling,Unknown,23-04-2007,Cuba,Swamps,Critically Endangered
@@ -65,12 +65,11 @@ West African Dwarf Crocodile,1.18,12.5,Adult,Female,30-10-2014,Cameroon,Small St
 Nile Crocodile,3.78,383.2,Adult,Male,09-05-2015,Kenya,Lakes,Least Concern
 Freshwater Crocodile (Johnstone's),1.93,46.7,Adult,Female,11-04-2009,Australia,Freshwater Rivers,Least Concern
 Borneo Crocodile (disputed),2.56,106.5,Adult,Male,07-01-2015,Malaysia,Estuarine Systems,Data Deficient
-Congo Dwarf Crocodile,1.25,19.3,Subadult,Female,29-08-2013,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.25,19.3,Subadult,Female,29-08-2013,Dem. Rep. Congo,Slow Streams,Data Deficient
 Cuban Crocodile,2.23,81.8,Adult,Female,06-05-2005,Cuba,Swamps,Critically Endangered
 American Crocodile,3.66,262.6,Adult,Unknown,10-04-2024,Venezuela,Brackish Rivers,Vulnerable
 Central African Slender-snouted Crocodile,1.85,67.3,Subadult,Male,14-12-2014,Cameroon,Swamps,Endangered
 Saltwater Crocodile,4.9,629.7,Subadult,Male,09-10-2006,Philippines,Coastal Wetlands,Least Concern
-Central African Slender-snouted Crocodile,1.2,38.0,Juvenile,Unknown,17-09-2011,Congo Basin Countries,Swamps,Endangered
 West African Slender-snouted Crocodile,2.9,165.4,Adult,Female,29-06-2005,Nigeria,Swamps,Critically Endangered
 Nile Crocodile,4.34,596.2,Subadult,Female,30-11-2009,Egypt,Lakes,Least Concern
 Cuban Crocodile,2.63,107.9,Adult,Unknown,13-12-2007,Cuba,Swamps,Critically Endangered
@@ -84,7 +83,6 @@ West African Crocodile,3.02,180.7,Adult,Male,25-08-2022,Niger,Rivers,Least Conce
 Philippine Crocodile,1.6,47.0,Subadult,Male,22-03-2011,Philippines,Freshwater Marshes,Critically Endangered
 Siamese Crocodile,1.25,36.3,Juvenile,Male,07-09-2015,Vietnam,Swamps,Critically Endangered
 Morelet's Crocodile,2.31,90.9,Adult,Female,11-04-2015,Guatemala,Swamps,Least Concern
-Central African Slender-snouted Crocodile,0.79,34.2,Juvenile,Unknown,20-04-2017,Congo Basin Countries,Swamps,Endangered
 West African Dwarf Crocodile,1.23,13.1,Adult,Unknown,03-03-2021,Sierra Leone,Small Streams,Vulnerable
 Mugger Crocodile (Marsh Crocodile),2.82,159.3,Subadult,Unknown,14-09-2025,Pakistan,Lakes,Vulnerable
 American Crocodile,2.76,152.5,Adult,Unknown,07-08-2017,Costa Rica,Coastal Lagoons,Vulnerable
@@ -139,11 +137,9 @@ New Guinea Crocodile,2.26,74.0,Adult,Unknown,27-12-2015,Indonesia,Swamps,Least C
 Hall's New Guinea Crocodile,2.81,126.9,Adult,Unknown,07-08-2005,Papua New Guinea,Rivers,Least Concern
 Saltwater Crocodile,3.05,344.0,Juvenile,Unknown,20-06-2007,India,Estuaries,Least Concern
 New Guinea Crocodile,2.82,129.1,Subadult,Unknown,06-02-2008,Papua New Guinea,Rivers,Least Concern
-Central African Slender-snouted Crocodile,2.5,120.6,Subadult,Unknown,10-01-2023,Congo Basin Countries,Swamps,Endangered
 Philippine Crocodile,1.94,65.9,Subadult,Unknown,19-02-2011,Philippines,Freshwater Marshes,Critically Endangered
 West African Crocodile,2.52,107.0,Subadult,Male,23-10-2018,Senegal,Oases,Least Concern
 Mugger Crocodile (Marsh Crocodile),3.11,179.1,Subadult,Male,12-02-2005,Iran,Rivers,Vulnerable
-Central African Slender-snouted Crocodile,2.36,87.9,Adult,Unknown,27-07-2021,Congo Basin Countries,Forest Rivers,Endangered
 Borneo Crocodile (disputed),3.68,273.7,Adult,Female,31-08-2024,Indonesia,Rivers,Data Deficient
 Morelet's Crocodile,2.42,78.6,Adult,Female,29-04-2009,Mexico,Rivers,Least Concern
 West African Slender-snouted Crocodile,3.41,220.3,Adult,Male,08-12-2008,Ghana,Swamps,Critically Endangered
@@ -158,7 +154,7 @@ Morelet's Crocodile,0.16,28.2,Hatchling,Unknown,16-02-2021,Guatemala,Rivers,Leas
 West African Crocodile,3.04,171.9,Adult,Male,26-05-2010,Mauritania,Rivers,Least Concern
 Saltwater Crocodile,6.02,1032.7,Adult,Male,22-02-2008,Philippines,Tidal Rivers,Least Concern
 New Guinea Crocodile,2.21,76.1,Subadult,Unknown,24-09-2024,Papua New Guinea,Rivers,Least Concern
-Congo Dwarf Crocodile,0.6,6.9,Juvenile,Female,29-05-2010,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,0.6,6.9,Juvenile,Female,29-05-2010,Dem. Rep. Congo,Slow Streams,Data Deficient
 West African Slender-snouted Crocodile,2.64,149.5,Adult,Male,05-01-2017,Nigeria,Shaded Forest Rivers,Critically Endangered
 Siamese Crocodile,0.94,39.1,Juvenile,Female,22-05-2025,Cambodia,Slow Rivers,Critically Endangered
 Morelet's Crocodile,2.22,74.6,Subadult,Unknown,22-01-2013,Belize,Rivers,Least Concern
@@ -171,11 +167,11 @@ West African Dwarf Crocodile,1.13,12.3,Subadult,Unknown,16-06-2010,Cameroon,Fore
 American Crocodile,0.36,70.2,Hatchling,Female,20-06-2019,Costa Rica,Coastal Lagoons,Vulnerable
 Saltwater Crocodile,4.21,517.3,Adult,Unknown,05-10-2025,Indonesia,Estuaries,Least Concern
 New Guinea Crocodile,2.31,88.7,Adult,Female,23-08-2008,Papua New Guinea,Rivers,Least Concern
-Congo Dwarf Crocodile,1.49,26.9,Adult,Female,16-03-2006,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.49,26.9,Adult,Female,16-03-2006,Dem. Rep. Congo,Slow Streams,Data Deficient
 American Crocodile,3.75,259.1,Subadult,Unknown,21-02-2018,United States of America,Brackish Rivers,Vulnerable
 Freshwater Crocodile (Johnstone's),2.85,122.1,Adult,Unknown,27-09-2013,Australia,Billabongs,Least Concern
 American Crocodile,1.69,90.7,Juvenile,Female,27-04-2007,Mexico,Coastal Lagoons,Vulnerable
-Congo Dwarf Crocodile,1.04,13.6,Subadult,Male,30-10-2017,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.04,13.6,Subadult,Male,30-10-2017,Dem. Rep. Congo,Slow Streams,Data Deficient
 Cuban Crocodile,2.75,114.5,Subadult,Male,03-03-2021,Cuba,Freshwater Wetlands,Critically Endangered
 Morelet's Crocodile,2.79,123.4,Subadult,Unknown,21-01-2008,Belize,Rivers,Least Concern
 Central African Slender-snouted Crocodile,1.12,41.7,Juvenile,Female,10-03-2013,Cameroon,Forest Rivers,Endangered
@@ -205,18 +201,17 @@ Nile Crocodile,0.56,133.9,Hatchling,Female,26-07-2020,Uganda,Reservoirs,Least Co
 Mugger Crocodile (Marsh Crocodile),2.25,104.2,Juvenile,Male,23-05-2019,Sri Lanka,Lakes,Vulnerable
 Nile Crocodile,4.62,712.0,Adult,Unknown,26-05-2020,South Africa,Lakes,Least Concern
 Morelet's Crocodile,1.83,54.7,Adult,Male,19-03-2011,Guatemala,Swamps,Least Concern
-Congo Dwarf Crocodile,1.51,22.3,Adult,Female,11-08-2009,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.51,22.3,Adult,Female,11-08-2009,Dem. Rep. Congo,Slow Streams,Data Deficient
 Saltwater Crocodile,5.91,906.6,Adult,Male,06-11-2016,Australia,Tidal Rivers,Least Concern
 Cuban Crocodile,2.96,120.7,Subadult,Unknown,08-07-2006,Cuba,Swamps,Critically Endangered
 Saltwater Crocodile,6.02,1085.6,Adult,Female,28-09-2020,Papua New Guinea,Estuaries,Least Concern
-Congo Dwarf Crocodile,1.51,23.7,Adult,Unknown,30-04-2012,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.51,23.7,Adult,Unknown,30-04-2012,Central African Rep.,Forest Swamps,Data Deficient
 Borneo Crocodile (disputed),3.09,169.1,Subadult,Male,14-04-2005,Indonesia,Rivers,Data Deficient
 Central African Slender-snouted Crocodile,2.61,134.2,Subadult,Male,07-07-2012,Gabon,Swamps,Endangered
 American Crocodile,2.44,113.3,Juvenile,Male,21-09-2010,Mexico,Coastal Lagoons,Vulnerable
 West African Dwarf Crocodile,0.93,8.4,Adult,Male,27-05-2017,Cameroon,Small Streams,Vulnerable
 New Guinea Crocodile,1.64,42.3,Juvenile,Male,16-01-2023,Papua New Guinea,Swamps,Least Concern
 West African Slender-snouted Crocodile,2.23,105.1,Subadult,Unknown,20-12-2018,Sierra Leone,Swamps,Critically Endangered
-Central African Slender-snouted Crocodile,0.33,32.6,Hatchling,Female,17-01-2024,Congo Basin Countries,Swamps,Endangered
 Philippine Crocodile,2.03,73.2,Adult,Male,26-12-2005,Philippines,Ponds,Critically Endangered
 Hall's New Guinea Crocodile,2.76,94.8,Subadult,Unknown,07-12-2007,Papua New Guinea,Rivers,Least Concern
 New Guinea Crocodile,1.2,40.7,Juvenile,Female,01-12-2011,Indonesia,Swamps,Least Concern
@@ -225,7 +220,7 @@ West African Crocodile,2.4,111.4,Subadult,Male,15-02-2007,Chad,Rivers,Least Conc
 Morelet's Crocodile,2.78,100.4,Subadult,Male,08-06-2009,Guatemala,Rivers,Least Concern
 American Crocodile,1.92,107.4,Juvenile,Female,17-02-2016,Mexico,Brackish Rivers,Vulnerable
 Orinoco Crocodile,3.88,346.7,Adult,Unknown,07-07-2010,Colombia,Flooded Savannas,Critically Endangered
-Congo Dwarf Crocodile,1.4,22.8,Adult,Male,24-02-2019,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.4,22.8,Adult,Male,24-02-2019,Dem. Rep. Congo,Slow Streams,Data Deficient
 Central African Slender-snouted Crocodile,1.79,66.7,Juvenile,Male,20-02-2023,Gabon,Swamps,Endangered
 Orinoco Crocodile,2.99,215.3,Juvenile,Female,16-12-2012,Venezuela,Large Rivers,Critically Endangered
 New Guinea Crocodile,2.87,128.0,Adult,Male,08-10-2023,Indonesia,Rivers,Least Concern
@@ -241,10 +236,10 @@ Borneo Crocodile (disputed),2.79,133.3,Adult,Female,26-10-2019,Malaysia,Estuarin
 Morelet's Crocodile,1.9,55.3,Adult,Unknown,10-10-2015,Mexico,Swamps,Least Concern
 Philippine Crocodile,1.88,57.7,Subadult,Male,26-05-2019,Philippines,Freshwater Marshes,Critically Endangered
 West African Crocodile,1.99,78.3,Subadult,Unknown,04-03-2007,Mali,Oases,Least Concern
-Congo Dwarf Crocodile,1.46,23.3,Adult,Unknown,30-05-2020,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.46,23.3,Adult,Unknown,30-05-2020,Central African Rep.,Forest Swamps,Data Deficient
 Freshwater Crocodile (Johnstone's),1.69,45.7,Adult,Unknown,30-11-2018,Australia,Freshwater Rivers,Least Concern
 Orinoco Crocodile,2.14,143.0,Juvenile,Unknown,03-07-2025,Venezuela,Large Rivers,Critically Endangered
-Congo Dwarf Crocodile,1.42,25.1,Adult,Unknown,07-03-2018,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.42,25.1,Adult,Unknown,07-03-2018,Central African Rep.,Forest Swamps,Data Deficient
 Cuban Crocodile,2.07,84.4,Adult,Male,16-08-2022,Cuba,Swamps,Critically Endangered
 Siamese Crocodile,1.52,52.5,Juvenile,Male,17-11-2013,Laos,Oxbow Lakes,Critically Endangered
 Saltwater Crocodile,3.55,405.8,Juvenile,Unknown,09-12-2014,Indonesia,Tidal Rivers,Least Concern
@@ -274,45 +269,42 @@ West African Slender-snouted Crocodile,2.08,82.8,Adult,Female,26-07-2021,Guinea,
 Nile Crocodile,5.18,848.2,Adult,Unknown,01-02-2007,Tanzania,Marshes,Least Concern
 Morelet's Crocodile,2.67,118.9,Adult,Unknown,16-11-2024,Mexico,Swamps,Least Concern
 Saltwater Crocodile,4.19,541.7,Adult,Female,18-09-2018,Australia,Mangroves,Least Concern
-Central African Slender-snouted Crocodile,2.69,125.4,Adult,Unknown,09-10-2016,Congo Basin Countries,Forest Rivers,Endangered
 West African Dwarf Crocodile,1.28,15.4,Subadult,Unknown,03-01-2025,Ghana,Forest Swamps,Vulnerable
 Orinoco Crocodile,3.25,253.9,Subadult,Unknown,30-12-2009,Colombia,Flooded Savannas,Critically Endangered
 American Crocodile,1.78,96.7,Juvenile,Male,18-01-2014,Colombia,Coastal Lagoons,Vulnerable
-Congo Dwarf Crocodile,1.51,23.7,Adult,Female,24-02-2013,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.51,23.7,Adult,Female,24-02-2013,Dem. Rep. Congo,Forest Swamps,Data Deficient
 New Guinea Crocodile,1.76,48.7,Juvenile,Female,19-12-2012,Indonesia,Rivers,Least Concern
 Hall's New Guinea Crocodile,2.33,69.2,Adult,Male,17-09-2007,Papua New Guinea,Freshwater Wetlands,Least Concern
 Philippine Crocodile,2.02,71.7,Subadult,Male,10-03-2016,Philippines,Ponds,Critically Endangered
-Congo Dwarf Crocodile,1.31,21.1,Subadult,Unknown,08-10-2024,Central African Republic,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.31,21.1,Subadult,Unknown,08-10-2024,Central African Rep.,Slow Streams,Data Deficient
 Siamese Crocodile,2.76,125.2,Adult,Unknown,28-06-2016,Laos,Oxbow Lakes,Critically Endangered
 New Guinea Crocodile,2.29,83.8,Subadult,Unknown,01-08-2019,Papua New Guinea,Rivers,Least Concern
 New Guinea Crocodile,2.89,144.5,Adult,Unknown,10-10-2021,Indonesia,Swamps,Least Concern
 West African Dwarf Crocodile,1.18,15.7,Adult,Male,30-10-2023,Guinea,Small Streams,Vulnerable
-Congo Dwarf Crocodile,1.2,16.9,Adult,Unknown,08-07-2019,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.2,16.9,Adult,Unknown,08-07-2019,Central African Rep.,Forest Swamps,Data Deficient
 Freshwater Crocodile (Johnstone's),1.47,30.9,Juvenile,Female,14-08-2023,Australia,Gorges,Least Concern
-Congo Dwarf Crocodile,1.36,20.2,Adult,Male,12-03-2009,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.36,20.2,Adult,Male,12-03-2009,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Saltwater Crocodile,4.96,637.2,Subadult,Male,30-10-2025,Indonesia,Estuaries,Least Concern
-Central African Slender-snouted Crocodile,3.06,180.7,Adult,Unknown,13-07-2006,Congo Basin Countries,Forest Rivers,Endangered
-Congo Dwarf Crocodile,1.11,14.6,Subadult,Unknown,27-08-2015,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.11,14.6,Subadult,Unknown,27-08-2015,Dem. Rep. Congo,Forest Swamps,Data Deficient
 West African Slender-snouted Crocodile,3.15,187.8,Adult,Male,28-08-2013,Liberia,Swamps,Critically Endangered
 West African Dwarf Crocodile,1.64,25.0,Adult,Male,03-10-2008,Ghana,Forest Swamps,Vulnerable
 Philippine Crocodile,2.48,104.1,Adult,Female,03-07-2019,Philippines,Ponds,Critically Endangered
 Nile Crocodile,1.63,169.1,Juvenile,Unknown,27-01-2014,South Africa,Marshes,Least Concern
 West African Crocodile,2.78,153.8,Adult,Unknown,10-01-2024,Mali,Lakes,Least Concern
 Morelet's Crocodile,2.79,101.5,Subadult,Male,19-12-2016,Mexico,Swamps,Least Concern
-Congo Dwarf Crocodile,1.35,23.0,Adult,Unknown,15-05-2013,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.35,23.0,Adult,Unknown,15-05-2013,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Saltwater Crocodile,3.62,437.6,Adult,Unknown,17-09-2012,India,Coastal Wetlands,Least Concern
 Cuban Crocodile,2.61,119.8,Adult,Unknown,07-05-2015,Cuba,Swamps,Critically Endangered
 Siamese Crocodile,2.18,76.2,Adult,Male,25-05-2011,Cambodia,Slow Rivers,Critically Endangered
 Central African Slender-snouted Crocodile,2.06,75.7,Subadult,Male,10-01-2012,Cameroon,Forest Rivers,Endangered
 Siamese Crocodile,2.92,150.7,Adult,Male,25-06-2019,Cambodia,Swamps,Critically Endangered
-Congo Dwarf Crocodile,1.12,15.5,Adult,Unknown,13-09-2005,Central African Republic,Forest Swamps,Data Deficient
-Congo Dwarf Crocodile,1.47,25.1,Subadult,Female,02-01-2008,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.12,15.5,Adult,Unknown,13-09-2005,Central African Rep.,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.47,25.1,Subadult,Female,02-01-2008,Central African Rep.,Forest Swamps,Data Deficient
 Hall's New Guinea Crocodile,1.51,43.1,Juvenile,Male,14-09-2017,Papua New Guinea,Rivers,Least Concern
 Saltwater Crocodile,3.65,449.3,Juvenile,Female,03-08-2025,Papua New Guinea,Estuaries,Least Concern
 New Guinea Crocodile,2.26,83.5,Adult,Unknown,25-11-2008,Indonesia,Rivers,Least Concern
 Hall's New Guinea Crocodile,1.34,43.5,Juvenile,Female,03-12-2015,Papua New Guinea,Freshwater Wetlands,Least Concern
 Cuban Crocodile,1.51,59.1,Juvenile,Unknown,02-03-2010,Cuba,Swamps,Critically Endangered
-Central African Slender-snouted Crocodile,0.79,33.9,Juvenile,Male,14-02-2019,Congo Basin Countries,Forest Rivers,Endangered
 Saltwater Crocodile,4.33,658.3,Adult,Unknown,30-04-2021,Malaysia,Tidal Rivers,Least Concern
 Philippine Crocodile,1.67,48.8,Adult,Male,24-12-2018,Philippines,Freshwater Marshes,Critically Endangered
 West African Slender-snouted Crocodile,2.94,142.5,Adult,Unknown,08-05-2020,Côte d'Ivoire,Shaded Forest Rivers,Critically Endangered
@@ -327,7 +319,6 @@ Orinoco Crocodile,2.8,218.0,Subadult,Unknown,31-08-2020,Venezuela,Large Rivers,C
 Hall's New Guinea Crocodile,2.28,73.1,Adult,Unknown,06-05-2005,Papua New Guinea,Freshwater Wetlands,Least Concern
 Freshwater Crocodile (Johnstone's),1.75,42.5,Juvenile,Female,23-11-2017,Australia,Billabongs,Least Concern
 Borneo Crocodile (disputed),3.0,130.3,Adult,Female,26-08-2024,Malaysia,Estuarine Systems,Data Deficient
-Central African Slender-snouted Crocodile,0.72,33.5,Juvenile,Male,08-03-2020,Congo Basin Countries,Forest Rivers,Endangered
 Borneo Crocodile (disputed),2.23,83.7,Adult,Male,09-06-2017,Indonesia,Estuarine Systems,Data Deficient
 Hall's New Guinea Crocodile,1.86,50.8,Juvenile,Male,29-07-2024,Papua New Guinea,Freshwater Wetlands,Least Concern
 Philippine Crocodile,1.57,40.7,Juvenile,Male,21-02-2022,Philippines,Rivers,Critically Endangered
@@ -345,16 +336,15 @@ West African Crocodile,2.28,97.8,Adult,Female,22-02-2010,Mauritania,Oases,Least 
 West African Slender-snouted Crocodile,2.95,170.0,Subadult,Female,21-04-2017,Côte d'Ivoire,Shaded Forest Rivers,Critically Endangered
 Orinoco Crocodile,3.49,305.4,Adult,Unknown,12-12-2011,Colombia,Flooded Savannas,Critically Endangered
 Mugger Crocodile (Marsh Crocodile),0.61,56.4,Hatchling,Female,08-06-2011,Pakistan,Lakes,Vulnerable
-Central African Slender-snouted Crocodile,2.1,87.2,Adult,Male,27-03-2014,Congo Basin Countries,Swamps,Endangered
 Mugger Crocodile (Marsh Crocodile),2.8,149.4,Subadult,Unknown,11-02-2023,Nepal,Reservoirs,Vulnerable
 Siamese Crocodile,2.92,166.7,Adult,Female,17-09-2020,Vietnam,Slow Rivers,Critically Endangered
 Nile Crocodile,2.04,168.7,Juvenile,Male,19-05-2008,Kenya,Reservoirs,Least Concern
 New Guinea Crocodile,0.24,32.3,Hatchling,Male,05-04-2006,Indonesia,Swamps,Least Concern
-Congo Dwarf Crocodile,0.9,9.0,Juvenile,Female,18-07-2010,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,0.9,9.0,Juvenile,Female,18-07-2010,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Morelet's Crocodile,2.59,87.1,Subadult,Unknown,07-09-2016,Mexico,Rivers,Least Concern
 Freshwater Crocodile (Johnstone's),0.88,20.5,Juvenile,Male,15-03-2005,Australia,Gorges,Least Concern
 Cuban Crocodile,2.92,139.4,Adult,Unknown,07-05-2006,Cuba,Swamps,Critically Endangered
-Congo Dwarf Crocodile,1.09,13.9,Subadult,Female,01-04-2021,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.09,13.9,Subadult,Female,01-04-2021,Dem. Rep. Congo,Slow Streams,Data Deficient
 Central African Slender-snouted Crocodile,2.64,129.9,Adult,Female,05-06-2021,Gabon,Swamps,Endangered
 Orinoco Crocodile,0.65,97.9,Hatchling,Male,20-10-2024,Venezuela,Flooded Savannas,Critically Endangered
 New Guinea Crocodile,2.5,97.3,Subadult,Female,12-03-2014,Indonesia,Lakes,Least Concern
@@ -365,24 +355,21 @@ West African Slender-snouted Crocodile,3.28,217.2,Adult,Unknown,19-07-2008,Ghana
 New Guinea Crocodile,1.46,41.8,Juvenile,Unknown,09-10-2025,Indonesia,Swamps,Least Concern
 West African Slender-snouted Crocodile,2.28,114.0,Adult,Unknown,20-06-2016,Ghana,Shaded Forest Rivers,Critically Endangered
 Saltwater Crocodile,4.16,558.3,Subadult,Unknown,03-08-2025,India,Estuaries,Least Concern
-Central African Slender-snouted Crocodile,2.08,88.4,Adult,Female,03-11-2005,Congo Basin Countries,Swamps,Endangered
 Saltwater Crocodile,4.78,696.0,Adult,Male,02-11-2011,Philippines,Estuaries,Least Concern
-Congo Dwarf Crocodile,1.28,19.0,Adult,Female,20-11-2021,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.28,19.0,Adult,Female,20-11-2021,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Freshwater Crocodile (Johnstone's),2.04,59.3,Subadult,Male,15-10-2015,Australia,Billabongs,Least Concern
 Philippine Crocodile,2.04,65.8,Subadult,Male,25-01-2020,Philippines,Rivers,Critically Endangered
 Hall's New Guinea Crocodile,3.03,145.9,Subadult,Unknown,09-04-2008,Papua New Guinea,Freshwater Wetlands,Least Concern
 Philippine Crocodile,1.42,33.3,Juvenile,Female,24-07-2020,Philippines,Rivers,Critically Endangered
-Central African Slender-snouted Crocodile,2.22,95.0,Subadult,Male,04-08-2020,Congo Basin Countries,Forest Rivers,Endangered
 West African Dwarf Crocodile,0.78,6.5,Juvenile,Female,24-10-2019,Liberia,Small Streams,Vulnerable
 Nile Crocodile,4.1,513.9,Adult,Female,15-11-2015,Sudan,Rivers,Least Concern
 Philippine Crocodile,1.61,40.4,Subadult,Female,21-12-2012,Philippines,Freshwater Marshes,Critically Endangered
 Siamese Crocodile,0.43,28.5,Hatchling,Male,31-08-2012,Vietnam,Oxbow Lakes,Critically Endangered
 American Crocodile,3.25,194.1,Subadult,Female,28-05-2025,Venezuela,Mangroves,Vulnerable
-Congo Dwarf Crocodile,0.84,9.9,Juvenile,Male,25-08-2014,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,0.84,9.9,Juvenile,Male,25-08-2014,Dem. Rep. Congo,Forest Swamps,Data Deficient
 American Crocodile,4.07,352.7,Adult,Female,28-09-2024,Colombia,Brackish Rivers,Vulnerable
 West African Slender-snouted Crocodile,0.88,37.6,Juvenile,Unknown,03-11-2018,Liberia,Shaded Forest Rivers,Critically Endangered
 Mugger Crocodile (Marsh Crocodile),3.25,186.3,Adult,Unknown,28-07-2019,Nepal,Rivers,Vulnerable
-Central African Slender-snouted Crocodile,2.72,155.3,Adult,Female,29-12-2009,Congo Basin Countries,Forest Rivers,Endangered
 American Crocodile,3.14,196.7,Adult,Male,04-08-2014,Colombia,Coastal Lagoons,Vulnerable
 New Guinea Crocodile,2.6,106.1,Adult,Male,05-09-2016,Papua New Guinea,Swamps,Least Concern
 Saltwater Crocodile,6.12,1139.7,Adult,Male,14-07-2011,Papua New Guinea,Coastal Wetlands,Least Concern
@@ -399,7 +386,7 @@ Borneo Crocodile (disputed),1.66,51.4,Juvenile,Unknown,01-03-2016,Malaysia,River
 Freshwater Crocodile (Johnstone's),1.91,54.2,Adult,Female,08-01-2006,Australia,Billabongs,Least Concern
 Philippine Crocodile,1.46,34.7,Adult,Female,16-03-2022,Philippines,Freshwater Marshes,Critically Endangered
 New Guinea Crocodile,2.42,76.0,Subadult,Male,20-10-2015,Papua New Guinea,Rivers,Least Concern
-Congo Dwarf Crocodile,1.73,36.9,Adult,Unknown,07-01-2017,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.73,36.9,Adult,Unknown,07-01-2017,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Hall's New Guinea Crocodile,2.41,75.0,Adult,Male,08-05-2018,Papua New Guinea,Rivers,Least Concern
 Saltwater Crocodile,0.53,263.9,Hatchling,Unknown,24-07-2005,Papua New Guinea,Mangroves,Least Concern
 New Guinea Crocodile,3.12,166.5,Adult,Unknown,24-12-2007,Papua New Guinea,Rivers,Least Concern
@@ -417,12 +404,12 @@ American Crocodile,3.07,195.5,Adult,Unknown,07-05-2008,Colombia,Mangroves,Vulner
 West African Slender-snouted Crocodile,2.92,161.0,Subadult,Female,02-01-2007,Ghana,Shaded Forest Rivers,Critically Endangered
 West African Crocodile,0.48,35.1,Hatchling,Male,26-04-2024,Niger,Rivers,Least Concern
 Borneo Crocodile (disputed),3.44,197.1,Adult,Unknown,21-11-2008,Malaysia,Rivers,Data Deficient
-Congo Dwarf Crocodile,1.52,22.6,Adult,Female,04-10-2019,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.52,22.6,Adult,Female,04-10-2019,Central African Rep.,Forest Swamps,Data Deficient
 Cuban Crocodile,2.11,77.1,Subadult,Unknown,25-05-2023,Cuba,Swamps,Critically Endangered
 Mugger Crocodile (Marsh Crocodile),2.66,116.2,Adult,Female,13-10-2025,Iran,Reservoirs,Vulnerable
 Saltwater Crocodile,3.18,473.1,Juvenile,Female,06-06-2015,Philippines,Estuaries,Least Concern
 American Crocodile,3.02,183.4,Adult,Unknown,04-01-2012,Venezuela,Coastal Lagoons,Vulnerable
-Congo Dwarf Crocodile,1.51,28.4,Subadult,Female,04-10-2008,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.51,28.4,Subadult,Female,04-10-2008,Dem. Rep. Congo,Slow Streams,Data Deficient
 Saltwater Crocodile,5.1,698.8,Adult,Male,08-06-2011,Papua New Guinea,Estuaries,Least Concern
 West African Dwarf Crocodile,1.31,17.3,Subadult,Unknown,29-07-2021,Sierra Leone,Small Streams,Vulnerable
 Orinoco Crocodile,2.88,197.6,Subadult,Male,15-10-2023,Colombia,Flooded Savannas,Critically Endangered
@@ -436,14 +423,13 @@ West African Slender-snouted Crocodile,2.93,178.8,Adult,Unknown,08-04-2022,Liber
 American Crocodile,3.36,196.1,Adult,Male,19-11-2014,Mexico,Brackish Rivers,Vulnerable
 West African Crocodile,2.81,134.0,Adult,Female,17-01-2021,Niger,Rivers,Least Concern
 American Crocodile,0.49,63.2,Hatchling,Female,16-04-2025,Colombia,Coastal Lagoons,Vulnerable
-Central African Slender-snouted Crocodile,1.13,40.5,Juvenile,Female,20-09-2007,Congo Basin Countries,Swamps,Endangered
 Freshwater Crocodile (Johnstone's),2.34,76.8,Subadult,Male,09-06-2017,Australia,Billabongs,Least Concern
 Freshwater Crocodile (Johnstone's),2.31,62.6,Adult,Unknown,02-04-2009,Australia,Freshwater Rivers,Least Concern
 Nile Crocodile,3.91,512.7,Subadult,Female,15-05-2005,Kenya,Marshes,Least Concern
 New Guinea Crocodile,2.26,82.0,Adult,Male,15-08-2021,Papua New Guinea,Lakes,Least Concern
 Cuban Crocodile,2.91,114.2,Adult,Female,30-05-2023,Cuba,Swamps,Critically Endangered
 American Crocodile,3.85,273.7,Adult,Unknown,20-03-2020,Colombia,Mangroves,Vulnerable
-Congo Dwarf Crocodile,1.06,11.2,Subadult,Female,08-10-2008,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.06,11.2,Subadult,Female,08-10-2008,Central African Rep.,Forest Swamps,Data Deficient
 Mugger Crocodile (Marsh Crocodile),2.48,101.4,Subadult,Male,07-11-2020,Iran,Reservoirs,Vulnerable
 Central African Slender-snouted Crocodile,2.55,114.9,Adult,Unknown,07-07-2020,Cameroon,Forest Rivers,Endangered
 American Crocodile,1.54,91.4,Juvenile,Unknown,20-05-2016,Cuba,Brackish Rivers,Vulnerable
@@ -467,13 +453,13 @@ West African Dwarf Crocodile,1.33,19.7,Adult,Male,30-04-2008,Liberia,Small Strea
 Orinoco Crocodile,3.87,347.9,Adult,Unknown,27-10-2022,Venezuela,Large Rivers,Critically Endangered
 Morelet's Crocodile,2.16,65.1,Adult,Male,06-12-2019,Belize,Rivers,Least Concern
 Hall's New Guinea Crocodile,2.81,97.2,Adult,Male,11-04-2015,Papua New Guinea,Freshwater Wetlands,Least Concern
-Congo Dwarf Crocodile,1.56,32.2,Adult,Male,08-12-2022,Central African Republic,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.56,32.2,Adult,Male,08-12-2022,Central African Rep.,Slow Streams,Data Deficient
 Central African Slender-snouted Crocodile,0.7,33.4,Juvenile,Unknown,22-10-2016,Cameroon,Swamps,Endangered
 Nile Crocodile,3.83,461.5,Subadult,Unknown,05-04-2006,Egypt,Marshes,Least Concern
 Cuban Crocodile,3.01,141.0,Adult,Male,29-04-2021,Cuba,Swamps,Critically Endangered
 Freshwater Crocodile (Johnstone's),0.91,26.9,Juvenile,Unknown,10-07-2012,Australia,Gorges,Least Concern
 American Crocodile,2.68,141.8,Adult,Male,21-06-2009,Cuba,Brackish Rivers,Vulnerable
-Congo Dwarf Crocodile,1.45,23.7,Adult,Male,08-08-2005,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.45,23.7,Adult,Male,08-08-2005,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Freshwater Crocodile (Johnstone's),0.88,26.6,Juvenile,Male,08-06-2018,Australia,Gorges,Least Concern
 Borneo Crocodile (disputed),3.52,191.7,Adult,Unknown,24-05-2005,Malaysia,Rivers,Data Deficient
 Cuban Crocodile,2.88,125.2,Subadult,Female,18-07-2011,Cuba,Freshwater Wetlands,Critically Endangered
@@ -485,12 +471,11 @@ Nile Crocodile,3.43,334.3,Adult,Female,30-06-2020,Sudan,Rivers,Least Concern
 Nile Crocodile,5.31,998.3,Adult,Male,10-07-2015,Kenya,Marshes,Least Concern
 American Crocodile,2.86,144.4,Adult,Male,14-01-2007,Cuba,Mangroves,Vulnerable
 Hall's New Guinea Crocodile,1.61,39.8,Juvenile,Male,20-01-2021,Papua New Guinea,Rivers,Least Concern
-Congo Dwarf Crocodile,1.37,18.9,Subadult,Unknown,30-05-2007,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.37,18.9,Subadult,Unknown,30-05-2007,Dem. Rep. Congo,Slow Streams,Data Deficient
 Borneo Crocodile (disputed),0.93,36.6,Juvenile,Unknown,20-06-2011,Indonesia,Rivers,Data Deficient
 Central African Slender-snouted Crocodile,2.29,88.5,Subadult,Female,27-03-2009,Cameroon,Swamps,Endangered
 Orinoco Crocodile,2.63,194.4,Adult,Male,20-03-2008,Colombia,Flooded Savannas,Critically Endangered
 Orinoco Crocodile,2.66,209.5,Juvenile,Female,26-02-2022,Colombia,Flooded Savannas,Critically Endangered
-Central African Slender-snouted Crocodile,1.98,81.8,Subadult,Male,27-03-2007,Congo Basin Countries,Forest Rivers,Endangered
 Central African Slender-snouted Crocodile,2.74,124.0,Adult,Male,19-01-2022,Cameroon,Swamps,Endangered
 Philippine Crocodile,1.82,56.7,Adult,Male,19-02-2022,Philippines,Rivers,Critically Endangered
 West African Crocodile,2.76,126.9,Adult,Female,04-11-2024,Senegal,Rivers,Least Concern
@@ -498,8 +483,6 @@ Borneo Crocodile (disputed),2.52,106.0,Adult,Unknown,05-02-2017,Malaysia,Estuari
 Orinoco Crocodile,4.22,441.8,Subadult,Male,31-03-2018,Venezuela,Large Rivers,Critically Endangered
 Hall's New Guinea Crocodile,3.22,149.7,Subadult,Male,31-10-2019,Papua New Guinea,Freshwater Wetlands,Least Concern
 Freshwater Crocodile (Johnstone's),0.27,19.9,Hatchling,Female,28-09-2017,Australia,Billabongs,Least Concern
-Central African Slender-snouted Crocodile,2.67,133.4,Adult,Male,30-06-2020,Congo Basin Countries,Forest Rivers,Endangered
-Central African Slender-snouted Crocodile,2.24,99.8,Subadult,Male,07-11-2023,Congo Basin Countries,Forest Rivers,Endangered
 Siamese Crocodile,1.87,57.7,Juvenile,Female,18-02-2011,Cambodia,Oxbow Lakes,Critically Endangered
 Central African Slender-snouted Crocodile,2.4,98.0,Subadult,Female,09-01-2014,Gabon,Swamps,Endangered
 Orinoco Crocodile,3.77,400.0,Adult,Female,23-04-2019,Colombia,Large Rivers,Critically Endangered
@@ -533,7 +516,7 @@ West African Crocodile,2.77,133.6,Subadult,Unknown,15-07-2018,Mauritania,Lakes,L
 Hall's New Guinea Crocodile,2.85,125.8,Adult,Unknown,07-03-2009,Papua New Guinea,Rivers,Least Concern
 Saltwater Crocodile,4.71,695.5,Adult,Unknown,14-02-2019,Malaysia,Estuaries,Least Concern
 West African Slender-snouted Crocodile,2.71,124.4,Adult,Male,25-09-2016,Côte d'Ivoire,Swamps,Critically Endangered
-Congo Dwarf Crocodile,1.13,12.3,Subadult,Unknown,14-05-2005,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.13,12.3,Subadult,Unknown,14-05-2005,Dem. Rep. Congo,Slow Streams,Data Deficient
 Orinoco Crocodile,3.96,385.8,Subadult,Male,26-09-2009,Venezuela,Large Rivers,Critically Endangered
 Morelet's Crocodile,2.35,87.5,Subadult,Unknown,02-07-2018,Guatemala,Rivers,Least Concern
 Hall's New Guinea Crocodile,1.0,37.4,Juvenile,Unknown,22-03-2009,Papua New Guinea,Freshwater Wetlands,Least Concern
@@ -553,7 +536,7 @@ Borneo Crocodile (disputed),3.44,200.8,Adult,Unknown,31-01-2023,Indonesia,Rivers
 New Guinea Crocodile,2.72,96.3,Adult,Male,30-03-2025,Papua New Guinea,Rivers,Least Concern
 Freshwater Crocodile (Johnstone's),1.96,57.1,Subadult,Unknown,10-09-2018,Australia,Gorges,Least Concern
 West African Slender-snouted Crocodile,2.78,154.3,Subadult,Male,04-10-2024,Liberia,Shaded Forest Rivers,Critically Endangered
-Congo Dwarf Crocodile,1.54,27.4,Adult,Male,11-07-2005,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.54,27.4,Adult,Male,11-07-2005,Dem. Rep. Congo,Slow Streams,Data Deficient
 Freshwater Crocodile (Johnstone's),0.39,18.0,Hatchling,Female,03-11-2017,Australia,Billabongs,Least Concern
 Mugger Crocodile (Marsh Crocodile),3.65,249.9,Adult,Unknown,31-03-2010,Nepal,Reservoirs,Vulnerable
 Cuban Crocodile,3.1,156.3,Adult,Female,11-03-2015,Cuba,Freshwater Wetlands,Critically Endangered
@@ -562,13 +545,12 @@ Cuban Crocodile,2.7,115.8,Adult,Unknown,08-10-2009,Cuba,Swamps,Critically Endang
 Orinoco Crocodile,4.24,444.1,Subadult,Female,18-08-2005,Venezuela,Large Rivers,Critically Endangered
 Saltwater Crocodile,4.18,542.3,Subadult,Female,11-07-2022,Papua New Guinea,Coastal Wetlands,Least Concern
 Cuban Crocodile,2.76,126.3,Subadult,Female,08-09-2013,Cuba,Swamps,Critically Endangered
-Congo Dwarf Crocodile,0.33,5.5,Juvenile,Unknown,06-12-2011,Democratic Republic of the Congo,Forest Swamps,Data Deficient
-Congo Dwarf Crocodile,1.35,20.1,Adult,Male,07-10-2019,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,0.33,5.5,Juvenile,Unknown,06-12-2011,Dem. Rep. Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.35,20.1,Adult,Male,07-10-2019,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Philippine Crocodile,0.41,17.5,Hatchling,Female,18-01-2009,Philippines,Freshwater Marshes,Critically Endangered
 New Guinea Crocodile,2.03,68.5,Juvenile,Male,13-10-2018,Indonesia,Lakes,Least Concern
 Saltwater Crocodile,5.4,765.7,Adult,Male,01-03-2006,India,Mangroves,Least Concern
-Central African Slender-snouted Crocodile,0.47,34.5,Hatchling,Male,14-01-2011,Congo Basin Countries,Forest Rivers,Endangered
-Congo Dwarf Crocodile,1.4,24.2,Adult,Male,17-05-2013,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.4,24.2,Adult,Male,17-05-2013,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Borneo Crocodile (disputed),2.2,67.4,Adult,Female,30-05-2018,Malaysia,Estuarine Systems,Data Deficient
 Philippine Crocodile,1.81,45.5,Subadult,Male,06-04-2021,Philippines,Rivers,Critically Endangered
 West African Dwarf Crocodile,1.01,10.0,Juvenile,Female,13-06-2018,Liberia,Forest Swamps,Vulnerable
@@ -612,7 +594,7 @@ Freshwater Crocodile (Johnstone's),2.34,65.2,Subadult,Female,19-09-2006,Australi
 Borneo Crocodile (disputed),2.94,122.6,Adult,Unknown,12-05-2015,Malaysia,Estuarine Systems,Data Deficient
 Philippine Crocodile,2.31,79.3,Adult,Female,08-05-2015,Philippines,Freshwater Marshes,Critically Endangered
 Mugger Crocodile (Marsh Crocodile),3.61,210.9,Adult,Unknown,04-04-2007,Sri Lanka,Reservoirs,Vulnerable
-Congo Dwarf Crocodile,1.42,25.3,Adult,Female,17-08-2020,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.42,25.3,Adult,Female,17-08-2020,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Freshwater Crocodile (Johnstone's),1.68,36.8,Juvenile,Male,17-06-2014,Australia,Freshwater Rivers,Least Concern
 Philippine Crocodile,2.3,78.4,Adult,Unknown,24-08-2009,Philippines,Rivers,Critically Endangered
 Mugger Crocodile (Marsh Crocodile),3.09,145.8,Subadult,Female,31-07-2019,Iran,Reservoirs,Vulnerable
@@ -653,7 +635,7 @@ Cuban Crocodile,2.42,107.5,Subadult,Male,24-07-2016,Cuba,Swamps,Critically Endan
 West African Crocodile,1.74,63.9,Juvenile,Unknown,09-10-2019,Mali,Lakes,Least Concern
 Siamese Crocodile,1.49,55.6,Juvenile,Female,21-02-2011,Cambodia,Oxbow Lakes,Critically Endangered
 West African Crocodile,1.97,77.9,Juvenile,Male,03-02-2014,Senegal,Rivers,Least Concern
-Congo Dwarf Crocodile,1.52,29.1,Adult,Unknown,14-10-2007,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.52,29.1,Adult,Unknown,14-10-2007,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Orinoco Crocodile,2.68,202.8,Adult,Male,13-08-2017,Colombia,Large Rivers,Critically Endangered
 Morelet's Crocodile,0.26,34.1,Hatchling,Unknown,16-04-2025,Belize,Lagoons,Least Concern
 West African Slender-snouted Crocodile,2.53,140.1,Adult,Unknown,16-09-2009,Nigeria,Shaded Forest Rivers,Critically Endangered
@@ -675,10 +657,9 @@ Saltwater Crocodile,5.05,624.1,Adult,Male,07-01-2014,Indonesia,Estuaries,Least C
 Borneo Crocodile (disputed),2.39,94.9,Subadult,Male,23-07-2015,Malaysia,Estuarine Systems,Data Deficient
 Hall's New Guinea Crocodile,2.58,91.1,Subadult,Unknown,14-06-2009,Papua New Guinea,Freshwater Wetlands,Least Concern
 Saltwater Crocodile,4.51,642.3,Adult,Unknown,18-12-2010,Australia,Coastal Wetlands,Least Concern
-Congo Dwarf Crocodile,1.38,22.7,Subadult,Female,13-12-2007,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.38,22.7,Subadult,Female,13-12-2007,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Cuban Crocodile,2.95,147.2,Subadult,Female,09-10-2015,Cuba,Swamps,Critically Endangered
 American Crocodile,4.18,311.2,Adult,Female,21-09-2020,Cuba,Brackish Rivers,Vulnerable
-Central African Slender-snouted Crocodile,2.51,103.1,Adult,Unknown,09-02-2019,Congo Basin Countries,Forest Rivers,Endangered
 Morelet's Crocodile,1.05,35.0,Juvenile,Unknown,31-07-2014,Guatemala,Swamps,Least Concern
 Morelet's Crocodile,0.17,26.0,Hatchling,Unknown,19-03-2012,Mexico,Rivers,Least Concern
 Siamese Crocodile,0.43,33.8,Hatchling,Female,01-02-2013,Laos,Oxbow Lakes,Critically Endangered
@@ -710,7 +691,6 @@ Freshwater Crocodile (Johnstone's),2.72,103.5,Adult,Male,01-09-2021,Australia,Bi
 Mugger Crocodile (Marsh Crocodile),3.91,280.9,Adult,Female,22-07-2023,Pakistan,Rivers,Vulnerable
 Hall's New Guinea Crocodile,3.49,192.0,Adult,Male,17-05-2010,Papua New Guinea,Freshwater Wetlands,Least Concern
 Morelet's Crocodile,1.7,51.7,Adult,Male,23-05-2010,Belize,Swamps,Least Concern
-Central African Slender-snouted Crocodile,1.6,56.3,Juvenile,Male,05-10-2020,Congo Basin Countries,Forest Rivers,Endangered
 Borneo Crocodile (disputed),3.79,259.1,Adult,Male,05-07-2011,Indonesia,Rivers,Data Deficient
 American Crocodile,2.63,140.2,Juvenile,Unknown,27-08-2018,United States of America,Mangroves,Vulnerable
 Cuban Crocodile,1.53,47.6,Juvenile,Male,19-09-2017,Cuba,Freshwater Wetlands,Critically Endangered
@@ -790,19 +770,19 @@ West African Dwarf Crocodile,1.26,16.9,Adult,Female,15-05-2022,Côte d'Ivoire,Fo
 Orinoco Crocodile,2.63,193.2,Juvenile,Female,15-11-2018,Venezuela,Large Rivers,Critically Endangered
 Borneo Crocodile (disputed),1.55,40.9,Juvenile,Unknown,03-06-2012,Indonesia,Rivers,Data Deficient
 Siamese Crocodile,2.76,129.6,Adult,Unknown,20-03-2016,Laos,Swamps,Critically Endangered
-Congo Dwarf Crocodile,0.17,4.7,Hatchling,Female,01-12-2024,Democratic Republic of the Congo,Forest Swamps,Data Deficient
-Congo Dwarf Crocodile,1.71,38.4,Adult,Unknown,08-10-2020,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,0.17,4.7,Hatchling,Female,01-12-2024,Dem. Rep. Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.71,38.4,Adult,Unknown,08-10-2020,Dem. Rep. Congo,Slow Streams,Data Deficient
 Borneo Crocodile (disputed),2.25,69.6,Subadult,Unknown,20-01-2010,Malaysia,Estuarine Systems,Data Deficient
 Freshwater Crocodile (Johnstone's),2.71,87.4,Adult,Male,25-12-2016,Australia,Gorges,Least Concern
-Congo Dwarf Crocodile,1.41,23.6,Adult,Male,28-10-2014,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.41,23.6,Adult,Male,28-10-2014,Dem. Rep. Congo,Slow Streams,Data Deficient
 Philippine Crocodile,2.09,73.8,Subadult,Unknown,28-09-2017,Philippines,Freshwater Marshes,Critically Endangered
 Saltwater Crocodile,4.76,660.4,Subadult,Male,23-09-2019,Australia,Estuaries,Least Concern
-Congo Dwarf Crocodile,1.15,14.0,Subadult,Unknown,26-07-2011,Democratic Republic of the Congo,Slow Streams,Data Deficient
-Congo Dwarf Crocodile,1.06,11.5,Juvenile,Unknown,27-05-2017,Democratic Republic of the Congo,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,1.15,14.0,Subadult,Unknown,26-07-2011,Dem. Rep. Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.06,11.5,Juvenile,Unknown,27-05-2017,Dem. Rep. Congo,Forest Swamps,Data Deficient
 Cuban Crocodile,0.56,38.0,Hatchling,Unknown,14-08-2013,Cuba,Freshwater Wetlands,Critically Endangered
 Siamese Crocodile,1.98,69.6,Adult,Unknown,05-03-2006,Laos,Slow Rivers,Critically Endangered
 Hall's New Guinea Crocodile,2.9,104.1,Adult,Unknown,26-09-2014,Papua New Guinea,Freshwater Wetlands,Least Concern
-Congo Dwarf Crocodile,1.3,19.0,Subadult,Unknown,01-11-2010,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.3,19.0,Subadult,Unknown,01-11-2010,Dem. Rep. Congo,Slow Streams,Data Deficient
 Mugger Crocodile (Marsh Crocodile),3.01,164.6,Subadult,Female,11-01-2011,Nepal,Lakes,Vulnerable
 Freshwater Crocodile (Johnstone's),2.07,65.5,Subadult,Female,22-04-2019,Australia,Billabongs,Least Concern
 American Crocodile,3.45,201.3,Adult,Female,28-10-2010,Colombia,Estuaries,Vulnerable
@@ -816,7 +796,7 @@ West African Dwarf Crocodile,1.34,20.1,Subadult,Male,24-03-2015,Liberia,Forest S
 West African Slender-snouted Crocodile,3.07,183.9,Adult,Unknown,11-11-2015,Ghana,Shaded Forest Rivers,Critically Endangered
 Borneo Crocodile (disputed),2.98,152.6,Adult,Unknown,03-11-2010,Malaysia,Estuarine Systems,Data Deficient
 Morelet's Crocodile,1.81,61.7,Adult,Male,28-09-2008,Mexico,Rivers,Least Concern
-Congo Dwarf Crocodile,0.14,4.4,Hatchling,Unknown,11-06-2024,Central African Republic,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,0.14,4.4,Hatchling,Unknown,11-06-2024,Central African Rep.,Slow Streams,Data Deficient
 Cuban Crocodile,2.12,79.5,Adult,Unknown,06-01-2006,Cuba,Swamps,Critically Endangered
 Borneo Crocodile (disputed),3.23,185.8,Adult,Unknown,07-03-2022,Indonesia,Rivers,Data Deficient
 Hall's New Guinea Crocodile,2.97,117.6,Subadult,Female,26-08-2012,Papua New Guinea,Rivers,Least Concern
@@ -842,21 +822,18 @@ Philippine Crocodile,1.86,47.5,Subadult,Unknown,04-12-2017,Philippines,Rivers,Cr
 Borneo Crocodile (disputed),2.38,100.9,Adult,Male,30-07-2013,Indonesia,Estuarine Systems,Data Deficient
 Hall's New Guinea Crocodile,3.24,133.7,Adult,Female,18-04-2013,Papua New Guinea,Freshwater Wetlands,Least Concern
 New Guinea Crocodile,2.88,115.5,Adult,Unknown,10-08-2010,Papua New Guinea,Lakes,Least Concern
-Central African Slender-snouted Crocodile,2.52,123.3,Adult,Male,18-03-2012,Congo Basin Countries,Swamps,Endangered
 Siamese Crocodile,2.52,108.4,Adult,Female,08-05-2015,Vietnam,Oxbow Lakes,Critically Endangered
 American Crocodile,2.46,112.5,Juvenile,Female,09-02-2016,Cuba,Brackish Rivers,Vulnerable
-Congo Dwarf Crocodile,1.55,29.5,Adult,Female,20-09-2016,Central African Republic,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.55,29.5,Adult,Female,20-09-2016,Central African Rep.,Slow Streams,Data Deficient
 Cuban Crocodile,2.16,76.4,Adult,Female,20-05-2015,Cuba,Swamps,Critically Endangered
 Orinoco Crocodile,2.95,216.9,Juvenile,Male,21-06-2009,Venezuela,Flooded Savannas,Critically Endangered
 Morelet's Crocodile,1.52,50.9,Juvenile,Female,18-05-2011,Belize,Lagoons,Least Concern
 Hall's New Guinea Crocodile,0.94,35.8,Juvenile,Female,31-12-2008,Papua New Guinea,Freshwater Wetlands,Least Concern
 West African Dwarf Crocodile,1.35,19.8,Subadult,Unknown,24-05-2025,Côte d'Ivoire,Forest Swamps,Vulnerable
 Nile Crocodile,3.02,283.5,Juvenile,Male,28-01-2008,Nigeria,Reservoirs,Least Concern
-Central African Slender-snouted Crocodile,2.22,83.9,Subadult,Unknown,10-02-2012,Congo Basin Countries,Forest Rivers,Endangered
 Orinoco Crocodile,3.98,445.1,Adult,Unknown,07-03-2025,Colombia,Flooded Savannas,Critically Endangered
 Nile Crocodile,4.48,604.8,Adult,Male,31-07-2013,Tanzania,Lakes,Least Concern
 Philippine Crocodile,1.69,51.5,Subadult,Unknown,15-02-2011,Philippines,Ponds,Critically Endangered
-Central African Slender-snouted Crocodile,2.25,79.1,Adult,Male,12-05-2024,Congo Basin Countries,Swamps,Endangered
 Central African Slender-snouted Crocodile,2.35,105.8,Subadult,Unknown,06-07-2021,Cameroon,Forest Rivers,Endangered
 Borneo Crocodile (disputed),3.16,155.2,Adult,Unknown,09-10-2018,Indonesia,Estuarine Systems,Data Deficient
 Orinoco Crocodile,4.81,636.5,Adult,Male,14-11-2008,Colombia,Large Rivers,Critically Endangered
@@ -874,7 +851,6 @@ Orinoco Crocodile,3.9,427.3,Subadult,Female,18-11-2013,Venezuela,Flooded Savanna
 Cuban Crocodile,2.69,102.7,Subadult,Unknown,20-12-2023,Cuba,Freshwater Wetlands,Critically Endangered
 Orinoco Crocodile,3.26,307.4,Adult,Female,03-11-2020,Venezuela,Large Rivers,Critically Endangered
 Cuban Crocodile,2.56,97.8,Adult,Female,23-05-2018,Cuba,Freshwater Wetlands,Critically Endangered
-Central African Slender-snouted Crocodile,1.1,37.7,Juvenile,Male,11-09-2018,Congo Basin Countries,Swamps,Endangered
 Mugger Crocodile (Marsh Crocodile),3.07,157.5,Adult,Female,19-05-2008,Nepal,Reservoirs,Vulnerable
 Central African Slender-snouted Crocodile,2.01,78.2,Adult,Female,31-01-2023,Cameroon,Swamps,Endangered
 West African Crocodile,2.69,132.0,Adult,Female,23-06-2014,Mali,Lakes,Least Concern
@@ -913,7 +889,6 @@ West African Dwarf Crocodile,0.8,7.7,Juvenile,Male,31-08-2018,Liberia,Small Stre
 Philippine Crocodile,2.34,79.4,Adult,Female,01-06-2015,Philippines,Ponds,Critically Endangered
 New Guinea Crocodile,2.75,117.5,Adult,Female,08-10-2017,Papua New Guinea,Rivers,Least Concern
 Morelet's Crocodile,2.6,105.9,Adult,Male,25-08-2010,Belize,Lagoons,Least Concern
-Central African Slender-snouted Crocodile,2.27,88.4,Subadult,Unknown,03-08-2017,Congo Basin Countries,Swamps,Endangered
 Morelet's Crocodile,2.9,126.3,Subadult,Unknown,29-05-2020,Guatemala,Swamps,Least Concern
 Morelet's Crocodile,2.47,86.4,Adult,Unknown,27-01-2020,Mexico,Rivers,Least Concern
 Philippine Crocodile,1.89,49.8,Adult,Female,29-08-2019,Philippines,Ponds,Critically Endangered
@@ -937,9 +912,8 @@ West African Dwarf Crocodile,1.46,18.0,Adult,Female,26-03-2024,Guinea,Small Stre
 Freshwater Crocodile (Johnstone's),2.4,72.3,Adult,Female,07-01-2006,Australia,Freshwater Rivers,Least Concern
 Nile Crocodile,3.43,317.9,Adult,Unknown,29-10-2019,Tanzania,Marshes,Least Concern
 Orinoco Crocodile,3.61,364.2,Adult,Female,19-09-2024,Venezuela,Large Rivers,Critically Endangered
-Central African Slender-snouted Crocodile,0.19,25.8,Hatchling,Female,08-10-2005,Congo Basin Countries,Forest Rivers,Endangered
 Saltwater Crocodile,4.01,509.2,Subadult,Male,10-07-2007,Papua New Guinea,Coastal Wetlands,Least Concern
-Congo Dwarf Crocodile,1.28,20.5,Subadult,Unknown,25-01-2021,Democratic Republic of the Congo,Slow Streams,Data Deficient
+Congo Dwarf Crocodile,1.28,20.5,Subadult,Unknown,25-01-2021,Dem. Rep. Congo,Slow Streams,Data Deficient
 Philippine Crocodile,1.98,56.1,Subadult,Female,21-02-2009,Philippines,Rivers,Critically Endangered
 West African Dwarf Crocodile,1.01,11.3,Subadult,Male,11-10-2021,Côte d'Ivoire,Forest Swamps,Vulnerable
 Orinoco Crocodile,2.75,204.8,Adult,Male,07-02-2019,Colombia,Flooded Savannas,Critically Endangered
@@ -953,7 +927,6 @@ Cuban Crocodile,1.79,65.6,Juvenile,Female,07-04-2018,Cuba,Freshwater Wetlands,Cr
 American Crocodile,3.67,269.8,Adult,Unknown,28-05-2008,Cuba,Brackish Rivers,Vulnerable
 Siamese Crocodile,2.69,131.4,Adult,Female,11-06-2023,Cambodia,Oxbow Lakes,Critically Endangered
 Cuban Crocodile,2.28,83.1,Adult,Male,23-01-2019,Cuba,Swamps,Critically Endangered
-Central African Slender-snouted Crocodile,3.02,179.1,Adult,Female,31-05-2010,Congo Basin Countries,Swamps,Endangered
 Borneo Crocodile (disputed),2.18,81.8,Adult,Unknown,23-05-2016,Malaysia,Estuarine Systems,Data Deficient
 Hall's New Guinea Crocodile,1.93,61.7,Juvenile,Unknown,10-08-2018,Papua New Guinea,Rivers,Least Concern
 Morelet's Crocodile,3.1,143.3,Adult,Unknown,18-06-2014,Belize,Lagoons,Least Concern
@@ -982,7 +955,7 @@ West African Crocodile,2.76,121.2,Subadult,Male,23-07-2025,Chad,Oases,Least Conc
 West African Dwarf Crocodile,1.01,11.3,Adult,Female,09-03-2012,Sierra Leone,Small Streams,Vulnerable
 Freshwater Crocodile (Johnstone's),2.14,57.7,Adult,Female,16-04-2022,Australia,Gorges,Least Concern
 Philippine Crocodile,2.04,69.0,Adult,Male,18-10-2011,Philippines,Freshwater Marshes,Critically Endangered
-Congo Dwarf Crocodile,0.6,6.8,Juvenile,Male,20-03-2007,Central African Republic,Forest Swamps,Data Deficient
+Congo Dwarf Crocodile,0.6,6.8,Juvenile,Male,20-03-2007,Central African Rep.,Forest Swamps,Data Deficient
 New Guinea Crocodile,2.5,80.4,Adult,Male,12-03-2025,Papua New Guinea,Swamps,Least Concern
 Mugger Crocodile (Marsh Crocodile),2.54,113.2,Juvenile,Male,06-03-2008,Iran,Rivers,Vulnerable
 Borneo Crocodile (disputed),3.91,272.3,Adult,Male,27-04-2023,Malaysia,Estuarine Systems,Data Deficient
@@ -999,3 +972,57 @@ Hall's New Guinea Crocodile,2.27,80.3,Subadult,Female,25-01-2023,Papua New Guine
 West African Slender-snouted Crocodile,2.34,93.5,Adult,Male,07-02-2014,Côte d'Ivoire,Swamps,Critically Endangered
 West African Slender-snouted Crocodile,2.82,147.6,Adult,Male,09-07-2010,Sierra Leone,Shaded Forest Rivers,Critically Endangered
 Hall's New Guinea Crocodile,1.73,47.4,Juvenile,Unknown,31-03-2014,Papua New Guinea,Freshwater Wetlands,Least Concern
+Central African Slender-snouted Crocodile,1.2,38.0,Juvenile,Unknown,17-09-2011,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,0.79,34.2,Juvenile,Unknown,20-04-2017,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.5,120.6,Subadult,Unknown,10-01-2023,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.36,87.9,Adult,Unknown,27-07-2021,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.33,32.6,Hatchling,Female,17-01-2024,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.69,125.4,Adult,Unknown,09-10-2016,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,3.06,180.7,Adult,Unknown,13-07-2006,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.79,33.9,Juvenile,Male,14-02-2019,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.72,33.5,Juvenile,Male,08-03-2020,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.1,87.2,Adult,Male,27-03-2014,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.08,88.4,Adult,Female,03-11-2005,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.22,95.0,Subadult,Male,04-08-2020,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.72,155.3,Adult,Female,29-12-2009,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,1.13,40.5,Juvenile,Female,20-09-2007,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,1.98,81.8,Subadult,Male,27-03-2007,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.67,133.4,Adult,Male,30-06-2020,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.24,99.8,Subadult,Male,07-11-2023,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.47,34.5,Hatchling,Male,14-01-2011,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.51,103.1,Adult,Unknown,09-02-2019,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,1.6,56.3,Juvenile,Male,05-10-2020,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.52,123.3,Adult,Male,18-03-2012,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.22,83.9,Subadult,Unknown,10-02-2012,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.25,79.1,Adult,Male,12-05-2024,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,1.1,37.7,Juvenile,Male,11-09-2018,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.27,88.4,Subadult,Unknown,03-08-2017,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,0.19,25.8,Hatchling,Female,08-10-2005,Congo,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,3.02,179.1,Adult,Female,31-05-2010,Congo,Swamps,Endangered
+Central African Slender-snouted Crocodile,1.2,38.0,Juvenile,Unknown,17-09-2011,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,0.79,34.2,Juvenile,Unknown,20-04-2017,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.5,120.6,Subadult,Unknown,10-01-2023,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.36,87.9,Adult,Unknown,27-07-2021,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.33,32.6,Hatchling,Female,17-01-2024,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.69,125.4,Adult,Unknown,09-10-2016,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,3.06,180.7,Adult,Unknown,13-07-2006,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.79,33.9,Juvenile,Male,14-02-2019,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.72,33.5,Juvenile,Male,08-03-2020,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.1,87.2,Adult,Male,27-03-2014,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.08,88.4,Adult,Female,03-11-2005,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.22,95.0,Subadult,Male,04-08-2020,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.72,155.3,Adult,Female,29-12-2009,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,1.13,40.5,Juvenile,Female,20-09-2007,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,1.98,81.8,Subadult,Male,27-03-2007,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.67,133.4,Adult,Male,30-06-2020,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.24,99.8,Subadult,Male,07-11-2023,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,0.47,34.5,Hatchling,Male,14-01-2011,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.51,103.1,Adult,Unknown,09-02-2019,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,1.6,56.3,Juvenile,Male,05-10-2020,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.52,123.3,Adult,Male,18-03-2012,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.22,83.9,Subadult,Unknown,10-02-2012,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,2.25,79.1,Adult,Male,12-05-2024,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,1.1,37.7,Juvenile,Male,11-09-2018,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,2.27,88.4,Subadult,Unknown,03-08-2017,Eq. Guinea,Swamps,Endangered
+Central African Slender-snouted Crocodile,0.19,25.8,Hatchling,Female,08-10-2005,Eq. Guinea,Forest Rivers,Endangered
+Central African Slender-snouted Crocodile,3.02,179.1,Adult,Female,31-05-2010,Eq. Guinea,Swamps,Endangered
