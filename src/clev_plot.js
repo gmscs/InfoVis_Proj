@@ -38,19 +38,6 @@ dataCSV.then(function (data) {
     svg.append("g")
         .attr("class","y axis");
 
-    function updateYLabel() {
-        const selectedOptionText = document.querySelector(`input[name="att"]:checked`).parentElement.textContent.trim();
-
-        svg.selectAll(".y.label")
-            .data([selectedOptionText])
-            .join("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("transform", `translate(${-margin.left / 1.5},${innerHeight / 2}) rotate(-90)`)
-            .attr("x", "-10px")
-            .text(selectedOptionText);
-    }   
-
     function updateXLabel() {
         svg.append("text")
         .attr("class", "x label")
@@ -150,6 +137,5 @@ dataCSV.then(function (data) {
     whyWouldYouDoThisToMe.observe(container.node());
 
     updateVis();
-    updateYLabel();
     updateXLabel();
 });
