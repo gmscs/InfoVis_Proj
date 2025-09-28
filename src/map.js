@@ -23,6 +23,11 @@ Promise.all([
     csvData = csvRows;
     counts = get_counts_by_country(csvData, selectedVariable);
 
+    svg.append("text")
+    .attr("x", 0)
+    .attr("y", height + margin.bottom)
+    .text("Active filter: None");
+
     const tooltip = create_tooltip("#map");
 
     const colorDomain = Array.from(counts.values()).sort((a, b) => a - b);
@@ -87,7 +92,20 @@ Promise.all([
         const filteredData = csvData.filter(row => row[attribute] === value);
 
         counts = get_counts_by_country(filteredData);
+        d3.select("text").text("Active filter: " + value)
         updateMap(counts);
+    })
+
+    window.addEventListener("click", function(event) {
+        //non important click, essencially "losing focus"
+        if(event.target.nodeName==="svg"){
+            d3.select("#country_select").property("value","global")
+            d3.select("#country_select").dispatch("change");
+
+            counts = get_counts_by_country(csvData, selectedVariable)
+            d3.select("text").text("Active filter: None")
+            updateMap(counts);
+        }
     })
 
 });

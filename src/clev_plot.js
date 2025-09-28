@@ -75,11 +75,12 @@ dataCSV.then(function (data) {
     function updateVis() {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(data, selectedVariable, countryFilter);
+        const minCount = d3.min(Array.from(counts.values()).filter((v) => v > 0));
         const maxCount = d3.max(Array.from(counts.values()));
         selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
         
         const x = d3.scaleLinear()
-            .domain([0, maxCount])
+            .domain([minCount-2, maxCount])
             .range([0, width]);
         svg.select(".x.axis")
             .transition()
