@@ -63,8 +63,6 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
 # Run the preprocessing on the dataset
 df = preprocess_data(df)
 
-print("unique countries:", df['country'].unique())
-
 # ---------------------------------------------------------------------
 # Step 10: Save final DataFrame to CSV and JSON
 df.to_csv('../dataset/crocodile_dataset_processed.csv', index=False)                      # Save as CSV without row indices
