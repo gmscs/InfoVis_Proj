@@ -1,4 +1,4 @@
-import {shared_color, get_visible_categories, create_tooltip, get_counts} from "./aux.js";
+import {dataCSV, selectedVariable, shared_color, get_visible_categories, create_tooltip, get_counts} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 const width = 800 - margin.left - margin.right;
@@ -12,10 +12,7 @@ const svg = d3.select("#clev_dot")
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-var dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
-
 //defaults
-let selectedVariable = "commonname"
 let selectedCountry = "global"
 
 dataCSV.then(function (data) {

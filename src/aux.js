@@ -2,6 +2,9 @@ export const font = "12px sans-serif";
 export const font_padding = 10;
 export const shared_color = "#2e83be"
 
+export const dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
+export const selectedVariable = "commonname"
+
 export function get_counts(data, varName, filter = null) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
     const filteredData = filter ? data.filter(filter) : data;

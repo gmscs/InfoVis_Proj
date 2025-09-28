@@ -1,4 +1,4 @@
-import {font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
+import {dataCSV, selectedVariable, font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 20, bottom: 30 };
 
@@ -12,16 +12,13 @@ const svg = d3.select("#map")
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-let selectedVariable = "commonname"
-let csvData = [];
 let counts;
 
 Promise.all([
     d3.json("./dataset/geo.json"),
-    d3.csv("./dataset/crocodile_dataset_processed.csv")
-]).then(([geo, csvRows]) => {
-    csvData = csvRows;
-    counts = get_counts_by_country(csvData, selectedVariable);
+    dataCSV
+]).then(([geo, dataCSV]) => {
+    counts = get_counts_by_country(dataCSV, selectedVariable);
 
     svg.append("text")
     .attr("x", 0)
@@ -81,15 +78,9 @@ Promise.all([
     }
     updateMap(counts);
 
-    // document.getElementById("col_select").addEventListener("change", function () {
-    //     selectedVariable = this.value;
-    //     counts = get_counts_by_country(csvData, selectedVariable);
-    //     updateMap(counts);
-    // });
-
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
-        const filteredData = csvData.filter(row => row[attribute] === value);
+        const filteredData = dataCSV.filter(row => row[attribute] === value);
 
         counts = get_counts_by_country(filteredData);
         d3.select("text").text("Active filter: " + value)
@@ -102,7 +93,7 @@ Promise.all([
             d3.select("#country_select").property("value","global")
             d3.select("#country_select").dispatch("change");
 
-            counts = get_counts_by_country(csvData, selectedVariable)
+            counts = get_counts_by_country(dataCSV, selectedVariable)
             d3.select("text").text("Active filter: None")
             updateMap(counts);
         }
