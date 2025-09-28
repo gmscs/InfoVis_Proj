@@ -6,64 +6,96 @@
 <script type="module" src="src/clev_plot.js"></script>
 <script type="module" src="src/map.js"></script>
 
-<select id="col_select">
-    <option value="commonname">Common Name</option>
-    <option value="age">Age</option>
-    <option value="sex">Sex</option>
-    <option value="country">Country</option>
-    <option value="habitat">Habitat</option>
-    <option value="conservation">Conservation</option>
-</select>
-
-<select id="country_select">
-    <option value="global">Global</option>
-    <option value="Australia">Australia</option>
-    <option value="Belize">Belize</option>
-    <option value="Cambodia">Cambodia</option>
-    <option value="Cameroon">Cameroon</option>
-    <option value="Central African Republic">Central African Republic</option>
-    <option value="Chad">Chad</option>
-    <option value="Colombia">Colombia</option>
-    <option value="Congo Basin Countries">Congo Basin Countries</option>
-    <option value="Costa Rica">Costa Rica</option>
-    <option value="Cuba">Cuba</option>
-    <option value="Côte d&#x27;Ivoire">Côte d&#x27;Ivoire</option>
-    <option value="Democratic Republic of the Congo">Democratic Republic of the Congo</option>
-    <option value="Egypt">Egypt</option>
-    <option value="Gabon">Gabon</option>
-    <option value="Ghana">Ghana</option>
-    <option value="Guatemala">Guatemala</option>
-    <option value="Guinea">Guinea</option>
-    <option value="India">India</option>
-    <option value="Indonesia">Indonesia</option>
-    <option value="Iran">Iran</option>
-    <option value="Kenya">Kenya</option>
-    <option value="Laos">Laos</option>
-    <option value="Liberia">Liberia</option>
-    <option value="Malaysia">Malaysia</option>
-    <option value="Mali">Mali</option>
-    <option value="Mauritania">Mauritania</option>
-    <option value="Mexico">Mexico</option>
-    <option value="Nepal">Nepal</option>
-    <option value="Niger">Niger</option>
-    <option value="Nigeria">Nigeria</option>
-    <option value="Pakistan">Pakistan</option>
-    <option value="Papua New Guinea">Papua New Guinea</option>
-    <option value="Philippines">Philippines</option>
-    <option value="Senegal">Senegal</option>
-    <option value="Sierra Leone">Sierra Leone</option>
-    <option value="South Africa">South Africa</option>
-    <option value="Sri Lanka">Sri Lanka</option>
-    <option value="Sudan">Sudan</option>
-    <option value="Tanzania">Tanzania</option>
-    <option value="Thailand">Thailand</option>
-    <option value="Uganda">Uganda</option>
-    <option value="United States of America">USA</option>
-    <option value="Venezuela">Venezuela</option>
-    <option value="Vietnam">Vietnam</option>
-</select>
-
 <body>
-    <div id="map"></div>
-    <div id="clev_dot"></div>
+    <div class="controls">
+        <select id="col_select">
+            <option value="commonname">Common Name</option>
+            <option value="age">Age</option>
+            <option value="sex">Sex</option>
+            <option value="country">Country</option>
+            <option value="habitat">Habitat</option>
+            <option value="conservation">Conservation</option>
+        </select>
+
+        <select id="country_select">
+            <option value="global">Global</option>
+            <option value="Australia">Australia</option>
+            <option value="Belize">Belize</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Cameroon">Cameroon</option>
+            <option value="Central African Republic">Central African Republic</option>
+            <option value="Chad">Chad</option>
+            <option value="Colombia">Colombia</option>
+            <option value="Congo Basin Countries">Congo Basin Countries</option>
+            <option value="Costa Rica">Costa Rica</option>
+            <option value="Cuba">Cuba</option>
+            <option value="Côte d&#x27;Ivoire">Côte d&#x27;Ivoire</option>
+            <option value="Democratic Republic of the Congo">Democratic Republic of the Congo</option>
+            <option value="Egypt">Egypt</option>
+            <option value="Gabon">Gabon</option>
+            <option value="Ghana">Ghana</option>
+            <option value="Guatemala">Guatemala</option>
+            <option value="Guinea">Guinea</option>
+            <option value="India">India</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Iran">Iran</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Laos">Laos</option>
+            <option value="Liberia">Liberia</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Mali">Mali</option>
+            <option value="Mauritania">Mauritania</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Nepal">Nepal</option>
+            <option value="Niger">Niger</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Pakistan">Pakistan</option>
+            <option value="Papua New Guinea">Papua New Guinea</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Senegal">Senegal</option>
+            <option value="Sierra Leone">Sierra Leone</option>
+            <option value="South Africa">South Africa</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Sudan">Sudan</option>
+            <option value="Tanzania">Tanzania</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Uganda">Uganda</option>
+            <option value="United States of America">USA</option>
+            <option value="Venezuela">Venezuela</option>
+            <option value="Vietnam">Vietnam</option>
+        </select>
+    </div>
+
+    <div class="panels">
+        <div id="map"></div>
+        <div id="clev_dot"></div>
+    </div>
 </body>
+
+
+<style>
+    body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 16px;
+      box-sizing: border-box;
+      align-items: right;
+    }
+    .controls {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      margin-right: 20px;
+    }
+    .panels {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 20px;
+      
+    }
+    
+</style>
+
