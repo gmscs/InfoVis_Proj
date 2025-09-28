@@ -1,4 +1,4 @@
-import {dataCSV, selectedVariable, font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
+import {dataCSV, font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 20, bottom: 30 };
 
@@ -12,6 +12,7 @@ const svg = d3.select("#map")
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+let selectedVariable = "commonname"
 let counts;
 
 Promise.all([

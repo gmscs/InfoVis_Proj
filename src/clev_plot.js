@@ -1,4 +1,4 @@
-import {dataCSV, selectedVariable, shared_color, get_visible_categories, create_tooltip, get_counts} from "./aux.js";
+import {dataCSV, shared_color, get_visible_categories, create_tooltip, get_counts} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 250, bottom: 30 };
 const width = 800 - margin.left - margin.right;
@@ -14,6 +14,7 @@ const svg = d3.select("#clev_dot")
 
 //defaults
 let selectedCountry = "global"
+let selectedVariable = "commonname"
 
 dataCSV.then(function (data) {
     let counts = get_counts(data, selectedVariable)
