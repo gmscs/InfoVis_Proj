@@ -1,20 +1,15 @@
-import {dataCSV, font, font_padding, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./aux.js";
+import {dataCSV, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./aux.js";
 
-const margin = { top: 30, right: 30, left: 20, bottom: 30 };
-
-const width = 800 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
-
-const svg = d3.select("#map")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+const margin = { top: -20, right: 0, left: -10, bottom: 0 };
+const container = d3.select("#map");
+const svg = create_svg(container, margin);
 
 let selectedVariable = "commonname";
 let counts;
 let colorScale;
+
+var width = container.node().getBoundingClientRect().width;
+var height = container.node().getBoundingClientRect().height;
 
 Promise.all([
     d3.json("./dataset/geo.json"),
@@ -22,17 +17,16 @@ Promise.all([
 ]).then(([geo, dataCSV]) => {
     counts = get_counts_by_country(dataCSV, selectedVariable);
 
-    svg.append("text")
-    .attr("x", 0)
-    .attr("y", height + margin.bottom)
-    .text("Active filter: None");
-
     const tooltip = create_tooltip("#map");
-    const proj = d3.geoMercator().fitSize([width, height], geo);
-    const path = d3.geoPath().projection(proj);
 
     function updateMap(counts) {
-        colorScale = get_colour_scale(counts);  
+        colorScale = get_colour_scale(counts);
+        height = container.node().getBoundingClientRect().height;
+        width = container.node().getBoundingClientRect().width;
+
+        svg.attr("width", width).attr("height", height)
+        const proj = d3.geoMercator().fitSize([width, height], geo);
+        const path = d3.geoPath().projection(proj);
 
         svg.selectAll("path")
             .data(geo.features)
@@ -78,9 +72,9 @@ Promise.all([
         const filteredData = dataCSV.filter(row => row[attribute] === value);
 
         counts = get_counts_by_country(filteredData);
-        d3.select("text").text("Active filter: " + value)
+        d3.select("#filter_label").text("Active filter: " + value)
         updateMap(counts);
-    })
+    });
 
     window.addEventListener("click", function(event) {
         //non important click, essencially "losing focus"
@@ -89,9 +83,14 @@ Promise.all([
             d3.select("#country_select").dispatch("change");
 
             counts = get_counts_by_country(dataCSV, selectedVariable)
-            d3.select("text").text("Active filter: None")
+            d3.select("#filter_label").text("Active filter: None")
             updateMap(counts);
         }
-    })
+    });
+
+    const whyWouldYouDoThisToMe = new ResizeObserver(() => {
+        updateMap(counts);
+    });
+    whyWouldYouDoThisToMe.observe(container.node());
 
 });

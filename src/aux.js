@@ -31,6 +31,17 @@ export function get_text_width(text, font) {
     return context.measureText(text).width;
 }
 
+export function create_svg(container, margin) {
+    let svg = container.append("svg")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .style("display", "block")
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    return svg;
+}
+
 export function create_tooltip(id) {
     let tooltip = d3.select(id)
         .append("div")

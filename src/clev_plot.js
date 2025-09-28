@@ -1,25 +1,20 @@
-import {dataCSV, shared_color, get_visible_categories, create_tooltip, get_counts} from "./aux.js";
+import {dataCSV, shared_color, get_visible_categories, create_svg, create_tooltip, get_counts} from "./aux.js";
 
-const margin = { top: 30, right: 30, left: 250, bottom: 30 };
-const width = 800 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
-const padding = 50;
-
-const svg = d3.select("#clev_dot")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom + padding)
-    .append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+const container = d3.select("#clev")
+const margin = { top: 20, right: 20, bottom: 50, left: 200 };
+const svg = create_svg(container, margin);
 
 //defaults
 let selectedCountry = "global"
 let selectedVariable = "commonname"
 
+var width = container.node().getBoundingClientRect().width;
+var height = container.node().getBoundingClientRect().height;
+
 dataCSV.then(function (data) {
     let counts = get_counts(data, selectedVariable)
 
-    const tooltip = create_tooltip("#clev_dot");
+    const tooltip = create_tooltip("#clev");
 
     var mouseover = function (d) {
         tooltip.style("opacity", 2).style("s");
@@ -43,14 +38,6 @@ dataCSV.then(function (data) {
     svg.append("g")
         .attr("class","y axis");
 
-    svg.append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "end")
-        .attr("x", width / 2)
-        .attr("y", height + 30)
-        .attr("dy", ".75em")
-        .text("Observations");
-
     function updateYLabel() {
         const selectedOptionText = document.querySelector(`input[name="att"]:checked`).parentElement.textContent.trim();
 
@@ -58,33 +45,45 @@ dataCSV.then(function (data) {
             .data([selectedOptionText])
             .join("text")
             .attr("class", "y label")
-            .attr("text-anchor", "end")
+            .attr("text-anchor", "middle")
+            .attr("transform", `translate(${-margin.left / 1.5},${innerHeight / 2}) rotate(-90)`)
             .attr("x", "-10px")
             .text(selectedOptionText);
-        }   
+    }   
+
+    function updateXLabel() {
+        svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", innerWidth / 2 + margin.left)
+        .attr("y", height - 10)
+        .text("Observations");
+    }
 
     function updateVis() {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(data, selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
+
+        height = container.node().getBoundingClientRect().height;
+        width = container.node().getBoundingClientRect().width;
+
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
-            .range([0, width]);
+            .range([0, innerWidth]);
+        const visibleCategories = get_visible_categories(selectedVariable, counts);
+        const y = d3.scaleBand()
+            .range([0, innerHeight])
+            .domain(visibleCategories).padding(1);
+
         svg.select(".x.axis")
+            .attr("transform", `translate(0,${innerHeight})`)
             .transition()
             .duration(2000)
-            .call(
-                d3.axisBottom(x)
-                  .ticks(Math.min(maxCount, 10))             
-                  .tickFormat(d3.format("d")) 
-              );
-        
-        const visibleCategories = get_visible_categories(selectedVariable, counts);
-
-        const y = d3.scaleBand()
-            .range([0, height])
-            .domain(visibleCategories).padding(1);
+            .call(d3.axisBottom(x).ticks(Math.min(maxCount, 10)).tickFormat(d3.format("d")));
 
         svg.selectAll(".y.axis")
             .transition()
@@ -127,7 +126,6 @@ dataCSV.then(function (data) {
             .transition().duration(1000)
             .attr("cx", d => x(counts.get(d) || 0))
             .attr("cy", d => y(d) + y.bandwidth()/2);
-
     }
 
     document.querySelectorAll('input[name="att"]').forEach(radio => {
@@ -145,6 +143,13 @@ dataCSV.then(function (data) {
         selectedCountry = this.value;
         updateVis();
     });
+
+    const whyWouldYouDoThisToMe = new ResizeObserver(() => {
+        updateVis();
+    });
+    whyWouldYouDoThisToMe.observe(container.node());
+
     updateVis();
     updateYLabel();
+    updateXLabel();
 });

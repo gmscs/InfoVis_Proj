@@ -7,93 +7,89 @@
 <script type="module" src="src/map.js"></script>
 
 <body>
-    <div class="controls">
-        <select id="country_select">
-            <option value="global">Global</option>
-            <option value="Australia">Australia</option>
-            <option value="Belize">Belize</option>
-            <option value="Cambodia">Cambodia</option>
-            <option value="Cameroon">Cameroon</option>
-            <option value="Central African Rep.">Central African Rep.</option>
-            <option value="Chad">Chad</option>
-            <option value="Colombia">Colombia</option>
-            <option value="Congo">Congo</option>
-            <option value="Costa Rica">Costa Rica</option>
-            <option value="Côte d&#x27;Ivoire">Côte d&#x27;Ivoire</option>
-            <option value="Cuba">Cuba</option>
-            <option value="Dem. Rep. Congo">Dem. Rep. Congo</option>
-            <option value="Egypt">Egypt</option>
-            <option value="Eq. Guinea">Eq. Guinea</option>
-            <option value="Gabon">Gabon</option>
-            <option value="Ghana">Ghana</option>
-            <option value="Guatemala">Guatemala</option>
-            <option value="Guinea">Guinea</option>
-            <option value="India">India</option>
-            <option value="Indonesia">Indonesia</option>
-            <option value="Iran">Iran</option>
-            <option value="Kenya">Kenya</option>
-            <option value="Laos">Laos</option>
-            <option value="Liberia">Liberia</option>
-            <option value="Malaysia">Malaysia</option>
-            <option value="Mali">Mali</option>
-            <option value="Mauritania">Mauritania</option>
-            <option value="Mexico">Mexico</option>
-            <option value="Nepal">Nepal</option>
-            <option value="Niger">Niger</option>
-            <option value="Nigeria">Nigeria</option>
-            <option value="Pakistan">Pakistan</option>
-            <option value="Papua New Guinea">Papua New Guinea</option>
-            <option value="Philippines">Philippines</option>
-            <option value="Senegal">Senegal</option>
-            <option value="Sierra Leone">Sierra Leone</option>
-            <option value="South Africa">South Africa</option>
-            <option value="Sri Lanka">Sri Lanka</option>
-            <option value="Sudan">Sudan</option>
-            <option value="Tanzania">Tanzania</option>
-            <option value="Thailand">Thailand</option>
-            <option value="Uganda">Uganda</option>
-            <option value="United States of America">USA</option>
-            <option value="Venezuela">Venezuela</option>
-            <option value="Vietnam">Vietnam</option>
-        </select>
+  <div class="grid">
+    <div class="cell" id="map">
+      <div class="controls">
+      <select id="country_select">
+          <option value="global">Global</option>
+          <option value="Australia">Australia</option>
+          <option value="Belize">Belize</option>
+          <option value="Cambodia">Cambodia</option>
+          <option value="Cameroon">Cameroon</option>
+          <option value="Central African Rep.">Central African Rep.</option>
+          <option value="Chad">Chad</option>
+          <option value="Colombia">Colombia</option>
+          <option value="Congo">Congo</option>
+          <option value="Costa Rica">Costa Rica</option>
+          <option value="Côte d&#x27;Ivoire">Côte d&#x27;Ivoire</option>
+          <option value="Cuba">Cuba</option>
+          <option value="Dem. Rep. Congo">Dem. Rep. Congo</option>
+          <option value="Egypt">Egypt</option>
+          <option value="Eq. Guinea">Eq. Guinea</option>
+          <option value="Gabon">Gabon</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Guatemala">Guatemala</option>
+          <option value="Guinea">Guinea</option>
+          <option value="India">India</option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Iran">Iran</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Laos">Laos</option>
+          <option value="Liberia">Liberia</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Mali">Mali</option>
+          <option value="Mauritania">Mauritania</option>
+          <option value="Mexico">Mexico</option>
+          <option value="Nepal">Nepal</option>
+          <option value="Niger">Niger</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Pakistan">Pakistan</option>
+          <option value="Papua New Guinea">Papua New Guinea</option>
+          <option value="Philippines">Philippines</option>
+          <option value="Senegal">Senegal</option>
+          <option value="Sierra Leone">Sierra Leone</option>
+          <option value="South Africa">South Africa</option>
+          <option value="Sri Lanka">Sri Lanka</option>
+          <option value="Sudan">Sudan</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Thailand">Thailand</option>
+          <option value="Uganda">Uganda</option>
+          <option value="United States of America">USA</option>
+          <option value="Venezuela">Venezuela</option>
+          <option value="Vietnam">Vietnam</option>
+      </select>
+      <label id="filter_label">Active filter: None</label>
+  </div>
+    </div> 
+    <div class="cell" id="clev">
+      <label><input type="radio" name="att" value="commonname" checked> Common Name</label>
+      <label><input type="radio" name="att" value="age"> Age</label>
+      <label><input type="radio" name="att" value="sex"> Sex</label>
+      <label><input type="radio" name="att" value="habitat"> Habitat</label>
+      <label><input type="radio" name="att" value="conservation"> Conservation</label>
     </div>
-
-    <div class="panels">
-        <div id="map"></div>
-        <div id="clev_dot">
-          <label><input type="radio" name="att" value="commonname" checked> Common Name</label>
-          <label><input type="radio" name="att" value="age"> Age</label>
-          <label><input type="radio" name="att" value="sex"> Sex</label>
-          <label><input type="radio" name="att" value="habitat"> Habitat</label>
-          <label><input type="radio" name="att" value="conservation"> Conservation</label>
-        </div>
-    </div>
+    <div class="cell" id="line"></div>
+    <div class="cell" id="scatter"></div>
+  </div>
 </body>
 
-
 <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      align-items: flex-start;
-      padding: 16px;
-      box-sizing: border-box;
-      align-items: right;
-    }
-    .controls {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-      margin-right: 20px;
-    }
-    .panels {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 20px;
-      
-    }
-    
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 97vh;
+    width: 97vw;
+    gap: 7px;
+    padding: 10px; 
+    box-sizing: border-box;
+  }
+
+  .cell {
+    background-color: #f9f9f9;
+    border: 3px solid #000000;
+    border-radius: 4px;
+    overflow: hidden;
+  }
 </style>
 
