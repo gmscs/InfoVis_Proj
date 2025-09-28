@@ -1,4 +1,4 @@
-import {dataCSV, font, font_padding, create_tooltip, get_counts_by_country, get_text_width} from "./aux.js";
+import {dataCSV, font, font_padding, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./aux.js";
 
 const margin = { top: 30, right: 30, left: 20, bottom: 30 };
 
@@ -12,8 +12,9 @@ const svg = d3.select("#map")
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-let selectedVariable = "commonname"
+let selectedVariable = "commonname";
 let counts;
+let colorScale;
 
 Promise.all([
     d3.json("./dataset/geo.json"),
@@ -27,18 +28,11 @@ Promise.all([
     .text("Active filter: None");
 
     const tooltip = create_tooltip("#map");
-
-    const colorDomain = Array.from(counts.values()).sort((a, b) => a - b);
-    const colorScale = d3.scaleThreshold()
-    .domain(colorDomain.filter((d, i) => i % Math.ceil(colorDomain.length / 5) === 0))
-    .range(d3.schemeBlues[5]);
-
     const proj = d3.geoMercator().fitSize([width, height], geo);
     const path = d3.geoPath().projection(proj);
 
-    function updateMap(counts) {           
-        const newColors = Array.from(counts.values()).sort((a, b) => a - b);
-        colorScale.domain(newColors.filter((d, i) => i % Math.ceil(newColors.length / 5) === 0));
+    function updateMap(counts) {
+        colorScale = get_colour_scale(counts);  
 
         svg.selectAll("path")
             .data(geo.features)

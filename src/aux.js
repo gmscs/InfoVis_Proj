@@ -72,4 +72,15 @@ export function get_visible_categories(varName, countsMap) {
         return Array.from(countsMap.keys())
         .sort((a, b) => order.indexOf(a) - order.indexOf(b));
     }
-};
+}
+
+export function get_colour_scale(counts) {
+    let sortedColours = Array.from(counts.values()).sort((a, b) => a - b);
+    let colorDomain = [
+        d3.quantile(sortedColours, 0.2),
+        d3.quantile(sortedColours, 0.4),
+        d3.quantile(sortedColours, 0.6),
+        d3.quantile(sortedColours, 0.8)
+    ].filter(d => d !== undefined);
+    return d3.scaleThreshold().domain(colorDomain).range(d3.schemeBlues[5]);
+}
