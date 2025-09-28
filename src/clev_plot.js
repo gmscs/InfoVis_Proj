@@ -5,9 +5,6 @@ const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 const padding = 50;
 
-//const dropdown = document.getElementById("col_select");
-let selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
-
 const svg = d3.select("#clev_dot")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -57,26 +54,21 @@ dataCSV.then(function (data) {
         .text("Observations");
 
     function updateYLabel() {
-        const dropdown = document.getElementById("col_select");
-        const selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
+        const selectedOptionText = document.querySelector(`input[name="att"]:checked`).parentElement.textContent.trim();
 
         svg.selectAll(".y.label")
             .data([selectedOptionText])
             .join("text")
             .attr("class", "y label")
             .attr("text-anchor", "end")
-            .attr("x", -width/3)
-            .attr("y", -height/2)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .text(d => d);
+            .attr("x", "-10px")
+            .text(selectedOptionText);
         }   
 
     function updateVis() {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(data, selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
-        selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
@@ -118,19 +110,19 @@ dataCSV.then(function (data) {
             .data(visibleCategories, d => d)
             .join(
               enter => enter.append("circle")
-                            .attr("class","dot")
-                            .attr("r", 6)
-                            .style("fill", shared_color)
-                            .on("mouseover", mouseover)
-                            .on("mousemove", mousemove)
-                            .on("mouseleave", mouseleave)
-                            .on("click", function(event, d) {
-                                const filterVal = d;
-                                const filterEvent = new CustomEvent("filterByValue", {
-                                    detail: { value: filterVal, attribute: selectedVariable}
-                                });
-                                window.dispatchEvent(filterEvent);
-                            }),
+                .attr("class","dot")
+                .attr("r", 6)
+                .style("fill", shared_color)
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseleave", mouseleave)
+                .on("click", function(event, d) {
+                    const filterVal = d;
+                    const filterEvent = new CustomEvent("filterByValue", {
+                        detail: { value: filterVal, attribute: selectedVariable}
+                    });
+                    window.dispatchEvent(filterEvent);
+                }),
               update => update,
               exit => exit.remove()
             )
