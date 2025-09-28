@@ -8,14 +8,13 @@
 
 <body>
     <div class="controls">
-        <select id="col_select">
+        <!--<select id="col_select">
             <option value="commonname">Common Name</option>
             <option value="age">Age</option>
             <option value="sex">Sex</option>
-            <option value="country">Country</option>
             <option value="habitat">Habitat</option>
             <option value="conservation">Conservation</option>
-        </select>
+        </select>-->
 
         <select id="country_select">
             <option value="global">Global</option>
@@ -69,7 +68,13 @@
 
     <div class="panels">
         <div id="map"></div>
-        <div id="clev_dot"></div>
+        <div id="clev_dot">
+          <label><input type="radio" name="att" value="commonname" checked> Common Name</label>
+          <label><input type="radio" name="att" value="age"> Age</label>
+          <label><input type="radio" name="att" value="sex"> Sex</label>
+          <label><input type="radio" name="att" value="habitat"> Habitat</label>
+          <label><input type="radio" name="att" value="conservation"> Conservation</label>
+        </div>
     </div>
 </body>
 

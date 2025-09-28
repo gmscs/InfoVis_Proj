@@ -81,11 +81,11 @@ Promise.all([
     }
     updateMap(counts);
 
-    document.getElementById("col_select").addEventListener("change", function () {
-        selectedVariable = this.value;
-        counts = get_counts_by_country(csvData, selectedVariable);
-        updateMap(counts);
-    });
+    // document.getElementById("col_select").addEventListener("change", function () {
+    //     selectedVariable = this.value;
+    //     counts = get_counts_by_country(csvData, selectedVariable);
+    //     updateMap(counts);
+    // });
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;

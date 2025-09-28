@@ -5,8 +5,8 @@ const width = 800 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 const padding = 50;
 
-const dropdown = document.getElementById("col_select");
-let selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
+//const dropdown = document.getElementById("col_select");
+let selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
 
 const svg = d3.select("#clev_dot")
     .append("svg")
@@ -58,7 +58,7 @@ dataCSV.then(function (data) {
 
     function updateYLabel() {
         const dropdown = document.getElementById("col_select");
-        const selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
+        const selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
 
         svg.selectAll(".y.label")
             .data([selectedOptionText])
@@ -76,7 +76,7 @@ dataCSV.then(function (data) {
         const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
         counts = get_counts(data, selectedVariable, countryFilter);
         const maxCount = d3.max(Array.from(counts.values()));
-        selectedOptionText = dropdown.options[dropdown.selectedIndex].text;
+        selectedOptionText = document.querySelector(`input[name="att"]:checked + label`);
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
@@ -140,11 +140,16 @@ dataCSV.then(function (data) {
 
     }
 
-    document.getElementById("col_select").addEventListener("change", function () {
-        selectedVariable = this.value;
-        updateVis();
-        updateYLabel();
+    document.querySelectorAll('input[name="att"]').forEach(radio => {
+        radio.addEventListener("change", function() {
+            if (this.checked) {
+                selectedVariable = this.value;
+                updateVis();
+                updateYLabel();
+            }
+        });
     });
+
 
     document.getElementById("country_select").addEventListener("change", function () {
         selectedCountry = this.value;
