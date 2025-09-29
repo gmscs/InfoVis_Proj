@@ -1,4 +1,4 @@
-import {dataCSV, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./aux.js";
+import {dataCSV, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");

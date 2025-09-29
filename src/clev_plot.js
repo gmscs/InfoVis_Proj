@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, get_visible_categories, create_svg, create_tooltip, get_counts} from "./aux.js";
+import {dataCSV, shared_color, get_visible_categories, create_svg, create_tooltip, get_counts} from "./stuff.js";
 
 const container = d3.select("#clev")
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
