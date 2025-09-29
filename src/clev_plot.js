@@ -38,8 +38,8 @@ dataCSV.then(function (data) {
         const key = typeof d === "string" ? d : d[selectedVariable];
         const containerRect = container.node().getBoundingClientRect();
         tooltip.html(counts.get(key))
-        .style("left", (event.pageX - containerRect.left + 10) + "px")
-        .style("top", (event.pageY - containerRect.top + 10) + "px");
+            .style("left", (event.pageX - containerRect.left + 10) + "px")
+            .style("top", (event.pageY - containerRect.top + 10) + "px");
     }
 
     svg.append("g")
@@ -50,7 +50,6 @@ dataCSV.then(function (data) {
         .attr("class","y axis");
 
     function updateXLabel() {
-        console.log(innerHeight);
         svg.selectAll(".x.label")
             .data(["Observations"])
             .join("text")
@@ -150,8 +149,8 @@ dataCSV.then(function (data) {
             .text(d.label);
     });
 
-    document.getElementById("country_select").addEventListener("change", function () {
-        selectedCountry = this.value;
+    window.addEventListener("countryChanged", (event) => {
+        selectedCountry = event.detail;
         updateVis();
     });
 

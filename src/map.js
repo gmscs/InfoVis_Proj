@@ -4,15 +4,20 @@ const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");
 const svg = create_svg(container, margin);
 
+const mapStuff = svg.append("g")
+    .attr("class", "mapStuff")
+
+const labelStuff = svg.append("g")
+    .attr("class", "labelStuff");
+
 let selectedVariable = "commonname";
+let selectedCountry = "global";
 let counts;
 let colorScale;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
-var zoomDefault = new d3.ZoomTransform(1,-10,-20)
-
-const dropdown = container.append("div").attr("class", "dropContainer");
+var zoomDefault = new d3.ZoomTransform(1, 0, 0);
 
 Promise.all([
     d3.json("./dataset/geo.json"),
@@ -20,7 +25,33 @@ Promise.all([
 ]).then(([geo, dataCSV]) => {
     counts = get_counts_by_country(dataCSV, selectedVariable);
 
-    const tooltip = create_tooltip("#map");
+    labelStuff.append("text")
+        .attr("class", "filterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .text("Active filter: None")
+
+    const countries = Array.from(new Set(dataCSV.map(d => d.country)));
+    countries.sort();
+    const tooltip = create_tooltip("body");
+    const countryDropdown = container.append("select").attr("class", "dropContainer")
+    .style("position", "absolute")
+    .style("top", "10px")
+    .style("right", "10px")
+    .style("z-index", "10")
+    .on("change", function() {
+        selectedCountry = d3.select(this).property("value");
+        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
+    });
+
+    countryDropdown.append("option").attr("value", "global").text("All Countries");
+    countryDropdown.selectAll("countryOptions")
+        .data(countries)
+        .join("option")
+        .attr("class", "countryOption")
+        .attr("value", d => d)
+        .text(d => d);
 
     function updateMap(counts) {
         colorScale = get_colour_scale(counts);
@@ -31,7 +62,7 @@ Promise.all([
         const proj = d3.geoMercator().fitSize([width, height], geo);
         const path = d3.geoPath().projection(proj);
 
-        svg.selectAll("path")
+        mapStuff.selectAll("path")
             .data(geo.features)
             .join("path")
             .attr("d", path)
@@ -54,8 +85,9 @@ Promise.all([
                 tooltip.style("width", `${textWidth + font_padding}px`)
             })
             .on("mousemove", function(event) {
-                tooltip.style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 10) + "px");
+                const containerRect = container.node().getBoundingClientRect();
+                tooltip.style("left", (event.pageX - containerRect.left + 30) + "px")
+                    .style("top", (event.pageY - containerRect.top + 30) + "px");
             })
             .on("mouseout", function() {
                 tooltip.transition()
@@ -63,9 +95,10 @@ Promise.all([
                     .style("opacity", 0);
             })
             .on("click", function(event, d) {
-                const countryName = d.properties.name;
-                d3.select("#country_select").property("value", countryName);
-                d3.select("#country_select").dispatch("change");
+                selectedCountry = d.properties.name;
+                countryDropdown.property("value", selectedCountry);
+                countryDropdown.dispatch("change");
+                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
             });
     }
     updateMap(counts);
@@ -75,18 +108,18 @@ Promise.all([
         const filteredData = dataCSV.filter(row => row[attribute] === value);
 
         counts = get_counts_by_country(filteredData);
-        d3.select("#filter_label").text("Active filter: " + value)
+        d3.select("text").text("Active filter: " + value)
         updateMap(counts);
     });
 
     window.addEventListener("click", function(event) {
-        //non important click, essencially "losing focus"
         if(event.target.nodeName==="svg"){
-            d3.select("#country_select").property("value","global")
-            d3.select("#country_select").dispatch("change");
+            countryDropdown.property("value", "global");
+            countryDropdown.dispatch("change");
+            window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
 
             counts = get_counts_by_country(dataCSV, selectedVariable)
-            d3.select("#filter_label").text("Active filter: None")
+            d3.select("text").text("Active filter: None")
             updateMap(counts);
             svg.call(zoom.transform,zoomDefault)
         }
@@ -98,14 +131,11 @@ Promise.all([
     whyWouldYouDoThisToMe.observe(container.node());
 
     const zoom = d3.zoom()
-    .scaleExtent([1 , 4])
-    .on("zoom", zoomed);
+        .scaleExtent([1 , 4])
+        .on("zoom", function(event) {
+            mapStuff.attr("transform", event.transform);
+        });
 
     svg.call(zoom);
-
-    function zoomed(event) {
-        const {transform} = event;
-        svg.attr("transform", transform);
-    }
 
 });
