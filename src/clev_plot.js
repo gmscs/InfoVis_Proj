@@ -2,6 +2,7 @@ import {dataCSV, shared_color, get_visible_categories, create_svg, create_toolti
 
 const container = d3.select("#clev")
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
+const padding = 20;
 const svg = create_svg(container, margin);
 
 //defaults
@@ -10,6 +11,15 @@ let selectedVariable = "commonname"
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
+
+const radioContainer = container.append("div").attr("class", "radioContainer");
+const radioOptions = [
+    { label:"Species", value:"commonname" },
+    { label:"Age", value:"age" },
+    { label:"Sex", value:"sex" },
+    { label:"Habitat", value:"habitat" },
+    { label:"Conservation Status", value:"conservation" }
+];
 
 dataCSV.then(function (data) {
     let counts = get_counts(data, selectedVariable)
@@ -26,9 +36,10 @@ dataCSV.then(function (data) {
 
     var mousemove = (event, d) => {
         const key = typeof d === "string" ? d : d[selectedVariable];
+        const containerRect = container.node().getBoundingClientRect();
         tooltip.html(counts.get(key))
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY) + "px");
+        .style("left", (event.pageX - containerRect.left + 10) + "px")
+        .style("top", (event.pageY - containerRect.top + 10) + "px");
     }
 
     svg.append("g")
@@ -39,12 +50,15 @@ dataCSV.then(function (data) {
         .attr("class","y axis");
 
     function updateXLabel() {
-        svg.append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "middle")
-        .attr("x", innerWidth / 2 + margin.left)
-        .attr("y", height - 10)
-        .text("Observations");
+        console.log(innerHeight);
+        svg.selectAll(".x.label")
+            .data(["Observations"])
+            .join("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "middle")
+            .attr("x", 0)
+            .attr("y", innerHeight / 2.35)
+            .text(d => d);
     }
 
     function updateVis() {
@@ -55,7 +69,7 @@ dataCSV.then(function (data) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
-        const innerWidth = width - margin.left - margin.right;
+        const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
         
         const x = d3.scaleLinear()
@@ -115,16 +129,26 @@ dataCSV.then(function (data) {
             .attr("cy", d => y(d) + y.bandwidth()/2);
     }
 
-    document.querySelectorAll('input[name="att"]').forEach(radio => {
-        radio.addEventListener("change", function() {
-            if (this.checked) {
+    radioContainer.selectAll(".radioOptions")
+        .data(radioOptions)
+        .join("div")
+        .attr("class", "radioOptions")
+        .each(function(d, i) {
+            const div = d3.select(this);
+            div.append("input")
+            .attr("type", "radio")
+            .attr("id", `radio_${i}`)
+            .attr("name", "radioGroup")
+            .attr("value", d.value)
+            .property("checked", d.value === selectedVariable)
+            .on("change", function() {
                 selectedVariable = this.value;
                 updateVis();
-                updateYLabel();
-            }
-        });
+            });
+            div.append("label")
+            .attr("for", `radio_${i}`)
+            .text(d.label);
     });
-
 
     document.getElementById("country_select").addEventListener("change", function () {
         selectedCountry = this.value;
@@ -133,6 +157,7 @@ dataCSV.then(function (data) {
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateVis();
+        updateXLabel();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 

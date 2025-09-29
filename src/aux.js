@@ -52,6 +52,7 @@ export function create_tooltip(id) {
         .style("border-radius", "5px")
         .style("padding", "10px")
         .style("position", "absolute")
+        .style("z-index", 1000)
         .style("pointer-events", "none")
         .style("background-color", "rgba(255, 255, 255)");
     return tooltip;

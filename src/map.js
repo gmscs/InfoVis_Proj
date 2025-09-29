@@ -12,6 +12,8 @@ var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var zoomDefault = new d3.ZoomTransform(1,-10,-20)
 
+const dropdown = container.append("div").attr("class", "dropContainer");
+
 Promise.all([
     d3.json("./dataset/geo.json"),
     dataCSV
