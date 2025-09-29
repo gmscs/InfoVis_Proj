@@ -10,6 +10,14 @@ const mapStuff = svg.append("g")
 const labelStuff = svg.append("g")
     .attr("class", "labelStuff");
 
+svg.append("rect")
+    .attr("class", "zoomable")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "transparent")
+    .style("pointer-events", "all")
+    .lower();
+
 let selectedVariable = "commonname";
 let selectedCountry = "global";
 let counts;
@@ -57,6 +65,10 @@ Promise.all([
         colorScale = get_colour_scale(counts);
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
+
+        svg.select(".zoomable")
+            .attr("width", width)
+            .attr("height", height);
 
         svg.attr("width", width).attr("height", height)
         const proj = d3.geoMercator().fitSize([width, height], geo);
@@ -113,7 +125,7 @@ Promise.all([
     });
 
     window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="svg"){
+        if(event.target.nodeName==="rect"){
             countryDropdown.property("value", "global");
             countryDropdown.dispatch("change");
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
@@ -131,7 +143,7 @@ Promise.all([
     whyWouldYouDoThisToMe.observe(container.node());
 
     const zoom = d3.zoom()
-        .scaleExtent([1 , 4])
+        .scaleExtent([1 , 10])
         .on("zoom", function(event) {
             mapStuff.attr("transform", event.transform);
         });
