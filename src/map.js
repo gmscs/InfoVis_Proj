@@ -10,6 +10,7 @@ let colorScale;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
+var zoomDefault = new d3.ZoomTransform(1,-10,-20)
 
 Promise.all([
     d3.json("./dataset/geo.json"),
@@ -85,6 +86,7 @@ Promise.all([
             counts = get_counts_by_country(dataCSV, selectedVariable)
             d3.select("#filter_label").text("Active filter: None")
             updateMap(counts);
+            svg.call(zoom.transform,zoomDefault)
         }
     });
 
@@ -92,5 +94,16 @@ Promise.all([
         updateMap(counts);
     });
     whyWouldYouDoThisToMe.observe(container.node());
+
+    const zoom = d3.zoom()
+    .scaleExtent([1 , 4])
+    .on("zoom", zoomed);
+
+    svg.call(zoom);
+
+    function zoomed(event) {
+        const {transform} = event;
+        svg.attr("transform", transform);
+    }
 
 });
