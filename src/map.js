@@ -32,7 +32,7 @@ Promise.all([
     dataCSV
 ]).then(([geo, dataCSV]) => {
     counts = get_counts_by_country(dataCSV, selectedVariable);
-
+    
     labelStuff.append("text")
         .attr("class", "filterLabel")
         .attr("x", 20)
@@ -50,6 +50,7 @@ Promise.all([
     .style("z-index", "10")
     .on("change", function() {
         selectedCountry = d3.select(this).property("value");
+        highlightSelectedCountry();
         window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
     });
 
@@ -59,7 +60,17 @@ Promise.all([
         .join("option")
         .attr("class", "countryOption")
         .attr("value", d => d)
-        .text(d => d);
+        .text(d => d)
+        .on("change", function(event, d) {
+            selectedCountry = d3.select(this).property("value");
+            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
+        });
+
+    function highlightSelectedCountry() {
+        mapStuff.selectAll("path")
+            .attr("stroke", d => d.properties.name === selectedCountry ? "black" : "none")
+            .attr("stroke-width", d => d.properties.name === selectedCountry ? 1.5 : null);
+    }
 
     function updateMap(counts) {
         colorScale = get_colour_scale(counts);
@@ -94,7 +105,8 @@ Promise.all([
 
                 const text = tooltip.node().textContent;
                 const textWidth = get_text_width(text, font);
-                tooltip.style("width", `${textWidth + font_padding}px`)
+                tooltip.style("width", `${textWidth + font_padding}px`);
+                d3.select(this).classed("hovered", true);
             })
             .on("mousemove", function(event) {
                 const containerRect = container.node().getBoundingClientRect();
@@ -103,17 +115,19 @@ Promise.all([
             })
             .on("mouseout", function() {
                 tooltip.transition()
-                    .duration(500)
+                    .duration(100)
                     .style("opacity", 0);
+                d3.select(this).classed("hovered", false);
             })
             .on("click", function(event, d) {
                 selectedCountry = d.properties.name;
                 countryDropdown.property("value", selectedCountry);
                 countryDropdown.dispatch("change");
-                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
-            });
+            })
+            
     }
     updateMap(counts);
+    highlightSelectedCountry();
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
