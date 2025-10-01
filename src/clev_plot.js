@@ -124,8 +124,8 @@ dataCSV.then(function (data) {
               exit => exit.remove()
             )
             .transition().duration(1000)
-            .attr("cx", d => x(counts.get(d) || 0))
-            .attr("cy", d => y(d) + y.bandwidth()/2);
+                .attr("cx", d => x(counts.get(d) || 0))
+                .attr("cy", d => y(d) + y.bandwidth()/2);
     }
 
     radioContainer.selectAll(".radioOptions")
