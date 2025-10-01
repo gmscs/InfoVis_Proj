@@ -96,3 +96,75 @@ export function get_colour_scale(counts) {
     ].filter(d => d !== undefined);
     return d3.scaleThreshold().domain(colorDomain).range(d3.schemeBlues[5]);
 }
+
+export function get_date_observations(data) {
+    const monthCountMap = new Map();
+    
+    data.forEach(row => {
+        const date = row.date;
+        if (date) {
+            const dateParts = date.split('-');
+            const month = dateParts[1];
+            const year = dateParts[2]; 
+            const monthYear = `${month}-${year}`;
+            
+            monthCountMap.set(monthYear, (monthCountMap.get(monthYear) || 0) + 1);
+        }
+    });
+    
+    // Convert the map to an array of objects with Date objects
+    const dateObservations = Array.from(monthCountMap.entries()).map(([dateStr, observations]) => ({
+        date: new Date(`${dateStr.split('-')[1]}-${dateStr.split('-')[0]}-01`), // Convert MM-YYYY to Date object
+        observations: observations
+    }));
+    
+    // Sort by date (now we can directly compare Date objects)
+    dateObservations.sort((a, b) => a.date - b.date);
+
+    return dateObservations;
+}
+
+export function get_date_observations_by_granularity(data, granularity = 'month') {
+    const dateCountMap = new Map();
+    
+    data.forEach(row => {
+        const date = row.date;
+        if (date) {
+            const dateParts = date.split('-');
+            const day = dateParts[0];
+            const month = dateParts[1];
+            const year = dateParts[2];
+            
+            let key, dateObj;
+            
+            switch(granularity) {
+                case 'day':
+                    key = `${day}-${month}-${year}`;
+                    dateObj = new Date(`${year}-${month}-${day}`);
+                    break;
+                case 'month':
+                    key = `${month}-${year}`;
+                    dateObj = new Date(`${year}-${month}-01`);
+                    break;
+                case 'year':
+                    key = year;
+                    dateObj = new Date(`${year}-01-01`);
+                    break;
+                default:
+                    key = `${month}-${year}`;
+                    dateObj = new Date(`${year}-${month}-01`);
+            }
+            
+            if (!dateCountMap.has(key)) {
+                dateCountMap.set(key, { date: dateObj, observations: 0 });
+            }
+            dateCountMap.get(key).observations += 1;
+        }
+    });
+    
+    const dateObservations = Array.from(dateCountMap.values());
+    dateObservations.sort((a, b) => a.date - b.date);
+    
+    return dateObservations;
+}
+

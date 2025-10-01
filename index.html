@@ -5,6 +5,7 @@
 <script type="module" src="src/stuff.js"></script>
 <script type="module" src="src/clev_plot.js"></script>
 <script type="module" src="src/map.js"></script>
+<script type="module" src="src/line_plot.js"></script>
 
 <body>
   <div class="grid">
@@ -74,6 +75,23 @@
   #map .hovered {
     stroke: black;
     stroke-width: 1.5;
+  }
+
+  #line {
+    position: relative;
+  }
+
+  #line .radioContainer {
+    position: absolute;
+    top: -7px;
+    left: 10px;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    z-index: 10;
   }
 </style>
 
