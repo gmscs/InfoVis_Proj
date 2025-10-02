@@ -98,33 +98,8 @@ export function get_colour_scale(counts) {
     return d3.scaleThreshold().domain(colorDomain).range(d3.schemeBlues[5]);
 }
 
-// export function get_date_observations(data, filterMonth=null, filterYear=null) {
-//     const monthCountMap = new Map();
-    
-//     filteredData.forEach(row => {
-//         const date = row.date;
-//         if (date) {
-//             const dateParts = date.split('-');
-//             const month = dateParts[1];
-//             const year = dateParts[2]; 
-//             const monthYear = `${month}-${year}`;
-            
-//             monthCountMap.set(monthYear, (monthCountMap.get(monthYear) || 0) + 1);
-//         }
-//     });
-    
-//     const dateObservations = Array.from(monthCountMap.entries()).map(([dateStr, observations]) => ({
-//         date: new Date(`${dateStr.split('-')[1]}-${dateStr.split('-')[0]}-01`), // Convert MM-YYYY to Date object
-//         observations: observations
-//     }));
-    
-//     dateObservations.sort((a, b) => a.date - b.date);
-
-//     return dateObservations;
-// }
-
 export function filter_by_date(data, filterMonth, filterYear) {
-    let filteredData = Array.from(data);
+    let filteredData;
     if (filterMonth || filterYear) {
         filteredData = data.filter(row => {
             const dateParts = row.date.split('-');
@@ -135,6 +110,39 @@ export function filter_by_date(data, filterMonth, filterYear) {
     }
     return filteredData;
 }
+
+export function filter_by_date_range(data, filterStartDate, filterEndDate) {
+    let filteredData;
+
+    filteredData = data.filter(row => {
+        const dateParts = row.date.split('-');
+        const month = dateParts[1];
+        const year = dateParts[2];
+
+        const startMonth = filterStartDate.getMonth();
+        const startYear = filterStartDate.getFullYear();
+
+        const endYear = filterEndDate.getFullYear();
+
+        return ((month >= startMonth) && (year >= startYear && year <= endYear));
+    });
+    return filteredData;
+}
+
+
+export function find_closest_date(data, x, xVal) {
+    const bisect = d3.bisector(d => d.date).left;
+    const index = bisect(data, x.invert(xVal), 1);
+
+    if (index === 0) return data[0].date;
+    if (index >= data.length) return data[data.length - 1].date;
+
+    const left = data[index - 1];
+    const right = data[index];
+
+    return (xVal - x(left.date) < x(right.date) - xVal) ? left.date : right.date;
+}
+
 
 export function get_date_observations_by_granularity(data, granularity = 'month') {
     const dateCountMap = new Map();

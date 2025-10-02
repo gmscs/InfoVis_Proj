@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_date, get_date_observations_by_granularity} from "./stuff.js";
+import {dataCSV, shared_color, duration, create_svg, create_tooltip, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 50 };
@@ -25,6 +25,13 @@ const granularityOptions = [
     { value: "year", label: "Yearly" }
 ];
 
+svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "transparent")
+    .style("pointer-events", "all")
+    .lower();
 
 dataCSV.then(function (data) {
     const tooltip = create_tooltip("#line");
@@ -37,6 +44,21 @@ dataCSV.then(function (data) {
     svg.append("g")
             .attr("class","y axis")
             .attr("transform", `translate(0,0)`)
+
+    let x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
+    let y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+
+    function brushed(event) {
+        if(!event.selection) return;
+        let filteredData;
+        const [x0, x1] = event.selection;
+
+        filteredData = filter_by_date_range(data, find_closest_date(dateObservations, x, x0), find_closest_date(dateObservations, x, x1));
+
+        window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
+        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
+    }
     
     function updateXLabel() {
         svg.selectAll(".x.label")
@@ -53,8 +75,16 @@ dataCSV.then(function (data) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
-        let x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
-        let y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+        x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
+        y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+        
+        const brush = d3.brushX()
+            .extent([[0, y(0) - 20], [width - margin.left - margin.right, y(0) + 20]])
+            .on("end", brushed);
+        svg.select(".brush").remove();
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
 
         const line = d3.line()
             .x(d => x(d.date))
@@ -171,7 +201,18 @@ dataCSV.then(function (data) {
                 .text(option.label);
         });
     
-    //window.updateVis = updateVis;
+    window.addEventListener("click", function(event) {
+        if(event.target.nodeName==="rect"){
+            selectedGranularity = "month"
+            radioContainer.property("value", selectedGranularity);
+            radioContainer.dispatch("change");
+            window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
+
+            dateObservations = get_date_observations_by_granularity(data, selectedGranularity);
+            updateVis(dateObservations);
+        }
+    });
+    
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateVis(dateObservations);
         updateXLabel();
