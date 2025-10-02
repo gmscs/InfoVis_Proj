@@ -1,4 +1,4 @@
-import {dataCSV, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./stuff.js";
+import {dataCSV, duration, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");
@@ -99,7 +99,7 @@ Promise.all([
                 const countryName = d.properties.name;
                 const count = counts.get(countryName) || 0;
                 tooltip.transition()
-                    .duration(200)
+                    .duration(duration / 5)
                     .style("opacity", 2).style("s");
                 tooltip.html(`${countryName}<br>${count}`);
 
@@ -115,7 +115,7 @@ Promise.all([
             })
             .on("mouseout", function() {
                 tooltip.transition()
-                    .duration(100)
+                    .duration(duration / 1000)
                     .style("opacity", 0);
                 d3.select(this).classed("hovered", false);
             })
@@ -128,6 +128,15 @@ Promise.all([
     }
     updateMap(counts);
     highlightSelectedCountry();
+
+    window.addEventListener("dateChanged", function(event) {
+        //const { value, attribute } = event.detail;
+        const filteredData = event.detail;
+
+        counts = get_counts_by_country(filteredData);
+        //d3.select("text").text("Active filter: " + value)
+        updateMap(counts);
+    });
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;

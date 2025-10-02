@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, get_visible_categories, create_svg, create_tooltip, get_counts} from "./stuff.js";
+import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts} from "./stuff.js";
 
 const container = d3.select("#clev")
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
@@ -8,6 +8,7 @@ const svg = create_svg(container, margin);
 //defaults
 let selectedCountry = "global"
 let selectedVariable = "commonname"
+let countryFilter;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -22,7 +23,8 @@ const radioOptions = [
 ];
 
 dataCSV.then(function (data) {
-    let counts = get_counts(data, selectedVariable)
+    countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
+    let counts = get_counts(data, selectedVariable, countryFilter);
 
     const tooltip = create_tooltip("#clev");
 
@@ -31,7 +33,7 @@ dataCSV.then(function (data) {
     }
 
     var mouseleave = function (d) {
-        tooltip.transition().duration(200).style("opacity", 0);
+        tooltip.transition().duration(duration / 5).style("opacity", 0);
     }
 
     var mousemove = (event, d) => {
@@ -60,9 +62,7 @@ dataCSV.then(function (data) {
             .text(d => d);
     }
 
-    function updateVis() {
-        const countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        counts = get_counts(data, selectedVariable, countryFilter);
+    function updateVis(counts) {
         const maxCount = d3.max(Array.from(counts.values()));
 
         height = container.node().getBoundingClientRect().height;
@@ -82,12 +82,12 @@ dataCSV.then(function (data) {
         svg.select(".x.axis")
             .attr("transform", `translate(0,${innerHeight})`)
             .transition()
-            .duration(2000)
+            .duration(duration * 2)
             .call(d3.axisBottom(x).ticks(Math.min(maxCount, 10)).tickFormat(d3.format("d")));
 
         svg.selectAll(".y.axis")
             .transition()
-            .duration(1000)
+            .duration(duration)
             .call(d3.axisLeft(y));
 
         svg.selectAll(".stem")
@@ -97,7 +97,7 @@ dataCSV.then(function (data) {
               update => update,
               exit => exit.remove()
             )
-            .transition().duration(1000)
+            .transition().duration(duration)
             .attr("x1", 0)
             .attr("x2", d => x(counts.get(d) || 0))
             .attr("y1", d => y(d) + y.bandwidth()/2)
@@ -123,7 +123,7 @@ dataCSV.then(function (data) {
               update => update,
               exit => exit.remove()
             )
-            .transition().duration(1000)
+            .transition().duration(duration)
                 .attr("cx", d => x(counts.get(d) || 0))
                 .attr("cy", d => y(d) + y.bandwidth()/2);
     }
@@ -142,24 +142,35 @@ dataCSV.then(function (data) {
             .property("checked", d.value === selectedVariable)
             .on("change", function() {
                 selectedVariable = this.value;
-                updateVis();
+                counts = get_counts(data, selectedVariable, countryFilter);
+                updateVis(counts);
             });
             div.append("label")
             .attr("for", `radio_${i}`)
             .text(d.label);
     });
 
+    window.addEventListener("dateChanged", function(event) {
+        const filteredData = event.detail;
+
+        counts = get_counts(filteredData, selectedVariable, countryFilter);
+        updateVis(counts);
+    });
+
     window.addEventListener("countryChanged", (event) => {
         selectedCountry = event.detail;
-        updateVis();
+        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
+        counts = get_counts(data, selectedVariable, countryFilter);
+        updateVis(counts);
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateVis();
+        counts = get_counts(data, selectedVariable, countryFilter);
+        updateVis(counts);
         updateXLabel();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    updateVis();
+    updateVis(counts);
     updateXLabel();
 });

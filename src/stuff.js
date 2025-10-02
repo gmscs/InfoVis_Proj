@@ -1,6 +1,7 @@
 export const font = "12px sans-serif";
 export const font_padding = 10;
-export const shared_color = "#2e83be"
+export const shared_color = "#2e83be";
+export const duration = 1000;
 
 export const dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
 
@@ -97,36 +98,46 @@ export function get_colour_scale(counts) {
     return d3.scaleThreshold().domain(colorDomain).range(d3.schemeBlues[5]);
 }
 
-export function get_date_observations(data) {
-    const monthCountMap = new Map();
+// export function get_date_observations(data, filterMonth=null, filterYear=null) {
+//     const monthCountMap = new Map();
     
-    data.forEach(row => {
-        const date = row.date;
-        if (date) {
-            const dateParts = date.split('-');
-            const month = dateParts[1];
-            const year = dateParts[2]; 
-            const monthYear = `${month}-${year}`;
+//     filteredData.forEach(row => {
+//         const date = row.date;
+//         if (date) {
+//             const dateParts = date.split('-');
+//             const month = dateParts[1];
+//             const year = dateParts[2]; 
+//             const monthYear = `${month}-${year}`;
             
-            monthCountMap.set(monthYear, (monthCountMap.get(monthYear) || 0) + 1);
-        }
-    });
+//             monthCountMap.set(monthYear, (monthCountMap.get(monthYear) || 0) + 1);
+//         }
+//     });
     
-    // Convert the map to an array of objects with Date objects
-    const dateObservations = Array.from(monthCountMap.entries()).map(([dateStr, observations]) => ({
-        date: new Date(`${dateStr.split('-')[1]}-${dateStr.split('-')[0]}-01`), // Convert MM-YYYY to Date object
-        observations: observations
-    }));
+//     const dateObservations = Array.from(monthCountMap.entries()).map(([dateStr, observations]) => ({
+//         date: new Date(`${dateStr.split('-')[1]}-${dateStr.split('-')[0]}-01`), // Convert MM-YYYY to Date object
+//         observations: observations
+//     }));
     
-    // Sort by date (now we can directly compare Date objects)
-    dateObservations.sort((a, b) => a.date - b.date);
+//     dateObservations.sort((a, b) => a.date - b.date);
 
-    return dateObservations;
+//     return dateObservations;
+// }
+
+export function filter_by_date(data, filterMonth, filterYear) {
+    let filteredData = Array.from(data);
+    if (filterMonth || filterYear) {
+        filteredData = data.filter(row => {
+            const dateParts = row.date.split('-');
+            const month = dateParts[1][1];
+            const year = dateParts[2];
+            return (!filterMonth || month == filterMonth) && (!filterYear || year == filterYear);
+        });
+    }
+    return filteredData;
 }
 
 export function get_date_observations_by_granularity(data, granularity = 'month') {
     const dateCountMap = new Map();
-    
     data.forEach(row => {
         const date = row.date;
         if (date) {
@@ -167,4 +178,3 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
     
     return dateObservations;
 }
-
