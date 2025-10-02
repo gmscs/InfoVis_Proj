@@ -130,11 +130,8 @@ Promise.all([
     highlightSelectedCountry();
 
     window.addEventListener("dateChanged", function(event) {
-        //const { value, attribute } = event.detail;
         const filteredData = event.detail;
-
         counts = get_counts_by_country(filteredData);
-        //d3.select("text").text("Active filter: " + value)
         updateMap(counts);
     });
 
