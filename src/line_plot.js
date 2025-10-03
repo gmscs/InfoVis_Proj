@@ -175,6 +175,9 @@ dataCSV.then(function (data) {
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
+                    tooltip.transition()
+                        .duration(duration / 2)
+                        .style("opacity", 0);
                     updateVis(dateObservations);
                 }),
                 update => update,
