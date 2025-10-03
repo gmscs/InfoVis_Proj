@@ -10,6 +10,19 @@ const mapStuff = svg.append("g")
 const labelStuff = svg.append("g")
     .attr("class", "labelStuff");
 
+const legendItemSize = 20;
+const legendSpacing = 4;
+    
+let selectedVariable = "commonname";
+let selectedCountry = "global";
+let selectedColour = false;
+let counts;
+
+var colourScale;
+var width = container.node().getBoundingClientRect().width;
+var height = container.node().getBoundingClientRect().height;
+var zoomDefault = new d3.ZoomTransform(1, 0, 0);
+
 svg.append("rect")
     .attr("class", "zoomable")
     .attr("width", width)
@@ -18,14 +31,9 @@ svg.append("rect")
     .style("pointer-events", "all")
     .lower();
 
-let selectedVariable = "commonname";
-let selectedCountry = "global";
-let counts;
-let colorScale;
-
-var width = container.node().getBoundingClientRect().width;
-var height = container.node().getBoundingClientRect().height;
-var zoomDefault = new d3.ZoomTransform(1, 0, 0);
+const colourLegend = svg.append("g")
+  .attr("class", "legend")
+  .attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 
 Promise.all([
     d3.json("./dataset/geo.json"),
@@ -72,10 +80,82 @@ Promise.all([
             .attr("stroke-width", d => d.properties.name === selectedCountry ? 1.5 : null);
     }
 
-    function updateMap(counts) {
-        colorScale = get_colour_scale(counts);
+    function filterByColour(colour) {
+        selectedColour = true;
+        const range = colourScale.range();
+        const domain = colourScale.domain();
+        const colorIndex = range.indexOf(colour);
+        
+        let lower, upper;
+        if (colorIndex === 0) {
+            lower = d3.min(Array.from(counts.values()));
+            upper = domain[colorIndex];
+        } else {
+            lower = domain[colorIndex - 1];
+            upper = (domain[colorIndex] || d3.max(Array.from(counts.values())) + 1);
+        }
+
+        const filteredData = dataCSV.filter(d => {
+            const countryCount = counts.get(d.country);
+                return countryCount >= lower && countryCount < upper;
+        });
+
+        return(filteredData);
+    }
+
+    function updateMap(counts, origin) {
+        console.log(origin);
+        colourScale = get_colour_scale(counts);
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
+
+        const maxCount = d3.max(Array.from(counts.values()));
+        const minCount = d3.min(Array.from(counts.values()));
+
+        const legendItems = colourLegend
+            .selectAll("g.legend-item")
+            .data(colourScale.range(), (d) => d);
+
+        const enterItems = legendItems
+            .enter()
+            .append("g")
+            .attr("class", "legend-item")
+            .attr("transform", (_, colour) => `translate(0, ${colour * (legendItemSize + legendSpacing)})`);
+
+        enterItems.append("rect")
+            .attr("width", legendItemSize)
+            .attr("height", legendItemSize)
+            .attr("fill", (d) => d)
+            .attr("stroke", "#fff")
+            .on("click", (event, d) => {
+                if(!selectedColour) {
+                    event.stopPropagation();
+                    let filteredData = filterByColour(d);
+                    counts = get_counts_by_country(filteredData);
+
+                    const filterEvent = new CustomEvent("filterByColour", {
+                        detail: filteredData
+                    });
+                    window.dispatchEvent(filterEvent);
+
+                    updateMap(counts, "filterColour");
+                }
+            });
+
+        enterItems.append("text")
+            .attr("x", legendItemSize + 5)
+            .attr("y", legendItemSize / 2)
+            .attr("dy", "0.32em")
+            .text((_, colour) => {
+                const domain = colourScale.domain();
+                const lower = Math.floor(domain[colour - 1] || minCount);
+                const upper = Math.floor(domain[colour]) || maxCount;
+                return `${lower} - ${upper}`;
+            });
+
+        legendItems.attr("transform", (_, colour) => `translate(0, ${colour * (legendItemSize + legendSpacing)})`);
+
+        legendItems.exit().remove();
 
         svg.select(".zoomable")
             .attr("width", width)
@@ -92,7 +172,7 @@ Promise.all([
             .attr("fill", function (d) {
                 const key = d.properties.name;
                 const count = counts.get(key);
-                return count === (0 || undefined) ? "#c0c0c0ff" : colorScale(count);
+                return count === (0 || undefined) ? "#c0c0c0ff" : colourScale(count);
             })
             
             .on("mouseover", function(event, d) {
@@ -130,13 +210,13 @@ Promise.all([
             })
             
     }
-    updateMap(counts);
+    updateMap(counts, "firstRun");
     highlightSelectedCountry();
 
     window.addEventListener("dateChanged", function(event) {
         const filteredData = event.detail;
         counts = get_counts_by_country(filteredData);
-        updateMap(counts);
+        updateMap(counts, "datechanged");
     });
 
     window.addEventListener("filterByValue", function(event) {
@@ -145,7 +225,7 @@ Promise.all([
 
         counts = get_counts_by_country(filteredData);
         d3.select("text").text("Active filter: " + value)
-        updateMap(counts);
+        updateMap(counts, "clevValueChanged");
     });
 
     window.addEventListener("click", function(event) {
@@ -154,15 +234,16 @@ Promise.all([
             countryDropdown.dispatch("change");
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
 
-            counts = get_counts_by_country(dataCSV, selectedVariable)
-            d3.select("text").text("Active filter: None")
-            updateMap(counts);
+            counts = get_counts_by_country(dataCSV, selectedVariable);
+            d3.select("text").text("Active filter: None");
+            selectedColour = false;
+            updateMap(counts, "resetToGlobal");
             svg.call(zoom.transform,zoomDefault)
         }
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateMap(counts);
+        updateMap(counts, "resizeWindow");
     });
     whyWouldYouDoThisToMe.observe(container.node());
 

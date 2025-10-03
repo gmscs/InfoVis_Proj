@@ -184,6 +184,13 @@ dataCSV.then(function (data) {
         updateVis(counts);
     });
 
+    window.addEventListener("filterByColour", function(event) {
+        let filteredData = event.detail;
+
+        counts = get_counts(filteredData, selectedVariable, countryFilter);
+        updateVis(counts);
+    });
+
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         counts = get_counts(data, selectedVariable, countryFilter);
         updateVis(counts);

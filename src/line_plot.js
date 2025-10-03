@@ -235,6 +235,13 @@ dataCSV.then(function (data) {
         updateVis(dateObservations);
     });
 
+    window.addEventListener("filterByColour", function(event) {
+        filteredData = event.detail;
+
+        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
+    });
+
     window.addEventListener("countryChanged", (event) => {
         selectedCountry = event.detail;
         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
