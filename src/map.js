@@ -114,7 +114,7 @@ Promise.all([
         return(filteredData);
     }
 
-    function updateMap(counts, origin) {
+    function updateMap(counts, origin=null) {
         //console.log(origin);
         colourScale = get_colour_scale(counts);
         height = container.node().getBoundingClientRect().height;
