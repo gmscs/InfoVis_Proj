@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity} from "./stuff.js";
+import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -91,18 +91,6 @@ dataCSV.then(function (data) {
             .x(d => x(d.date))
             .y(d => y(d.observations));
 
-        svg.select(".x.axis")
-            .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
-            .transition()
-            .duration(duration)
-            .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
-
-        svg.selectAll(".y.axis")
-            .attr("transform", `translate(0,0)`)
-            .transition()
-            .duration(duration)
-            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")));
-
         svg.selectAll("path")
             .data([dateObservations], d => d)
             .join(
@@ -119,6 +107,18 @@ dataCSV.then(function (data) {
             .transition().duration(duration)
                 .attr("d", line(dateObservations));
             
+         svg.select(".x.axis")
+            .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
+            .transition()
+            .duration(duration)
+            .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+
+        svg.selectAll(".y.axis")
+            .attr("transform", `translate(0,0)`)
+            .transition()
+            .duration(duration)
+            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")));
+
         svg.selectAll(".dot")
             .data(dateObservations, d => d.date)
             .join(
@@ -141,9 +141,17 @@ dataCSV.then(function (data) {
                         ? d3.timeFormat("%b %Y")
                         : d3.timeFormat("%d %b %Y");
                     const containerRect = container.node().getBoundingClientRect();
-                    tooltip.html(`Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`)
-                        .style("left", (event.pageX - containerRect.left - 135) + "px")
+                    let tooltip_text=`Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`
+                    //.style("left", (event.pageX - containerRect.left - 135) + "px") old style if needed
+                    if(event.layerX<(width/2)){
+                        tooltip.html(tooltip_text)
+                        .style("left",event.layerX + 50 + "px")
                         .style("top", (event.pageY - containerRect.top + 13) + "px");
+                    }else{
+                        tooltip.html(tooltip_text)
+                        .style("left",event.layerX + 60 - get_text_width(tooltip_text) + "px")
+                        .style("top", (event.pageY - containerRect.top + 13) + "px");
+                    }
                 })
                 .on("mouseout", function(d) {
                     tooltip.transition()
@@ -249,11 +257,11 @@ dataCSV.then(function (data) {
     
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateVis(dateObservations);
-        updateXLabel();
+        //updateXLabel();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    updateXLabel();
+    //updateXLabel();
     updateVis(dateObservations);
 
 });
