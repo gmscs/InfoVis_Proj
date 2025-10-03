@@ -1,6 +1,7 @@
 export const font = "12px sans-serif";
 export const font_padding = 10;
 export const shared_color = "#2e83be";
+export const shared_color2 = "#bed8e7";
 export const duration = 1000;
 
 export const dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");

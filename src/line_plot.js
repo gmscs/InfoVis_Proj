@@ -10,6 +10,7 @@ let selectedCountry = "global";
 let countryFilter;
 let selectedGranularity = "month";
 let dateObservations;
+var filteredData;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -35,7 +36,7 @@ svg.append("rect")
 dataCSV.then(function (data) {
     const tooltip = create_tooltip("#line");
     countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-    let filteredData = countryFilter ? data.filter(countryFilter) : data;
+    filteredData = countryFilter ? data.filter(countryFilter) : data;
     dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
     svg.append("g")
@@ -54,7 +55,7 @@ dataCSV.then(function (data) {
         const [x0, x1] = event.selection;
         
         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        let filteredData = countryFilter ? data.filter(countryFilter) : data;
+        filteredData = countryFilter ? data.filter(countryFilter) : data;
         filteredData = filter_by_date_range(filteredData, find_closest_date(dateObservations, x, x0), find_closest_date(dateObservations, x, x1));
 
         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
@@ -158,7 +159,7 @@ dataCSV.then(function (data) {
                         radioContainer.selectAll(".radioOption input[value='month']")
                             .property("checked", true);
                         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                        let filteredData = countryFilter ? data.filter(countryFilter) : data;
+                        filteredData = countryFilter ? data.filter(countryFilter) : data;
                         filteredData = filter_by_date(filteredData, null, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
@@ -169,7 +170,7 @@ dataCSV.then(function (data) {
                         radioContainer.selectAll(".radioOption input[value='day']")
                             .property("checked", true);
                         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                        let filteredData = countryFilter ? data.filter(countryFilter) : data;
+                        filteredData = countryFilter ? data.filter(countryFilter) : data;
                         filteredData = filter_by_date(filteredData, selectedDate.date.getMonth(), selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
@@ -199,8 +200,8 @@ dataCSV.then(function (data) {
                 .property("disabled", option.value === "day")
                 .on("change", function() {
                     selectedGranularity = this.value;
-                    countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                    let filteredData = countryFilter ? data.filter(countryFilter) : data;
+                    // countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
+                    // let filteredData = countryFilter ? data.filter(countryFilter) : data;
                     dateObservations = get_date_observations_by_granularity(filteredData, this.value)
                     updateVis(dateObservations);
                 });
@@ -219,17 +220,25 @@ dataCSV.then(function (data) {
             window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
 
             countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-            let filteredData = countryFilter ? data.filter(countryFilter) : data;
+            filteredData = countryFilter ? data.filter(countryFilter) : data;
 
             dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
             updateVis(dateObservations);
         }
     });
 
+    window.addEventListener("filterByValue", function(event) {
+        const { value, attribute } = event.detail;
+        filteredData = data.filter(row => row[attribute] === value);
+
+        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
+    });
+
     window.addEventListener("countryChanged", (event) => {
         selectedCountry = event.detail;
         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        let filteredData = countryFilter ? data.filter(countryFilter) : data;
+        filteredData = countryFilter ? data.filter(countryFilter) : data;
 
         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
         updateVis(dateObservations);

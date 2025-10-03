@@ -1,13 +1,14 @@
-import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts} from "./stuff.js";
+import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2} from "./stuff.js";
 
-const container = d3.select("#clev")
+const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
 const padding = 20;
 const svg = create_svg(container, margin);
 
 //defaults
-let selectedCountry = "global"
-let selectedVariable = "commonname"
+let selectedCountry = "global";
+let selectedVariable = "commonname";
+let selectedDot = null;
 let countryFilter;
 
 var width = container.node().getBoundingClientRect().width;
@@ -21,6 +22,14 @@ const radioOptions = [
     { label:"Habitat", value:"habitat" },
     { label:"Conservation Status", value:"conservation" }
 ];
+
+svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "transparent")
+    .style("pointer-events", "all")
+    .lower();
 
 dataCSV.then(function (data) {
     countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
@@ -114,6 +123,9 @@ dataCSV.then(function (data) {
                 .on("mousemove", mousemove)
                 .on("mouseleave", mouseleave)
                 .on("click", function(event, d) {
+                    selectedDot = selectedDot === d ? null : d;
+                    svg.selectAll(".dot")
+                        .style("fill", d => d === selectedDot ? shared_color : shared_color2);
                     const filterVal = d;
                     const filterEvent = new CustomEvent("filterByValue", {
                         detail: { value: filterVal, attribute: selectedVariable}
@@ -148,6 +160,14 @@ dataCSV.then(function (data) {
             div.append("label")
             .attr("for", `radio_${i}`)
             .text(d.label);
+    });
+
+    window.addEventListener("click", function(event) {
+        if(event.target.nodeName==="rect"){
+            svg.selectAll(".dot")
+                .style("fill", shared_color);
+            window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
+        }
     });
 
     window.addEventListener("dateChanged", function(event) {
