@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, create_svg, create_tooltip, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity} from "./stuff.js";
+import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -6,7 +6,7 @@ const padding = 20;
 const svg = create_svg(container, margin);
 
 //defaults
-let selectedCountry = "global";
+let selectedCountries = [];
 let countryFilter;
 let selectedGranularity = "month";
 let dateObservations;
@@ -35,8 +35,7 @@ svg.append("rect")
 
 dataCSV.then(function (data) {
     const tooltip = create_tooltip("#line");
-    countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-    filteredData = countryFilter ? data.filter(countryFilter) : data;
+    filteredData = filter_by_countries(data, selectedCountries);
     dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
     svg.append("g")
@@ -54,8 +53,7 @@ dataCSV.then(function (data) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
         
-        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        filteredData = countryFilter ? data.filter(countryFilter) : data;
+        filteredData = filter_by_countries(data, selectedCountries);
         filteredData = filter_by_date_range(filteredData, find_closest_date(dateObservations, x, x0), find_closest_date(dateObservations, x, x1));
 
         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
@@ -158,8 +156,7 @@ dataCSV.then(function (data) {
                         selectedGranularity = "month";
                         radioContainer.selectAll(".radioOption input[value='month']")
                             .property("checked", true);
-                        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                        filteredData = countryFilter ? data.filter(countryFilter) : data;
+                        filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, null, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
@@ -169,8 +166,7 @@ dataCSV.then(function (data) {
                         selectedGranularity = "day";
                         radioContainer.selectAll(".radioOption input[value='day']")
                             .property("checked", true);
-                        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                        filteredData = countryFilter ? data.filter(countryFilter) : data;
+                        filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, selectedDate.date.getMonth() + 1, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
@@ -222,9 +218,7 @@ dataCSV.then(function (data) {
             radioContainer.dispatch("change");
             window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
 
-            countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-            filteredData = countryFilter ? data.filter(countryFilter) : data;
-
+            filteredData = filter_by_countries(data, selectedCountries);
             dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
             updateVis(dateObservations);
         }
@@ -246,9 +240,8 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("countryChanged", (event) => {
-        selectedCountry = event.detail;
-        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        filteredData = countryFilter ? data.filter(countryFilter) : data;
+        selectedCountries = event.detail;
+        filteredData = filter_by_countries(data, selectedCountries);
 
         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
         updateVis(dateObservations);

@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2} from "./stuff.js";
+import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries} from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
@@ -6,10 +6,10 @@ const padding = 20;
 const svg = create_svg(container, margin);
 
 //defaults
-let selectedCountry = "global";
+//let selectedCountries = "global";
 let selectedVariable = "commonname";
 let selectedDot = null;
-let countryFilter;
+//let countryFilter;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -32,8 +32,8 @@ svg.append("rect")
     .lower();
 
 dataCSV.then(function (data) {
-    countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-    let counts = get_counts(data, selectedVariable, countryFilter);
+    //countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
+    let counts = get_counts(data, selectedVariable);
 
     const tooltip = create_tooltip("#clev");
 
@@ -154,7 +154,7 @@ dataCSV.then(function (data) {
             .property("checked", d.value === selectedVariable)
             .on("change", function() {
                 selectedVariable = this.value;
-                counts = get_counts(data, selectedVariable, countryFilter);
+                counts = get_counts(data, selectedVariable);
                 updateVis(counts);
             });
             div.append("label")
@@ -166,33 +166,33 @@ dataCSV.then(function (data) {
         if(event.target.nodeName==="rect"){
             svg.selectAll(".dot")
                 .style("fill", shared_color);
-            window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
+            window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
         }
     });
 
     window.addEventListener("dateChanged", function(event) {
-        const filteredData = event.detail;
+        let filteredData = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable, countryFilter);
+        counts = get_counts(filteredData, selectedVariable);
         updateVis(counts);
     });
 
     window.addEventListener("countryChanged", (event) => {
-        selectedCountry = event.detail;
-        countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-        counts = get_counts(data, selectedVariable, countryFilter);
+        let selectedCountries = event.detail;
+        let filteredData = filter_by_countries(data, selectedCountries);
+        counts = get_counts(filteredData, selectedVariable);
         updateVis(counts);
     });
 
     window.addEventListener("filterByColour", function(event) {
         let filteredData = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable, countryFilter);
+        counts = get_counts(filteredData, selectedVariable);
         updateVis(counts);
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        counts = get_counts(data, selectedVariable, countryFilter);
+        counts = get_counts(data, selectedVariable);
         updateVis(counts);
         updateXLabel();
     });

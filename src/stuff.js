@@ -33,6 +33,20 @@ export function get_text_width(text, font) {
     return context.measureText(text).width;
 }
 
+export function filter_by_countries(data, selectedCountries) {
+    let filteredData;
+    if(selectedCountries.length === 0) {
+        filteredData = data;
+    } else {
+        filteredData = data.filter(row => {
+            const country = row.country;
+            return (selectedCountries.includes(country));
+        });
+    }
+    //console.log(filteredData);
+    return filteredData;
+}
+
 export function create_svg(container, margin) {
     let svg = container.append("svg")
     .attr("width", "100%")

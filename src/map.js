@@ -14,7 +14,7 @@ const legendItemSize = 20;
 const legendSpacing = 4;
     
 let selectedVariable = "commonname";
-let selectedCountry = "global";
+let selectedCountries = [];
 let selectedColour = false;
 let counts;
 
@@ -51,36 +51,47 @@ Promise.all([
     const countries = Array.from(new Set(dataCSV.map(d => d.country)));
     countries.sort();
     const tooltip = create_tooltip("body");
-    const countryDropdown = container.append("select").attr("class", "dropContainer")
+    const countryDropdown = container.append("select")
+    .attr("class", "dropContainer")
     .style("position", "absolute")
     .style("top", "10px")
     .style("right", "10px")
     .style("z-index", "10")
-    .on("change", function() {
-        selectedCountry = d3.select(this).property("value");
+    .on("change", function(event, d) {
+        let country = d3.select(this).property("value");
+        if(country != "global" && !(selectedCountries.includes(country)))
+            selectedCountries.push(country);
+        else if(country != "global" && (selectedCountries.includes(country)))
+            selectedCountries = selectedCountries = selectedCountries.filter(c => c !== country);
+        else if(country == "global")
+            selectedCountries = [];
         highlightSelectedCountry();
-        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
+        updateDropdownOptions();
+        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
     });
 
-    countryDropdown.append("option").attr("value", "global").text("All Countries");
+    countryDropdown.append("option")
+        .attr("value", "global")
+        .text("All Countries");
     countryDropdown.selectAll("countryOptions")
         .data(countries)
         .join("option")
         .attr("class", "countryOption")
         .attr("value", d => d)
-        .text(d => d)
-        .on("change", function(event, d) {
-            selectedCountry = d3.select(this).property("value");
-            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountry }));
-        });
+        .text(d => d);
+
+    function updateDropdownOptions() {
+        countryDropdown.selectAll("option.countryOption")
+            .classed("selected", d => selectedCountries.includes(d));
+    }
 
     function highlightSelectedCountry() {
         mapStuff.selectAll("path")
-            .attr("stroke", d => d.properties.name === selectedCountry ? "black" : "none")
-            .attr("stroke-width", d => d.properties.name === selectedCountry ? 1.5 : null);
+            .attr("stroke", d => selectedCountries.includes(d.properties.name) ? "black" : "none")
+            .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? 1.5 : null);
     }
 
-    function filterByColour(colour) {
+    function filter_by_colour(colour) {
         selectedColour = true;
         const range = colourScale.range();
         const domain = colourScale.domain();
@@ -104,7 +115,7 @@ Promise.all([
     }
 
     function updateMap(counts, origin) {
-        console.log(origin);
+        //console.log(origin);
         colourScale = get_colour_scale(counts);
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
@@ -126,19 +137,26 @@ Promise.all([
             .attr("width", legendItemSize)
             .attr("height", legendItemSize)
             .attr("fill", (d) => d)
-            .attr("stroke", "#fff")
+            .attr("stroke", "#ffffffff")
             .on("click", (event, d) => {
                 if(!selectedColour) {
                     event.stopPropagation();
-                    let filteredData = filterByColour(d);
-                    counts = get_counts_by_country(filteredData);
+                    
+                    const parentNode = event.currentTarget.parentNode;
+                    d3.select(parentNode)
+                        .classed("legend-item-selected", !d3.select(parentNode).classed("legend-item-selected"));
 
+                    let filteredData = filter_by_colour(d);
+                    counts = get_counts_by_country(filteredData);
                     const filterEvent = new CustomEvent("filterByColour", {
                         detail: filteredData
                     });
                     window.dispatchEvent(filterEvent);
 
                     updateMap(counts, "filterColour");
+                } else {
+                    colourLegend.selectAll(".legend-item")
+                        .classed("legend-item-selected", false);
                 }
             });
 
@@ -200,17 +218,25 @@ Promise.all([
                 d3.select(this).classed("hovered", false);
             })
             .on("click", function(event, d) {
-                if(selectedCountry === d.properties.name) {
-                    selectedCountry = "global";
+            if(countries.includes(d.properties.name)) {
+                if(selectedCountries.includes(d.properties.name)) {
+                    selectedCountries = selectedCountries.filter(c => c !== d.properties.name);
+                    if(selectedCountries == []) {
+                        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                    }
                 } else {
-                    selectedCountry = d.properties.name;
+                    selectedCountries.push(d.properties.name);
                 }
-                countryDropdown.property("value", selectedCountry);
-                countryDropdown.dispatch("change");
-            })
+                highlightSelectedCountry();
+                updateDropdownOptions();
+                countryDropdown.property("value", d.properties.name);
+                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+            }
+        })
             
     }
     updateMap(counts, "firstRun");
+    updateDropdownOptions();
     highlightSelectedCountry();
 
     window.addEventListener("dateChanged", function(event) {
@@ -231,12 +257,15 @@ Promise.all([
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
             countryDropdown.property("value", "global");
-            countryDropdown.dispatch("change");
-            window.dispatchEvent(new CustomEvent("countryChanged", { detail: "global" }));
+            selectedCountries = [];
+            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
 
             counts = get_counts_by_country(dataCSV, selectedVariable);
             d3.select("text").text("Active filter: None");
             selectedColour = false;
+            selectedCountries = [];
+            highlightSelectedCountry();
+            updateDropdownOptions();
             updateMap(counts, "resetToGlobal");
             svg.call(zoom.transform,zoomDefault)
         }
