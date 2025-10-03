@@ -1,7 +1,7 @@
 import {dataCSV, shared_color, duration, create_svg, create_tooltip, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity} from "./stuff.js";
 
 const container = d3.select("#line")
-const margin = { top: 60, right: 20, bottom: 50, left: 50 };
+const margin = { top: 60, right: 20, bottom: 50, left: 40 };
 const padding = 20;
 const svg = create_svg(container, margin);
 

@@ -103,7 +103,7 @@ export function filter_by_date(data, filterMonth, filterYear) {
     if (filterMonth || filterYear) {
         filteredData = data.filter(row => {
             const dateParts = row.date.split('-');
-            const month = dateParts[1][1];
+            const month = dateParts[1];
             const year = dateParts[2];
             return (!filterMonth || month == filterMonth) && (!filterYear || year == filterYear);
         });
