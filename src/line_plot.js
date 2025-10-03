@@ -171,7 +171,7 @@ dataCSV.then(function (data) {
                             .property("checked", true);
                         countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
                         filteredData = countryFilter ? data.filter(countryFilter) : data;
-                        filteredData = filter_by_date(filteredData, selectedDate.date.getMonth(), selectedDate.date.getFullYear());
+                        filteredData = filter_by_date(filteredData, selectedDate.date.getMonth() + 1, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
                         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
