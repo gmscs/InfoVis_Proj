@@ -120,7 +120,11 @@ Promise.all([
                 d3.select(this).classed("hovered", false);
             })
             .on("click", function(event, d) {
-                selectedCountry = d.properties.name;
+                if(selectedCountry === d.properties.name) {
+                    selectedCountry = "global";
+                } else {
+                    selectedCountry = d.properties.name;
+                }
                 countryDropdown.property("value", selectedCountry);
                 countryDropdown.dispatch("change");
             })
