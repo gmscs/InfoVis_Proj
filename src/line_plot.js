@@ -100,7 +100,7 @@ dataCSV.then(function (data) {
         x = d3.scaleUtc(d3.extent(filteredDateObservations, d => d.date), [0, width - margin.left - margin.right]);
         y = d3.scaleLinear([0, d3.max(filteredDateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
 
-        const uniqueObservations = Array.from(new Set(filteredDateObservations.map(d => d.observations))).sort((a, b) => a - b);
+        const uniqueObservations = Array.from(new Set(filteredDateObservations.map(d => d.observations)));
 
         const points = filteredDateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
         const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
@@ -166,7 +166,7 @@ dataCSV.then(function (data) {
             .attr("transform", `translate(0,0)`)
             .transition()
             .duration(duration)
-            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).tickValues(uniqueObservations));
+            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
