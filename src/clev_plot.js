@@ -170,6 +170,7 @@ dataCSV.then(function (data) {
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
             filterVal = null;
+            selectedDot = null;
             svg.selectAll(".dot")
                 .style("fill", shared_color);
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
