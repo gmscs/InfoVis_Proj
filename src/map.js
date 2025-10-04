@@ -245,6 +245,14 @@ Promise.all([
         updateMap(counts, "datechanged");
     });
 
+    window.addEventListener("lineCountrySelect", function(event) {
+        selectedCountries = event.detail;
+        const filteredData = dataCSV.filter(row => row.country === selectedCountries[0]);
+        counts = get_counts_by_country(filteredData);
+
+        updateMap(counts, "lineCountrySelect");
+    })
+
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
         const filteredData = dataCSV.filter(row => row[attribute] === value);

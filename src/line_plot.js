@@ -129,6 +129,24 @@ dataCSV.then(function (data) {
             .join("path")
                 .style("mix-blend-mode", "multiply")
                 .attr("stroke", d => colorScale(d.z))
+                .on("click", function(event, d) {
+                    const clickedCountry = d.z;
+                    if(clickedCountry != "global") {
+                        selectedCountries = [clickedCountry];
+                        window.dispatchEvent(new CustomEvent("lineCountrySelect", { detail: selectedCountries }));
+                        filteredData = filter_by_countries(data, selectedCountries);
+                        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+                        updateVis(dateObservations);
+                    }
+                })
+                .on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .attr("stroke-width", 4);
+                })
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .attr("stroke-width", 1.5);
+                })
                 .attr("d", d => {
                 const points = d.map(point => [point[0], y(0)]);
                 return line(points);

@@ -191,6 +191,13 @@ dataCSV.then(function (data) {
         counts = get_counts(filteredData, selectedVariable);
         updateVis(counts);
     });
+    
+    window.addEventListener("lineCountrySelect", (event) => {
+        let selectedCountries = event.detail;
+        let filteredData = filter_by_countries(data, selectedCountries);
+        counts = get_counts(filteredData, selectedVariable);
+        updateVis(counts);
+    });
 
     window.addEventListener("filterByColour", function(event) {
         let filteredData = event.detail;
