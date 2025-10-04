@@ -127,8 +127,6 @@ dataCSV.then(function (data) {
                     const prevDot = selectedDot;
                     selectedDot = selectedDot === d ? null : d;
                     if(selectedDot != null) {
-                        console.log("OG: " + prevDot);
-                        console.log("Now: " + selectedDot);
                         svg.selectAll(".dot")
                             .style("fill", d => d === prevDot ? shared_color2 : null)
                             .style("fill", d => d === selectedDot ? shared_color : shared_color2);

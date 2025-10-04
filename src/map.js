@@ -1,4 +1,4 @@
-import {dataCSV, duration, font, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width} from "./stuff.js";
+import {dataCSV, duration, font, stroke_width, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width, shared_color} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");
@@ -88,7 +88,7 @@ Promise.all([
     function highlightSelectedCountry() {
         mapStuff.selectAll("path")
             .attr("stroke", d => selectedCountries.includes(d.properties.name) ? "black" : "none")
-            .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? 1.5 : null);
+            .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
 
     function filter_by_colour(colour) {
@@ -137,15 +137,10 @@ Promise.all([
             .attr("width", legendItemSize)
             .attr("height", legendItemSize)
             .attr("fill", (d) => d)
-            .attr("stroke", "#2e83be")
+            .attr("stroke", shared_color)
             .on("click", (event, d) => {
                 if(!selectedColour) {
                     event.stopPropagation();
-                    
-                    const parentNode = event.currentTarget.parentNode;
-                    d3.select(parentNode)
-                        .classed("legend-item-selected", !d3.select(parentNode).classed("legend-item-selected"));
-
                     let filteredData = filter_by_colour(d);
                     counts = get_counts_by_country(filteredData);
                     const filterEvent = new CustomEvent("filterByColour", {
@@ -154,25 +149,23 @@ Promise.all([
                     window.dispatchEvent(filterEvent);
 
                     updateMap(counts, "filterColour");
-                } else {
-                    colourLegend.selectAll(".legend-item")
-                        .classed("legend-item-selected", false);
                 }
             });
 
         enterItems.append("text")
             .attr("x", legendItemSize + 5)
             .attr("y", legendItemSize / 2)
-            .attr("dy", "0.32em")
-            .text((_, colour) => {
+            .attr("dy", "0.32em");
+
+        legendItems.select("text")
+            .text((_, i) => {
                 const domain = colourScale.domain();
-                const lower = Math.floor(domain[colour - 1] || minCount);
-                const upper = Math.floor(domain[colour]) || maxCount;
+                const lower = Math.floor(domain[i - 1] || minCount);
+                const upper = Math.floor(domain[i]) || maxCount;
                 return `${lower} - ${upper}`;
             });
 
-        legendItems.attr("transform", (_, colour) => `translate(0, ${colour * (legendItemSize + legendSpacing)})`);
-
+        legendItems.attr("transform", (_, i) => `translate(0, ${i * (legendItemSize + legendSpacing)})`);
         legendItems.exit().remove();
 
         svg.select(".zoomable")

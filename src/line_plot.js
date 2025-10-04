@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size} from "./stuff.js";
+import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -120,7 +120,7 @@ dataCSV.then(function (data) {
         svg.append("g")
             .attr("class", "lines")
             .attr("fill", "none")
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", stroke_width)
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .selectAll("path")
@@ -140,11 +140,11 @@ dataCSV.then(function (data) {
                 })
                 .on("mouseover", function(event, d) {
                     d3.select(this)
-                        .attr("stroke-width", 4);
+                        .attr("stroke-width", stroke_width * 2);
                 })
                 .on("mouseout", function() {
                     d3.select(this)
-                        .attr("stroke-width", 1.5);
+                        .attr("stroke-width", stroke_width);
                 })
                 .attr("d", d => {
                 const points = d.map(point => [point[0], y(0)]);

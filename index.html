@@ -17,6 +17,26 @@
 </body>
 
 <style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+  }
+
+  svg text {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .d3-tip {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  select, input, label, button {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: 0.7fr 1fr;
@@ -39,11 +59,6 @@
   .dropContainer option.selected {
     font-weight: bold;
     background-color: #bed8e7;
-  }
-
-  .legend-item-selected rect {
-    stroke: black;
-    stroke-width: 2px;
   }
 
   #clev {
@@ -79,7 +94,7 @@
 
   #map .hovered {
     stroke: black;
-    stroke-width: 1.5;
+    stroke-width: 1.5px;
   }
 
   #line {
