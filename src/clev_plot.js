@@ -56,21 +56,16 @@ dataCSV.then(function (data) {
 
     svg.append("g")
         .attr("class","x axis")
-        .attr("transform", `translate(0,${height})`);
+        .attr("transform", `translate(0,${height})`)
+        .call(g => g.append("text")
+                .attr("x", -20)
+                .attr("y", 30)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "start")
+                .text("Observations"));
 
     svg.append("g")
         .attr("class","y axis");
-
-    function updateXLabel() {
-        svg.selectAll(".x.label")
-            .data(["Observations"])
-            .join("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0)
-            .attr("y", innerHeight / 2.35)
-            .text(d => d);
-    }
 
     function updateVis(counts) {
         const maxCount = d3.max(Array.from(counts.values()));
@@ -208,10 +203,8 @@ dataCSV.then(function (data) {
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         counts = get_counts(data, selectedVariable);
         updateVis(counts);
-        updateXLabel();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
     updateVis(counts);
-    updateXLabel();
 });

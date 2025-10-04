@@ -1,4 +1,4 @@
-export const font = "12px sans-serif";
+export const font = "12px Arial sans-serif";
 export const font_padding = 10;
 export const shared_color = "#2e83be";
 export const shared_color2 = "#bed8e7";

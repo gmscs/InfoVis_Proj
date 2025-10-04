@@ -54,8 +54,8 @@ dataCSV.then(function (data) {
             .call(d3.axisLeft(y))
             .call(g => g.select(".domain").remove())
             .call(g => g.append("text")
-                .attr("x", - margin.left)
-                .attr("y", -20)
+                .attr("x", -margin.left + 10)
+                .attr("y", -15)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
                 .text("Observations"));
@@ -334,11 +334,9 @@ dataCSV.then(function (data) {
     
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateVis(dateObservations);
-        //updateXLabel();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    //updateXLabel();
     updateVis(dateObservations);
 
 });
