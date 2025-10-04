@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries} from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries} from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
@@ -118,7 +118,7 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", 6)
+                .attr("r", symbol_size)
                 .style("fill", shared_color)
                 .on("mouseover", mouseover)
                 .on("mousemove", mousemove)

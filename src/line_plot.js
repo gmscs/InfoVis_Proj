@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width} from "./stuff.js";
+import {dataCSV, shared_color, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -7,7 +7,6 @@ const svg = create_svg(container, margin);
 
 //defaults
 let selectedCountries = [];
-let countryFilter;
 let selectedGranularity = "month";
 let dateObservations;
 var filteredData;
@@ -182,7 +181,7 @@ dataCSV.then(function (data) {
                 .attr("class", "dot")
                 .attr("cx", d => x(d.date))
                 .attr("cy", d => y(0))
-                .attr("r", 3)
+                .attr("r", symbol_size / 2)
                 .attr("fill", d => colorScale(d.country))
                 .on("mouseover", function(event, d) {
                     tooltip.style("opacity", .9);
@@ -219,9 +218,15 @@ dataCSV.then(function (data) {
                         .style("top", (event.pageY - containerRect.top + 10) + "px");
                 })
                 .on("mouseout", function(d) {
+                    d3.select(this)
+                        .attr("r", symbol_size / 2);
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
+                })
+                .on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .attr("r", symbol_size);
                 })
                 .on("click", function(event, d) {
                     if(selectedGranularity === "year") {
