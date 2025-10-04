@@ -191,11 +191,16 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
             }
             
             const mapKey = `${country}|${key}`
-
             if (!dateCountMap.has(mapKey)) {
                 dateCountMap.set(mapKey, { country, date: dateObj, observations: 0 });
             }
             dateCountMap.get(mapKey).observations += 1;
+
+            const globalKey = `global|${key}`;
+            if (!dateCountMap.has(globalKey)) {
+                dateCountMap.set(globalKey, { country: 'global', date: dateObj, observations: 0 });
+            }
+            dateCountMap.get(globalKey).observations += 1;
         }
     });
     

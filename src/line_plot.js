@@ -19,6 +19,11 @@ const radioContainer = container
     .append("div")
     .attr("class", "radioContainer");
 
+const checkboxContainer = container
+    .append("div")
+    .attr("class", "checkboxContainer")
+    .style("margin-bottom", "10px");
+
 const granularityOptions = [
     { value: "day", label: "Daily" },
     { value: "month", label: "Monthly" },
@@ -69,6 +74,18 @@ dataCSV.then(function (data) {
         updateVis(dateObservations);
     }
 
+    checkboxContainer.append("input")
+        .attr("type", "checkbox")
+        .attr("id", "globalDisplay")
+        .property("checked", true)
+        .on("change", function() {
+            updateVis(dateObservations);
+        });
+
+    checkboxContainer.append("label")
+        .attr("for", "globalDisplay")
+        .text("Merge data");
+
     function updateVis(dateObservations) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
@@ -76,10 +93,15 @@ dataCSV.then(function (data) {
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
 
-        x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
-        y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+        const globalDisplay = d3.select("#globalDisplay").property("checked");
+        let filteredDateObservations = globalDisplay
+            ? dateObservations.filter(d => d.country === "global")
+            : dateObservations.filter(d => d.country !== "global");
         
-        const points = dateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
+        x = d3.scaleUtc(d3.extent(filteredDateObservations, d => d.date), [0, width - margin.left - margin.right]);
+        y = d3.scaleLinear([0, d3.max(filteredDateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+
+        const points = filteredDateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
         const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
         
         const brush = d3.brushX()
@@ -128,7 +150,7 @@ dataCSV.then(function (data) {
             .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")));
 
         const dotMap = new Map();
-        dateObservations.forEach(d => {
+        filteredDateObservations.forEach(d => {
             const key = `${x(d.date)},${y(d.observations)}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
@@ -136,7 +158,7 @@ dataCSV.then(function (data) {
         });
 
         svg.selectAll(".dot")
-            .data(dateObservations, d => d.date)
+            .data(filteredDateObservations, d => d.date)
             .join(
                 enter => enter.append("circle")
                 .attr("class", "dot")
@@ -192,7 +214,7 @@ dataCSV.then(function (data) {
                         filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, null, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
-                        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+                        filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     else if(selectedGranularity === "month") {
                         const selectedDate = d;
@@ -202,12 +224,12 @@ dataCSV.then(function (data) {
                         filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, selectedDate.date.getMonth() + 1, selectedDate.date.getFullYear());
                         window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
-                        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+                        filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
-                    updateVis(dateObservations);
+                    updateVis(filteredDateObservations);
                 }),
                 update => update,
                 exit => exit.remove()
