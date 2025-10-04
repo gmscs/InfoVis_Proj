@@ -124,20 +124,19 @@ dataCSV.then(function (data) {
                 .on("mousemove", mousemove)
                 .on("mouseleave", mouseleave)
                 .on("click", function(event, d) {
+                    const prevDot = selectedDot;
                     selectedDot = selectedDot === d ? null : d;
-                    if(filterVal == null) {
+                    if(selectedDot != null) {
+                        console.log("OG: " + prevDot);
+                        console.log("Now: " + selectedDot);
                         svg.selectAll(".dot")
+                            .style("fill", d => d === prevDot ? shared_color2 : null)
                             .style("fill", d => d === selectedDot ? shared_color : shared_color2);
                         filterVal = d;
                         const filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
                         });
                         window.dispatchEvent(filterEvent);
-                    } else {
-                        filterVal = null;
-                        svg.selectAll(".dot")
-                            .style("fill", shared_color);
-                        window.dispatchEvent(new CustomEvent("filterReset", { detail: [] }));
                     }
                 }),
               update => update,
@@ -172,6 +171,7 @@ dataCSV.then(function (data) {
 
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
+            filterVal = null;
             svg.selectAll(".dot")
                 .style("fill", shared_color);
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
