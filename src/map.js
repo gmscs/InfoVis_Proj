@@ -137,7 +137,7 @@ Promise.all([
             .attr("width", legendItemSize)
             .attr("height", legendItemSize)
             .attr("fill", (d) => d)
-            .attr("stroke", "#ffffffff")
+            .attr("stroke", "#2e83be")
             .on("click", (event, d) => {
                 if(!selectedColour) {
                     event.stopPropagation();
@@ -252,6 +252,20 @@ Promise.all([
         counts = get_counts_by_country(filteredData);
         d3.select("text").text("Active filter: " + value)
         updateMap(counts, "clevValueChanged");
+    });
+
+    window.addEventListener("filterReset", (event) => {
+        countryDropdown.property("value", "global");
+        selectedCountries = [];
+
+        counts = get_counts_by_country(dataCSV, selectedVariable);
+        d3.select("text").text("Active filter: None");
+        selectedColour = false;
+        selectedCountries = [];
+        highlightSelectedCountry();
+        updateDropdownOptions();
+        updateMap(counts, "resetToGlobal");
+        svg.call(zoom.transform,zoomDefault)
     });
 
     window.addEventListener("click", function(event) {

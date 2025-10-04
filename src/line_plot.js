@@ -68,17 +68,6 @@ dataCSV.then(function (data) {
         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
         updateVis(dateObservations);
     }
-    
-    function updateXLabel() {
-        svg.selectAll(".x.label")
-            .data(["Observations"])
-            .join("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0)
-            .attr("y", innerHeight / 2.35)
-            .text(d => d);
-    }
 
     function updateVis(dateObservations) {
         height = container.node().getBoundingClientRect().height;
@@ -288,6 +277,11 @@ dataCSV.then(function (data) {
         filteredData = filter_by_countries(data, selectedCountries);
 
         dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
+    });
+
+    window.addEventListener("filterReset", (event) => {
+        dateObservations = get_date_observations_by_granularity(data, selectedGranularity);
         updateVis(dateObservations);
     });
     

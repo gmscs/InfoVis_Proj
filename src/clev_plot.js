@@ -13,6 +13,7 @@ let selectedDot = null;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
+var filterVal = null;
 
 const radioContainer = container.append("div").attr("class", "radioContainer");
 const radioOptions = [
@@ -124,13 +125,20 @@ dataCSV.then(function (data) {
                 .on("mouseleave", mouseleave)
                 .on("click", function(event, d) {
                     selectedDot = selectedDot === d ? null : d;
-                    svg.selectAll(".dot")
-                        .style("fill", d => d === selectedDot ? shared_color : shared_color2);
-                    const filterVal = d;
-                    const filterEvent = new CustomEvent("filterByValue", {
-                        detail: { value: filterVal, attribute: selectedVariable}
-                    });
-                    window.dispatchEvent(filterEvent);
+                    if(filterVal == null) {
+                        svg.selectAll(".dot")
+                            .style("fill", d => d === selectedDot ? shared_color : shared_color2);
+                        filterVal = d;
+                        const filterEvent = new CustomEvent("filterByValue", {
+                            detail: { value: filterVal, attribute: selectedVariable}
+                        });
+                        window.dispatchEvent(filterEvent);
+                    } else {
+                        filterVal = null;
+                        svg.selectAll(".dot")
+                            .style("fill", shared_color);
+                        window.dispatchEvent(new CustomEvent("filterReset", { detail: [] }));
+                    }
                 }),
               update => update,
               exit => exit.remove()
