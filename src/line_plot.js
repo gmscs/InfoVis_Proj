@@ -38,17 +38,25 @@ dataCSV.then(function (data) {
     filteredData = filter_by_countries(data, selectedCountries);
     dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
+    let x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
+    let y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+
     svg.append("g")
         .attr("class","x axis")
         .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
 
     svg.append("g")
             .attr("class","y axis")
-            .attr("transform", `translate(0,0)`)
+            .call(d3.axisLeft(y))
+            .call(g => g.select(".domain").remove())
+            .call(g => g.append("text")
+                .attr("x", - margin.left)
+                .attr("y", -20)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "start")
+                .text("Number of Observations"));
 
-    let x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
-    let y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
-
+    
     function brushed(event) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
@@ -76,8 +84,14 @@ dataCSV.then(function (data) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
+        svg.selectAll(".lines").remove();
+        svg.selectAll(".dot").remove();
+
         x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
         y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+        
+        const points = dateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
+        const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
         
         const brush = d3.brushX()
             .extent([[0, y(0) - 20], [width - margin.left - margin.right, y(0) + 20]])
@@ -87,25 +101,27 @@ dataCSV.then(function (data) {
             .attr("class", "brush")
             .call(brush);
 
-        const line = d3.line()
-            .x(d => x(d.date))
-            .y(d => y(d.observations));
+        const colorScale = d3.scaleOrdinal()
+            .domain(Array.from(groups.keys()))
+            .range(d3.schemeCategory10);
 
-        svg.selectAll("path")
-            .data([dateObservations], d => d)
-            .join(
-                enter => enter.append("path")
-                    .attr("fill", "none")
-                    .attr("stroke", shared_color)
-                    .attr("stroke-width", 1)
-                    .attr("d", d3.line()
-                        .x(d => x(d.date))
-                        .y(() => y(0))),
-                update => update,
-                exit => exit.remove()
-            )
-            .transition().duration(duration)
-                .attr("d", line(dateObservations));
+        const line = d3.line();
+
+        svg.append("g")
+            .attr("class", "lines")
+            .attr("fill", "none")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .selectAll("path")
+            .data(groups.values())
+            .join("path")
+                .style("mix-blend-mode", "multiply")
+                .attr("stroke", d => colorScale(d.z))
+                .attr("d", line)
+            .transition()
+            .duration(duration)
+            .attr("d", line);
             
          svg.select(".x.axis")
             .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
@@ -127,7 +143,7 @@ dataCSV.then(function (data) {
                 .attr("cx", d => x(d.date))
                 .attr("cy", d => y(0))
                 .attr("r", 3)
-                .attr("fill", shared_color)
+                .attr("fill", d => colorScale(d.country))
                 .on("mouseover", function(event, d) {
                     tooltip.style("opacity", .9);
                 })
@@ -141,7 +157,7 @@ dataCSV.then(function (data) {
                         ? d3.timeFormat("%b %Y")
                         : d3.timeFormat("%d %b %Y");
                     const containerRect = container.node().getBoundingClientRect();
-                    let tooltip_text=`Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`
+                    let tooltip_text=`Country: ${d.country}<br/> Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`
                     //.style("left", (event.pageX - containerRect.left - 135) + "px") old style if needed
                     if(event.layerX<(width/2)){
                         tooltip.html(tooltip_text)

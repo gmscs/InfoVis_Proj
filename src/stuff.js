@@ -163,7 +163,8 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
     const dateCountMap = new Map();
     data.forEach(row => {
         const date = row.date;
-        if (date) {
+        const country = row.country;
+        if (date && country) {
             const dateParts = date.split('-');
             const day = dateParts[0];
             const month = dateParts[1];
@@ -189,15 +190,17 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
                     dateObj = new Date(`${year}-${month}-01`);
             }
             
-            if (!dateCountMap.has(key)) {
-                dateCountMap.set(key, { date: dateObj, observations: 0 });
+            const mapKey = `${country}|${key}`
+
+            if (!dateCountMap.has(mapKey)) {
+                dateCountMap.set(mapKey, { country, date: dateObj, observations: 0 });
             }
-            dateCountMap.get(key).observations += 1;
+            dateCountMap.get(mapKey).observations += 1;
         }
     });
     
     const dateObservations = Array.from(dateCountMap.values());
-    dateObservations.sort((a, b) => a.date - b.date);
-    
+    dateObservations.sort((a, b) => a.date - b.date || a.country.localeCompare(b.country));
+
     return dateObservations;
 }
