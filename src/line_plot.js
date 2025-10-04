@@ -54,7 +54,7 @@ dataCSV.then(function (data) {
                 .attr("y", -20)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("Number of Observations"));
+                .text("Observations"));
 
     
     function brushed(event) {
@@ -118,10 +118,13 @@ dataCSV.then(function (data) {
             .join("path")
                 .style("mix-blend-mode", "multiply")
                 .attr("stroke", d => colorScale(d.z))
-                .attr("d", line)
-            .transition()
-            .duration(duration)
-            .attr("d", line);
+                .attr("d", d => {
+                const points = d.map(point => [point[0], y(0)]);
+                return line(points);
+                })
+                .transition()
+                .duration(duration)
+                .attr("d", line);
             
          svg.select(".x.axis")
             .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
@@ -134,6 +137,14 @@ dataCSV.then(function (data) {
             .transition()
             .duration(duration)
             .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")));
+
+        const dotMap = new Map();
+        dateObservations.forEach(d => {
+            const key = `${x(d.date)},${y(d.observations)}`;
+            if (!dotMap.has(key))
+                dotMap.set(key, []);
+            dotMap.get(key).push(d);
+        });
 
         svg.selectAll(".dot")
             .data(dateObservations, d => d.date)
@@ -148,26 +159,35 @@ dataCSV.then(function (data) {
                     tooltip.style("opacity", .9);
                 })
                 .on("mousemove", function(event, d) {
-                    tooltip.transition()
-                        .duration(duration / 5)
-                        .style("opacity", .9);
+                    tooltip.transition().duration(duration / 5).style("opacity", .9);
+                    const key = `${x(d.date)},${y(d.observations)}`;
+                    const overlappingDots = dotMap.get(key);
+
                     const formatDate = selectedGranularity === 'year' 
                         ? d3.timeFormat("%Y")
                         : selectedGranularity === 'month'
                         ? d3.timeFormat("%b %Y")
                         : d3.timeFormat("%d %b %Y");
                     const containerRect = container.node().getBoundingClientRect();
-                    let tooltip_text=`Country: ${d.country}<br/> Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`
-                    //.style("left", (event.pageX - containerRect.left - 135) + "px") old style if needed
-                    if(event.layerX<(width/2)){
-                        tooltip.html(tooltip_text)
-                        .style("left",event.layerX + 50 + "px")
-                        .style("top", (event.pageY - containerRect.top + 13) + "px");
-                    }else{
-                        tooltip.html(tooltip_text)
-                        .style("left",event.layerX + 60 - get_text_width(tooltip_text) + "px")
-                        .style("top", (event.pageY - containerRect.top + 13) + "px");
+                    
+                    let tooltip_text;
+                    if (overlappingDots.length > 1) {
+                        tooltip_text = `${overlappingDots.length} Observations:<br/>`;
+                        overlappingDots.forEach(dot => {
+                        tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
+                        });
+                    } else {
+                        tooltip_text = `Country: ${d.country}<br/>Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`;
                     }
+                    
+                    tooltip.html(tooltip_text);
+                    const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                    let leftPos = event.pageX - containerRect.left + 10;
+                    if (leftPos + tooltipWidth > containerRect.width) {
+                        leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                    }
+                    tooltip.style("left", leftPos + "px")
+                        .style("top", (event.pageY - containerRect.top + 10) + "px");
                 })
                 .on("mouseout", function(d) {
                     tooltip.transition()
