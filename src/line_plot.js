@@ -202,7 +202,7 @@ dataCSV.then(function (data) {
                     
                     let tooltip_text;
                     if (overlappingDots.length > 1) {
-                        tooltip_text = `${overlappingDots.length} Observations:<br/>`;
+                        tooltip_text = `${overlappingDots.length} Countries:<br/>`;
                         overlappingDots.forEach(dot => {
                         tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
                         });
