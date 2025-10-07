@@ -154,7 +154,11 @@ dataCSV.then(function (data) {
                     .style("opacity", 0);
             })
             .on("click", function(d) {
-                console.log("CLICKING");
+                console.log(d.target.__data__.commonname);
+                const clickedSpecies = d.target.__data__.commonname;
+                window.dispatchEvent(new CustomEvent("filterByValue", {
+                    detail: { value: clickedSpecies, attribute: "commonname"}
+                }));
             }),
         update => update,
         exit => exit.remove()
