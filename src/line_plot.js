@@ -156,7 +156,7 @@ dataCSV.then(function (data) {
                 .duration(duration)
                 .attr("d", line);
             
-         svg.select(".x.axis")
+        svg.select(".x.axis")
             .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
             .transition()
             .duration(duration)

@@ -1,4 +1,4 @@
-commonname,length,weight,age,sex,date,country,habitat,conservation
+commonname,lengthM,weight,age,sex,date,country,habitat,conservation
 Morelet's Crocodile,1.9,62.0,Adult,Male,31-03-2018,Belize,Swamps,Least Concern
 American Crocodile,4.09,334.5,Adult,Male,28-01-2015,Venezuela,Mangroves,Vulnerable
 Orinoco Crocodile,1.08,118.2,Juvenile,Unknown,07-12-2010,Venezuela,Flooded Savannas,Critically Endangered

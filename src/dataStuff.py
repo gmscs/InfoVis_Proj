@@ -25,7 +25,7 @@ def remove_features(df: pd.DataFrame) -> pd.DataFrame:
 def standardize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     return df. rename(columns={
         "Common Name": "commonname",
-        "Observed Length (m)": "length",
+        "Observed Length (m)": "lengthM",
         "Observed Weight (kg)": "weight",
         "Age Class": "age",
         "Sex": "sex",

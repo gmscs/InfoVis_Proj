@@ -146,6 +146,16 @@ export function filter_by_date_range(data, filterStartDate, filterEndDate) {
     return filteredData;
 }
 
+export function filter_by_length_range(data, startPos, endPos) {
+    let filteredData;
+    console.log(startPos, endPos);
+    
+    filteredData = data.filter(row => {
+        const lengthM = row.lengthM;
+        return ((lengthM >= startPos) && ( lengthM <= endPos));
+    });
+    return filteredData;
+}
 
 export function find_closest_date(data, x, xVal) {
     const bisect = d3.bisector(d => d.date).left;
@@ -158,6 +168,24 @@ export function find_closest_date(data, x, xVal) {
     const right = data[index];
 
     return (xVal - x(left.date) < x(right.date) - xVal) ? left.date : right.date;
+}
+
+export function find_closest_length(data, x, xVal) {
+    data.sort((a, b) => a.lengthM - b.lengthM);
+
+    const bisect = d3.bisector(d => d.lengthM).left;
+    const targetVal = x.invert(xVal);
+    const index = bisect(data, targetVal, 1);
+
+    if (index === 0) return data[0].date;
+    if (index >= data.length) return data[data.length - 1].date;
+
+    const left = data[index - 1];
+    const right = data[index];
+
+    return (Math.abs(targetVal - left.lengthM) < Math.abs(right.lengthM - targetVal))
+        ? left.lengthM
+        : right.lengthM;
 }
 
 
