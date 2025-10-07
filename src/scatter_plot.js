@@ -1,7 +1,7 @@
 import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range } from "./stuff.js";
 
 const container = d3.select("#scatter");
-const margin = { top: 60, right: 100, bottom: 50, left: 40 };
+const margin = { top: 20, right: 100, bottom: 50, left: 40 };
 const padding = 20;
 const svg = create_svg(container, margin);
 
@@ -22,16 +22,20 @@ svg.append("rect")
 dataCSV.then(function (data) {
     const tooltip = create_tooltip("#scatter");
     filteredData = filter_by_countries(data, selectedCountries);
+    
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    
     let x = d3.scaleLinear()
         .domain(d3.extent(filteredData, d => d.lengthM))
-        .range([0, width - margin.left - margin.right]);
+        .range([0, innerWidth]);
     let y = d3.scaleLinear()
         .domain([0, d3.max(filteredData, d => d.weight)])
-        .range([height - margin.top - margin.bottom, 0]);
+        .range([innerHeight, 0]);
 
     svg.append("g")
         .attr("class","x axis")
-        .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
+        .attr("transform", `translate(0,${innerHeight})`)
         .call(g => g.append("text")
                 .attr("x", -20)
                 .attr("y", 30)
@@ -61,19 +65,22 @@ dataCSV.then(function (data) {
     function updateVis(filteredData) {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
+        const innerWidth = newWidth - margin.left - margin.right;
+        const innerHeight = newHeight - margin.top - margin.bottom;
+        
         svg.attr("width", newWidth).attr("height", newHeight);
 
         x = d3.scaleLinear()
             .domain(d3.extent(filteredData, d => d.lengthM))
-            .range([0, newWidth - margin.left - margin.right]);
+            .range([0, innerWidth]);
         y = d3.scaleLinear()
-            .domain([0, d3.max(filteredData, d => d.weight)])
-            .range([newHeight - margin.top - margin.bottom, 0]);
+            .domain([0, d3.max(filteredData, d => d.weight * 1.1)])
+            .range([innerHeight, 0]);
 
         svg.selectAll(".dot").remove();
 
         const brush = d3.brushX()
-            .extent([[0, y(0) + 2 ], [width - margin.left - margin.right, y(0) + 20]])
+            .extent([[0, 0 ], [innerWidth, innerHeight]])
             .on("end", brushed);
         svg.select(".brush").remove();
         svg.append("g")
@@ -81,7 +88,7 @@ dataCSV.then(function (data) {
             .call(brush);
 
         svg.select(".x.axis")
-            .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
+            .attr("transform", `translate(0,${innerHeight})`)
             .transition()
             .duration(duration)
             .call(d3.axisBottom(x));
@@ -143,6 +150,9 @@ dataCSV.then(function (data) {
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);
+            })
+            .on("click", function(d) {
+                console.log("CLICKING");
             }),
         update => update,
         exit => exit.remove()
