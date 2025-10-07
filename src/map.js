@@ -238,6 +238,12 @@ Promise.all([
         updateMap(counts, "datechanged");
     });
 
+    window.addEventListener("sizeChanged", function(event) {
+        const filteredData = event.detail;
+        counts = get_counts_by_country(filteredData);
+        updateMap(counts, "sizechanged");
+    });
+
     window.addEventListener("lineCountrySelect", function(event) {
         selectedCountries = event.detail;
         const filteredData = dataCSV.filter(row => row.country === selectedCountries[0]);

@@ -59,6 +59,8 @@ dataCSV.then(function (data) {
 
         filteredData = filter_by_countries(data, selectedCountries);
         filteredData = filter_by_length_range(filteredData, find_closest_length(data, x, x0), find_closest_length(data, x, x1));
+        
+        window.dispatchEvent(new CustomEvent("sizeChanged", { detail: filteredData }));
         updateVis(filteredData);
     }
     
@@ -171,6 +173,11 @@ dataCSV.then(function (data) {
         }
     });
 
+    window.addEventListener("dateChanged", function(event) {
+        let filteredData = event.detail;
+        updateVis(filteredData);
+    });
+
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
         filteredData = data.filter(row => row[attribute] === value);
@@ -182,6 +189,18 @@ dataCSV.then(function (data) {
         selectedCountries = event.detail;
         filteredData = filter_by_countries(data, selectedCountries);
 
+        updateVis(filteredData);
+    });
+
+    window.addEventListener("lineCountrySelect", (event) => {
+        selectedCountries = event.detail;
+        filteredData = filter_by_countries(data, selectedCountries);
+
+        updateVis(filteredData);
+    });
+
+    window.addEventListener("filterByColour", function(event) {
+        let filteredData = event.detail;
         updateVis(filteredData);
     });
 
