@@ -89,6 +89,9 @@ dataCSV.then(function (data) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
 
@@ -106,7 +109,7 @@ dataCSV.then(function (data) {
         const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
         
         const brush = d3.brushX()
-            .extent([[0, y(0) - 20], [width - margin.left - margin.right, y(0) + 20]])
+            .extent([[0, 0], [innerWidth, innerHeight]])
             .on("end", brushed);
         svg.select(".brush").remove();
         svg.append("g")
