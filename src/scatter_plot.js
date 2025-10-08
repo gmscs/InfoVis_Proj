@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range } from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 100, bottom: 50, left: 40 };
@@ -94,10 +94,11 @@ dataCSV.then(function (data) {
         const innerHeight = newHeight - margin.top - margin.bottom;
 
         const {a, b} = exponentialRegression(filteredData);
-        const lineData = data.map(({ lengthM }) => ({
+        const lineData = filteredData.map(({ lengthM }) => ({
             lengthM,
             weight: a * Math.exp(b * lengthM),
-        }));
+        }))
+        .sort((a, b) => a.lengthM - b.lengthM);
         
         svg.attr("width", newWidth).attr("height", newHeight);
 
@@ -111,14 +112,14 @@ dataCSV.then(function (data) {
         const line = d3.line()
             .x(d => x(d.lengthM))
             .y(d => y(d.weight));
-        
+            
         svg.selectAll(".regression-line").remove();
         svg.append("path")
             .datum(lineData)
             .attr("class", "regression-line")
             .attr("fill", "none")
             .attr("stroke", "red")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", stroke_width)
             .attr("d", line);
 
         svg.selectAll(".dot").remove();
