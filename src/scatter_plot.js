@@ -63,12 +63,41 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("sizeChanged", { detail: filteredData }));
         updateVis(filteredData);
     }
+
+    function exponentialRegression(data) {
+        const n = data.length;
+        let sumX = 0;
+        let sumY = 0;
+        let sumXY = 0;
+        let sumX2 = 0;
+        let l, w;
+
+        data.forEach(({lengthM, weight}) => {
+            l = parseInt(lengthM);
+            w = parseInt(weight);
+            sumX += l;
+            sumY += Math.log(w);
+            sumXY += l * Math.log(w);
+            sumX2 += l * l;
+        });
+
+        const b = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const a = Math.exp((sumY - b * sumX) / n);
+
+        return {a, b};
+    }
     
     function updateVis(filteredData) {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
+
+        const {a, b} = exponentialRegression(filteredData);
+        const lineData = data.map(({ lengthM }) => ({
+            lengthM,
+            weight: a * Math.exp(b * lengthM),
+        }));
         
         svg.attr("width", newWidth).attr("height", newHeight);
 
@@ -78,6 +107,19 @@ dataCSV.then(function (data) {
         y = d3.scaleLinear()
             .domain([0, d3.max(filteredData, d => d.weight * 1.1)])
             .range([innerHeight, 0]);
+
+        const line = d3.line()
+            .x(d => x(d.lengthM))
+            .y(d => y(d.weight));
+        
+        svg.selectAll(".regression-line").remove();
+        svg.append("path")
+            .datum(lineData)
+            .attr("class", "regression-line")
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", 2)
+            .attr("d", line);
 
         svg.selectAll(".dot").remove();
 
