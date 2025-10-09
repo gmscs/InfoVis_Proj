@@ -242,10 +242,12 @@ dataCSV.then(function (data) {
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
+                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                 })
                 .on("mouseover", function(event, d) {
                     d3.select(this)
                         .attr("r", symbol_size);
+                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: d.country }));
                 })
                 .on("click", function(event, d) {
                     if(selectedGranularity === "year") {
