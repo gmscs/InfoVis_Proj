@@ -55,7 +55,6 @@ dataCSV.then(function (data) {
     function brushed(event) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
-        console.log(x0, x1);
 
         filteredData = filter_by_countries(data, selectedCountries);
         filteredData = filter_by_length_range(filteredData, find_closest_length(data, x, x0), find_closest_length(data, x, x1));
@@ -68,6 +67,7 @@ dataCSV.then(function (data) {
         const n = data.length;
         let sumX = 0;
         let sumY = 0;
+        let sumYL = 0;
         let sumXY = 0;
         let sumX2 = 0;
         let l, w;
@@ -77,14 +77,20 @@ dataCSV.then(function (data) {
             w = parseInt(weight);
             sumX += l;
             sumY += Math.log(w);
+            sumYL += w;
             sumXY += l * Math.log(w);
             sumX2 += l * l;
         });
-
-        const b = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        
+        let det = (n * sumX2 - sumX * sumX);
+        if(det === 0) {
+            const a = sumYL / n;
+            return {type:"lin", a: a, b: 0};
+        }
+        const b = (n * sumXY - sumX * sumY) / det;
         const a = Math.exp((sumY - b * sumX) / n);
 
-        return {a, b};
+        return {type:"exp", a, b};
     }
     
     function updateVis(filteredData) {
@@ -93,12 +99,23 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
 
-        const {a, b} = exponentialRegression(filteredData);
-        const lineData = filteredData.map(({ lengthM }) => ({
-            lengthM,
-            weight: a * Math.exp(b * lengthM),
-        }))
-        .sort((a, b) => a.lengthM - b.lengthM);
+        const {type, a, b} = exponentialRegression(filteredData);
+        let lineData;
+        if(type === "exp") {
+            lineData = filteredData.map(({ lengthM }) => ({
+                lengthM,
+                weight: a * Math.exp(b * lengthM),
+            }))
+            .sort((a, b) => a.lengthM - b.lengthM);
+        } else if (type === "lin") {
+            lineData = filteredData.map(({ lengthM }) => ({
+                lengthM,
+                weight: a  + b * lengthM,
+            }))
+            .sort((a, b) => a.lengthM - b.lengthM);
+        } else {
+            console.log("oi m8 wathchu doin");
+        }
         
         svg.attr("width", newWidth).attr("height", newHeight);
 
