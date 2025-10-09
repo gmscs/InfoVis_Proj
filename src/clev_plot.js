@@ -49,7 +49,7 @@ dataCSV.then(function (data) {
     var mousemove = (event, d) => {
         const key = typeof d === "string" ? d : d[selectedVariable];
         const containerRect = container.node().getBoundingClientRect();
-        tooltip.html(counts.get(key))
+        tooltip.html("Observations: " + counts.get(key))
             .style("left", (event.pageX - containerRect.left + 10) + "px")
             .style("top", (event.pageY - containerRect.top + 10) + "px");
     }
