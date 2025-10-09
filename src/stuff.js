@@ -188,7 +188,6 @@ export function find_closest_length(data, x, xVal) {
         : right.lengthM;
 }
 
-
 export function get_date_observations_by_granularity(data, granularity = 'month') {
     const dateCountMap = new Map();
     data.forEach(row => {

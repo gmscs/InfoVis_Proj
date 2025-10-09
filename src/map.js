@@ -252,6 +252,13 @@ Promise.all([
         updateMap(counts, "lineCountrySelect");
     })
 
+    window.addEventListener("lineCountryHighlight", function(event) {
+        let highlightedCountry = event.detail;
+        mapStuff.selectAll("path")
+            .attr("stroke", d => highlightedCountry.includes(d.properties.name) ? "black" : "none")
+            .attr("stroke-width", d => highlightedCountry.includes(d.properties.name) ? stroke_width : null);
+    })
+
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
         const filteredData = dataCSV.filter(row => row[attribute] === value);

@@ -157,10 +157,12 @@ dataCSV.then(function (data) {
                     .on("mouseover", function(event, d) {
                         d3.select(this)
                             .attr("stroke-width", stroke_width * 2);
+                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
                     })
                     .on("mouseout", function() {
                         d3.select(this)
                             .attr("stroke-width", stroke_width);
+                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
                     .attr("d", d => {
                     const points = d.map(point => [point[0], y(0)]);
