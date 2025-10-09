@@ -9,6 +9,7 @@ const svg = create_svg(container, margin);
 let selectedCountries = [];
 let selectedGranularity = "month";
 let dateObservations;
+let selectedChart = "line";
 var filteredData;
 
 var width = container.node().getBoundingClientRect().width;
@@ -17,6 +18,10 @@ var height = container.node().getBoundingClientRect().height;
 const radioContainer = container
     .append("div")
     .attr("class", "radioContainer");
+
+const radioContainer2 = container
+    .append("div")
+    .attr("class", "radioContainer2");
 
 const checkboxContainer = container
     .append("div")
@@ -27,6 +32,11 @@ const granularityOptions = [
     { value: "day", label: "Daily" },
     { value: "month", label: "Monthly" },
     { value: "year", label: "Yearly" }
+];
+
+const chartOptions = [
+    { label:"Strip Chart", value:"strip" },
+    { label:"Line Chart", value:"line" },
 ];
 
 svg.append("rect")
@@ -120,44 +130,46 @@ dataCSV.then(function (data) {
             .domain(Array.from(groups.keys()))
             .range(d3.schemeCategory10);
 
-        const line = d3.line();
+        if(selectedChart === "line") {
+            const line = d3.line();
 
-        svg.append("g")
-            .attr("class", "lines")
-            .attr("fill", "none")
-            .attr("stroke-width", stroke_width)
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .selectAll("path")
-            .data(groups.values())
-            .join("path")
-                .style("mix-blend-mode", "multiply")
-                .attr("stroke", d => colorScale(d.z))
-                .on("click", function(event, d) {
-                    const clickedCountry = d.z;
-                    if(clickedCountry != "global") {
-                        selectedCountries = [clickedCountry];
-                        window.dispatchEvent(new CustomEvent("lineCountrySelect", { detail: selectedCountries }));
-                        filteredData = filter_by_countries(data, selectedCountries);
-                        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-                        updateVis(dateObservations);
-                    }
-                })
-                .on("mouseover", function(event, d) {
-                    d3.select(this)
-                        .attr("stroke-width", stroke_width * 2);
-                })
-                .on("mouseout", function() {
-                    d3.select(this)
-                        .attr("stroke-width", stroke_width);
-                })
-                .attr("d", d => {
-                const points = d.map(point => [point[0], y(0)]);
-                return line(points);
-                })
-                .transition()
-                .duration(duration)
-                .attr("d", line);
+            svg.append("g")
+                .attr("class", "lines")
+                .attr("fill", "none")
+                .attr("stroke-width", stroke_width)
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .selectAll("path")
+                .data(groups.values())
+                .join("path")
+                    .style("mix-blend-mode", "multiply")
+                    .attr("stroke", d => colorScale(d.z))
+                    .on("click", function(event, d) {
+                        const clickedCountry = d.z;
+                        if(clickedCountry != "global") {
+                            selectedCountries = [clickedCountry];
+                            window.dispatchEvent(new CustomEvent("lineCountrySelect", { detail: selectedCountries }));
+                            filteredData = filter_by_countries(data, selectedCountries);
+                            dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+                            updateVis(dateObservations);
+                        }
+                    })
+                    .on("mouseover", function(event, d) {
+                        d3.select(this)
+                            .attr("stroke-width", stroke_width * 2);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .attr("stroke-width", stroke_width);
+                    })
+                    .attr("d", d => {
+                    const points = d.map(point => [point[0], y(0)]);
+                    return line(points);
+                    })
+                    .transition()
+                    .duration(duration)
+                    .attr("d", line);
+        }
             
         svg.select(".x.axis")
             .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
@@ -282,13 +294,32 @@ dataCSV.then(function (data) {
                 .property("disabled", option.value === "day")
                 .on("change", function() {
                     selectedGranularity = this.value;
-                    // countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
-                    // let filteredData = countryFilter ? data.filter(countryFilter) : data;
                     dateObservations = get_date_observations_by_granularity(filteredData, this.value)
                     updateVis(dateObservations);
                 });
             div.append("label")
                 .attr("for", `granularity_radio_${i}`)
+                .text(option.label);
+        });
+
+        radioContainer2.selectAll(".radioOption2")
+        .data(chartOptions)
+        .join("div")
+        .attr("class", "radioOption2")
+        .each(function(option, i) {
+            const div = d3.select(this);
+            div.append("input")
+                .attr("type", "radio")
+                .attr("id", `chart_radio_${i}`)
+                .attr("name", "chart_radio")
+                .attr("value", option.value)
+                .property("checked", option.value === selectedChart)
+                .on("change", function() {
+                    selectedChart = this.value;
+                    updateVis(dateObservations);
+                });
+            div.append("label")
+                .attr("for", `chart_radio_${i}`)
                 .text(option.label);
         });
     
