@@ -251,6 +251,11 @@ dataCSV.then(function (data) {
         updateVis(filteredData);
     });
 
+    window.addEventListener("filterReset", function(event) {
+        filteredData = filter_by_countries(data, selectedCountries);
+        updateVis(filteredData);
+    });
+
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateVis(data);
     });

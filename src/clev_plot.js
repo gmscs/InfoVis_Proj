@@ -120,8 +120,14 @@ dataCSV.then(function (data) {
                 .on("mouseleave", mouseleave)
                 .on("click", function(event, d) {
                     const prevDot = selectedDot;
-                    selectedDot = selectedDot === d ? null : d;
-                    if(selectedDot != null) {
+                    selectedDot = d;
+                    if (selectedDot != null && prevDot == selectedDot) {
+                        svg.selectAll(".dot").style("fill", shared_color);
+                        selectedDot = null;
+                        const filterEvent = new CustomEvent("filterReset");
+                        window.dispatchEvent(filterEvent);
+                    }
+                    else if(selectedDot != null) {
                         svg.selectAll(".dot")
                             .style("fill", d => d === prevDot ? shared_color2 : null)
                             .style("fill", d => d === selectedDot ? shared_color : shared_color2);
