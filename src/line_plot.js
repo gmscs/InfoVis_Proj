@@ -1,4 +1,4 @@
-import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size} from "./stuff.js";
+import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size, dot_opacity} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -202,6 +202,7 @@ dataCSV.then(function (data) {
                 .attr("cy", d => y(0))
                 .attr("r", symbol_size / 2)
                 .attr("fill", d => colorScale(d.country))
+                .style("opacity", dot_opacity)
                 .on("mouseover", function(event, d) {
                     tooltip.style("opacity", .9);
                 })

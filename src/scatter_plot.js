@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width } from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, dot_opacity } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 100, bottom: 50, left: 40 };
@@ -175,6 +175,7 @@ dataCSV.then(function (data) {
             .attr("class", "dot")
             .attr("r", symbol_size / 2)
             .style("fill", shared_color)
+            .style("opacity", dot_opacity)
             .on("mouseover", function(event, d) {
                 tooltip.style("opacity", .9);
                 d3.select(this)
