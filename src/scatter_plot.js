@@ -102,7 +102,7 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
 
-        update_legend_title(legendTitle, innerWidth, innerHeight, -90, 4, "Weight - Length Correlation");
+        update_legend_title(legendTitle, innerWidth, innerHeight, -90, 4, "Weight-Length Correlation");
 
         const {type, a, b} = exponentialRegression(filteredData);
         let lineData;

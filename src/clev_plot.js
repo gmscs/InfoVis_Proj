@@ -80,7 +80,7 @@ dataCSV.then(function (data) {
         const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
 
-        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, `Observations per ${selectedLabel}`);
+        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, `Observations by ${selectedLabel}`);
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])

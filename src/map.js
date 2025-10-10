@@ -1,4 +1,4 @@
-import {dataCSV, duration, font, stroke_width, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width, shared_color, update_legend_title} from "./stuff.js";
+import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color, update_legend_title} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");
@@ -203,11 +203,8 @@ Promise.all([
                 tooltip.transition()
                     .duration(duration / 5)
                     .style("opacity", 2).style("s");
-                tooltip.html(`${countryName}<br>${count}`);
+                tooltip.html(`Country: ${countryName}<br>Observations: ${count}`);
 
-                const text = tooltip.node().textContent;
-                const textWidth = get_text_width(text, font);
-                tooltip.style("width", `${textWidth + font_padding}px`);
                 d3.select(this).classed("hovered", true);
             })
             .on("mousemove", function(event) {

@@ -1,5 +1,3 @@
-export const font = "12px Arial sans-serif";
-export const font_padding = 10;
 export const shared_color = "#2e83be";
 export const shared_color2 = "#bed8e7";
 export const duration = 1000;
@@ -246,5 +244,7 @@ export function update_legend_title(legendTitle, width, height, paddingX, paddin
         .attr("y", height + 10 * paddingY)
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "ideographic")
-        .text(text);
+        .style("font-weight", "bold")
+        .style("fill", "#555")
+        .text("Crocodile " + text);
 }

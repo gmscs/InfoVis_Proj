@@ -1,4 +1,4 @@
-import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size, dot_opacity, update_legend_title} from "./stuff.js";
+import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, symbol_size, dot_opacity, update_legend_title} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
