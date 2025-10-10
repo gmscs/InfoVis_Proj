@@ -1,4 +1,4 @@
-import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries} from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries, update_legend_title} from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
@@ -9,11 +9,15 @@ const svg = create_svg(container, margin);
 //let selectedCountries = "global";
 let selectedVariable = "commonname";
 let selectedDot = null;
+let selectedLabel = "Species";
 //let countryFilter;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var filterVal = null;
+
+const legendTitle = svg.append("text")
+    .attr("class", "legend-title");
 
 const radioContainer = container.append("div").attr("class", "radioContainer");
 const radioOptions = [
@@ -75,6 +79,8 @@ dataCSV.then(function (data) {
 
         const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
+
+        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, `Observations per ${selectedLabel}`);
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
@@ -160,6 +166,7 @@ dataCSV.then(function (data) {
             .property("checked", d.value === selectedVariable)
             .on("change", function() {
                 selectedVariable = this.value;
+                selectedLabel = d.label;
                 counts = get_counts(data, selectedVariable);
                 updateVis(counts);
             });

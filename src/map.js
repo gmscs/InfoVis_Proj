@@ -1,4 +1,4 @@
-import {dataCSV, duration, font, stroke_width, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width, shared_color} from "./stuff.js";
+import {dataCSV, duration, font, stroke_width, font_padding, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, get_text_width, shared_color, update_legend_title} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 const container = d3.select("#map");
@@ -9,6 +9,9 @@ const mapStuff = svg.append("g")
 
 const labelStuff = svg.append("g")
     .attr("class", "labelStuff");
+
+const legendTitle = svg.append("text")
+    .attr("class", "legend-title");
 
 const legendItemSize = 20;
 const legendSpacing = 4;
@@ -119,6 +122,8 @@ Promise.all([
         colourScale = get_colour_scale(counts);
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
+
+        update_legend_title(legendTitle, width, height, 1, 1, "Observations per Country");
 
         labelStuff.select(".filterLabel")
             .attr("x", 20)

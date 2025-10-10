@@ -1,4 +1,4 @@
-import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size, dot_opacity} from "./stuff.js";
+import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, get_text_width, symbol_size, dot_opacity, update_legend_title} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -14,6 +14,9 @@ var filteredData;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
+
+const legendTitle = svg.append("text")
+    .attr("class", "legend-title");
 
 const radioContainer = container
     .append("div")
@@ -101,6 +104,8 @@ dataCSV.then(function (data) {
 
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
+
+        update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
 
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();

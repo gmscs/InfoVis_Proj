@@ -239,3 +239,12 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
 
     return dateObservations;
 }
+
+export function update_legend_title(legendTitle, width, height, paddingX, paddingY, text) {
+    legendTitle
+        .attr("x", width - paddingX)
+        .attr("y", height + 10 * paddingY)
+        .attr("text-anchor", "end")
+        .attr("dominant-baseline", "ideographic")
+        .text(text);
+}
