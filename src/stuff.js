@@ -1,7 +1,6 @@
 export const shared_color = "#2e83be";
-export const shared_color2 = "#bed8e7";
 export const duration = 1000;
-export const symbol_size = 6;
+export const symbol_size = 4;
 export const stroke_width = 1.5;
 export const dot_opacity = 0.4;
 
@@ -265,7 +264,7 @@ export function calculate_R_squared(data, coefficients, type) {
         } else if (type === "Linear") {
             yPred = coefficients[0] + coefficients[1] * x;
         } else {
-            throw new Error("Unsupported regression type");
+            console.log("Error, Type (skip?): " + type);
         }
 
         sumY += y;

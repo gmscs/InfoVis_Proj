@@ -168,13 +168,14 @@ dataCSV.then(function (data) {
         .join(
             enter => enter.append("circle")
             .attr("class", "dot")
-            .attr("r", symbol_size / 2)
+            .attr("r", symbol_size)
             .style("fill", shared_color)
             .style("opacity", dot_opacity)
             .on("mouseover", function(event, d) {
                 tooltip.style("opacity", .9);
                 d3.select(this)
-                    .attr("r", symbol_size);
+                    .attr("r", symbol_size * 2)
+                    .style("opacity", 1);
             })
             .on("mousemove", function(event, d) {
                 tooltip.transition().duration(duration / 5).style("opacity", .9);
@@ -204,7 +205,8 @@ dataCSV.then(function (data) {
             })
             .on("mouseout", function(d) {
                 d3.select(this)
-                    .attr("r", symbol_size / 2);
+                    .attr("r", symbol_size)
+                    .style("opacity", dot_opacity);
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);

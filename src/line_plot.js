@@ -205,7 +205,7 @@ dataCSV.then(function (data) {
                 .attr("class", "dot")
                 .attr("cx", d => x(d.date))
                 .attr("cy", d => y(0))
-                .attr("r", symbol_size / 2)
+                .attr("r", symbol_size)
                 .attr("fill", d => colorScale(d.country))
                 .style("opacity", dot_opacity)
                 .on("mouseover", function(event, d) {
@@ -244,7 +244,8 @@ dataCSV.then(function (data) {
                 })
                 .on("mouseout", function(d) {
                     d3.select(this)
-                        .attr("r", symbol_size / 2);
+                        .attr("r", symbol_size)
+                        .style("opacity", dot_opacity);
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
@@ -252,7 +253,8 @@ dataCSV.then(function (data) {
                 })
                 .on("mouseover", function(event, d) {
                     d3.select(this)
-                        .attr("r", symbol_size);
+                        .attr("r", symbol_size * 2)
+                        .style("opacity", 1);
                     window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: d.country }));
                 })
                 .on("click", function(event, d) {

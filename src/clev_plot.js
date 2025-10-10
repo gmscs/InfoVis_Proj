@@ -1,16 +1,13 @@
-import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, shared_color2, filter_by_countries, update_legend_title} from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, filter_by_countries, update_legend_title} from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 50, left: 200 };
 const padding = 20;
 const svg = create_svg(container, margin);
 
-//defaults
-//let selectedCountries = "global";
 let selectedVariable = "commonname";
 let selectedDot = null;
 let selectedLabel = "Species";
-//let countryFilter;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -37,17 +34,18 @@ svg.append("rect")
     .lower();
 
 dataCSV.then(function (data) {
-    //countryFilter = selectedCountry === "global" ? null : d => d.country === selectedCountry;
     let counts = get_counts(data, selectedVariable);
 
     const tooltip = create_tooltip("#clev");
 
     var mouseover = function (d) {
         tooltip.style("opacity", 2).style("s");
+        d3.select(this).attr("r", symbol_size * 2);
     }
 
     var mouseleave = function (d) {
         tooltip.transition().duration(duration / 5).style("opacity", 0);
+        d3.select(this).attr("r", symbol_size);
     }
 
     var mousemove = (event, d) => {
@@ -128,15 +126,15 @@ dataCSV.then(function (data) {
                     const prevDot = selectedDot;
                     selectedDot = d;
                     if (selectedDot != null && prevDot == selectedDot) {
-                        svg.selectAll(".dot").style("fill", shared_color);
+                        svg.selectAll(".dot").style("opacity", 1);
                         selectedDot = null;
                         const filterEvent = new CustomEvent("filterReset");
                         window.dispatchEvent(filterEvent);
                     }
                     else if(selectedDot != null) {
                         svg.selectAll(".dot")
-                            .style("fill", d => d === prevDot ? shared_color2 : null)
-                            .style("fill", d => d === selectedDot ? shared_color : shared_color2);
+                            .style("opacity", d => d === prevDot ? dot_opacity : null)
+                            .style("opacity", d => d === selectedDot ? 1 : dot_opacity);
                         filterVal = d;
                         const filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
@@ -180,7 +178,7 @@ dataCSV.then(function (data) {
             filterVal = null;
             selectedDot = null;
             svg.selectAll(".dot")
-                .style("fill", shared_color);
+                .style("opacity", 1);
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
         }
     });
