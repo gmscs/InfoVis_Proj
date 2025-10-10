@@ -147,7 +147,6 @@ export function filter_by_date_range(data, filterStartDate, filterEndDate) {
 
 export function filter_by_length_range(data, startPos, endPos) {
     let filteredData;
-    console.log(startPos, endPos);
     
     filteredData = data.filter(row => {
         const lengthM = row.lengthM;
@@ -247,4 +246,114 @@ export function update_legend_title(legendTitle, width, height, paddingX, paddin
         .style("font-weight", "bold")
         .style("fill", "#555")
         .text("Crocodile " + text);
+}
+
+export function calculate_R_squared(data, coefficients, type) {
+    const n = data.length;
+    let sumY = 0;
+    let sumY2 = 0;
+    let sumE2 = 0;
+    let yMean = 0;
+
+    data.forEach(({ lengthM, weight }) => {
+        const y = parseFloat(weight);
+        let yPred;
+        const x = parseFloat(lengthM);
+
+        if (type === "Quadratic") {
+            yPred = coefficients[0] + coefficients[1] * x + coefficients[2] * x * x;
+        } else if (type === "Linear") {
+            yPred = coefficients[0] + coefficients[1] * x;
+        } else {
+            throw new Error("Unsupported regression type");
+        }
+
+        sumY += y;
+        sumY2 += y * y;
+        sumE2 += Math.pow(y - yPred, 2);
+    });
+
+    yMean = sumY / n;
+    const ssTot = sumY2 - n * yMean * yMean;
+    return 1 - (sumE2 / ssTot);
+}
+
+export function quadratic_regression(data) {
+    const n = data.length;
+    let sumX = 0;
+    let sumY = 0;
+    let sumX2 = 0;
+    let sumX3 = 0;
+    let sumX4 = 0;
+    let sumXY = 0;
+    let sumX2Y = 0;
+
+    data.forEach(({ lengthM, weight }) => {
+        const x = parseFloat(lengthM);
+        const y = parseFloat(weight);
+        sumX += x;
+        sumY += y;
+        sumX2 += x * x;
+        sumX3 += x * x * x;
+        sumX4 += x * x * x * x;
+        sumXY += x * y;
+        sumX2Y += x * x * y;
+    });
+
+    const X = [
+        [n, sumX, sumX2],
+        [sumX, sumX2, sumX3],
+        [sumX2, sumX3, sumX4]
+    ];
+    const Y = [sumY, sumXY, sumX2Y];
+    const coefficients = leGauss(X, Y);
+
+    return {
+        type: coefficients[3],
+        a: coefficients[0],
+        b: coefficients[1],
+        c: coefficients[2]
+    };
+}
+
+function leGauss(matrix, vector) {
+    const n = matrix.length;
+    const augmy = matrix.map((row, i) => {
+        return Array.from(row).concat(vector[i]);
+    });
+    
+    for (let col = 0; col < n; col++) {
+        let maxRow = col;
+        for (let i = col + 1; i < n; i++) {
+            if (Math.abs(augmy[i][col]) > Math.abs(augmy[maxRow][col])) {
+                maxRow = i;
+            }
+        }
+        [augmy[col], augmy[maxRow]] = [augmy[maxRow], augmy[col]];
+
+        if (augmy[col][col] == 0) {
+            if(augmy[col][0] == 0 && augmy[col][1] == 0 && augmy[col][2] == 0) {
+                return { type: "skip", a: null, b: null, c: null };
+            }
+            const meanY = Math.exp(maxRow / n);
+            return { type: "Linear", a: meanY, b: 0, c: null };
+        }
+
+        for (let i = col + 1; i < n; i++) {
+            const factor = augmy[i][col] / augmy[col][col];
+            for (let j = col; j <= n; j++) {
+                augmy[i][j] -= factor * augmy[col][j];
+            }
+        }
+    }
+
+    const sol = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) {
+        sol[i] = augmy[i][n] / augmy[i][i];
+        for (let j = i - 1; j >= 0; j--) {
+            augmy[j][n] -= augmy[j][i] * sol[i];
+        }
+    }
+    sol[3] = "Quadratic"
+    return sol;
 }

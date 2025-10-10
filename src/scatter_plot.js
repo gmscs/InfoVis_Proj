@@ -1,8 +1,7 @@
-import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, dot_opacity, update_legend_title } from "./stuff.js";
+import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 100, bottom: 50, left: 40 };
-const padding = 20;
 const svg = create_svg(container, margin);
 
 var width = container.node().getBoundingClientRect().width;
@@ -13,6 +12,7 @@ const legendTitle = svg.append("text")
 
 let selectedCountries = [];
 var filteredData;
+var regressionLine = true;
 
 svg.append("rect")
     .attr("class", "background")
@@ -65,36 +65,6 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("sizeChanged", { detail: filteredData }));
         updateVis(filteredData);
     }
-
-    function exponentialRegression(data) {
-        const n = data.length;
-        let sumX = 0;
-        let sumY = 0;
-        let sumYL = 0;
-        let sumXY = 0;
-        let sumX2 = 0;
-        let l, w;
-
-        data.forEach(({lengthM, weight}) => {
-            l = parseInt(lengthM);
-            w = parseInt(weight);
-            sumX += l;
-            sumY += Math.log(w);
-            sumYL += w;
-            sumXY += l * Math.log(w);
-            sumX2 += l * l;
-        });
-        
-        let det = (n * sumX2 - sumX * sumX);
-        if(det === 0) {
-            const a = sumYL / n;
-            return {type:"lin", a: a, b: 0};
-        }
-        const b = (n * sumXY - sumX * sumY) / det;
-        const a = Math.exp((sumY - b * sumX) / n);
-
-        return {type:"exp", a, b};
-    }
     
     function updateVis(filteredData) {
         const newWidth = container.node().getBoundingClientRect().width;
@@ -104,22 +74,24 @@ dataCSV.then(function (data) {
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -90, 4, "Weight-Length Correlation");
 
-        const {type, a, b} = exponentialRegression(filteredData);
+        const {type, a, b, c} = quadratic_regression(filteredData);
         let lineData;
-        if(type === "exp") {
+        if(type === "Quadratic") {
             lineData = filteredData.map(({ lengthM }) => ({
-                lengthM,
-                weight: a * Math.exp(b * lengthM),
+                lengthM: lengthM,
+                weight: a + b * lengthM + c * Math.pow(lengthM, 2),
             }))
             .sort((a, b) => a.lengthM - b.lengthM);
-        } else if (type === "lin") {
+            regressionLine = true;
+        } else if (type === "Linear") {
             lineData = filteredData.map(({ lengthM }) => ({
                 lengthM,
                 weight: a  + b * lengthM,
             }))
             .sort((a, b) => a.lengthM - b.lengthM);
+            regressionLine = true;
         } else {
-            console.log("oi m8 wathchu doin");
+            regressionLine = false;
         }
         
         svg.attr("width", newWidth).attr("height", newHeight);
@@ -130,19 +102,6 @@ dataCSV.then(function (data) {
         y = d3.scaleLinear()
             .domain([0, d3.max(filteredData, d => d.weight * 1.1)])
             .range([innerHeight, 0]);
-
-        const line = d3.line()
-            .x(d => x(d.lengthM))
-            .y(d => y(d.weight));
-            
-        svg.selectAll(".regression-line").remove();
-        svg.append("path")
-            .datum(lineData)
-            .attr("class", "regression-line")
-            .attr("fill", "none")
-            .attr("stroke", "red")
-            .attr("stroke-width", stroke_width)
-            .attr("d", line);
 
         svg.selectAll(".dot").remove();
 
@@ -164,6 +123,37 @@ dataCSV.then(function (data) {
             .transition()
             .duration(duration)
             .call(d3.axisLeft(y));
+
+               
+        svg.selectAll(".regression-line").remove(); 
+        if(regressionLine) {
+            const line = d3.line()
+                .x(d => x(d.lengthM))
+                .y(d => y(d.weight));
+            const rSquared = calculate_R_squared(filteredData, [a, b, c], type);
+                
+            svg.append("path")
+                .datum(lineData)
+                .attr("class", "regression-line")
+                .attr("fill", "none")
+                .attr("stroke", "red")
+                .attr("stroke-width", stroke_width)
+                .attr("d", line)
+                .on("mouseover", function() {
+                    tooltip.style("opacity", .9);
+                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}`);
+                    d3.select(this).attr("stroke-width", stroke_width * 2);
+                })
+                .on("mousemove", function(event) {
+                    const containerRect = container.node().getBoundingClientRect();
+                    tooltip.style("left", (event.pageX - containerRect.left + 10) + "px")
+                        .style("top", (event.pageY - containerRect.top + 10) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.style("opacity", 0);
+                    d3.select(this).attr("stroke-width", stroke_width);
+                });
+        }
 
         const dotMap = new Map();
         filteredData.forEach(d => {
@@ -220,8 +210,10 @@ dataCSV.then(function (data) {
                     .style("opacity", 0);
             })
             .on("click", function(d) {
-                console.log(d.target.__data__.commonname);
                 const clickedSpecies = d.target.__data__.commonname;
+                tooltip.transition()
+                    .duration(duration / 2)
+                    .style("opacity", 0);
                 window.dispatchEvent(new CustomEvent("filterByValue", {
                     detail: { value: clickedSpecies, attribute: "commonname"}
                 }));
