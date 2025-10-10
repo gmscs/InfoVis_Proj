@@ -120,6 +120,12 @@ Promise.all([
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
+        labelStuff.select(".filterLabel")
+            .attr("x", 20)
+            .attr("y", height + margin.bottom);
+
+        colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
+
         const maxCount = d3.max(Array.from(counts.values()));
         const minCount = d3.min(Array.from(counts.values()));
 
