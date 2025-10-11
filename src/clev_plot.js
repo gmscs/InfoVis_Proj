@@ -38,7 +38,8 @@ svg.append("rect")
     .lower();
 
 dataCSV.then(function (data) {
-    let counts = get_counts(data, selectedVariable);
+    filteredData = data;
+    let counts = get_counts(filteredData, selectedVariable);
 
     const tooltip = create_tooltip("#clev");
 

@@ -1,7 +1,7 @@
 import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression } from "./stuff.js";
 
 const container = d3.select("#scatter");
-const margin = { top: 20, right: 100, bottom: 50, left: 40 };
+const margin = { top: 20, right: 40, bottom: 50, left: 40 };
 const svg = create_svg(container, margin);
 
 var width = container.node().getBoundingClientRect().width;
@@ -111,7 +111,7 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
 
-        update_legend_title(legendTitle, innerWidth, innerHeight, -90, 4, "Weight-Length Correlation");
+        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, "Weight-Length Correlation");
 
         const {type, a, b, c} = quadratic_regression(filteredData);
         let lineData;
