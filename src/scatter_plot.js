@@ -131,6 +131,9 @@ dataCSV.then(function (data) {
                 .x(d => x(d.lengthM))
                 .y(d => y(d.weight));
             const rSquared = calculate_R_squared(filteredData, [a, b, c], type);
+            let sign = [];
+            sign[0] = Math.sign(b) === -1 ? " - " : " + ";
+            sign[1] = Math.sign(c) === -1 ? " - " : " + ";
                 
             svg.append("path")
                 .datum(lineData)
@@ -141,12 +144,20 @@ dataCSV.then(function (data) {
                 .attr("d", line)
                 .on("mouseover", function() {
                     tooltip.style("opacity", .9);
-                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}`);
+                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x${sign[1]}${Math.abs(c.toFixed(2))}x²`);
                     d3.select(this).attr("stroke-width", stroke_width * 2);
                 })
                 .on("mousemove", function(event) {
                     const containerRect = container.node().getBoundingClientRect();
                     tooltip.style("left", (event.pageX - containerRect.left + 10) + "px")
+                        .style("top", (event.pageY - containerRect.top + 10) + "px");
+                    // tooltip.html(tooltip_text);
+                    const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                    let leftPos = event.pageX - containerRect.left + 10;
+                    if (leftPos + tooltipWidth > containerRect.width) {
+                        leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                    }
+                    tooltip.style("left", leftPos + "px")
                         .style("top", (event.pageY - containerRect.top + 10) + "px");
                 })
                 .on("mouseout", function() {
