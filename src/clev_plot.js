@@ -11,6 +11,7 @@ const labelStuff = svg.append("g")
 let selectedVariable = "commonname";
 let selectedDot = null;
 let selectedLabel = "Species";
+let filteredData;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -159,7 +160,7 @@ dataCSV.then(function (data) {
                         svg.selectAll(".dot").style("opacity", dot_opacity);
                         selectedDot = null;
                         filterVal = null;
-                        counts = get_counts(data, selectedVariable, filterVal);
+                        counts = get_counts(filteredData, selectedVariable, filterVal);
                         filterEvent = new CustomEvent("filterReset");
 
                     }
@@ -167,7 +168,7 @@ dataCSV.then(function (data) {
                         svg.selectAll(".dot")
                             .style("opacity", d => d === selectedDot ? 1 : dot_opacity);
                         filterVal = d;
-                        counts = get_counts(data, selectedVariable, filterVal);
+                        counts = get_counts(filteredData, selectedVariable, filterVal);
                         filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
                         });
@@ -199,7 +200,7 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
-                counts = get_counts(data, selectedVariable, filterVal);
+                counts = get_counts(filteredData, selectedVariable, filterVal);
                 updateVis(counts);
             });
             div.append("label")
@@ -224,14 +225,14 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChanged", function(event) {
-        let filteredData = event.detail;
+        filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     window.addEventListener("sizeChanged", function(event) {
-        let filteredData = event.detail;
+        filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
@@ -239,20 +240,23 @@ dataCSV.then(function (data) {
 
     window.addEventListener("countryChanged", (event) => {
         let selectedCountries = event.detail;
-        let filteredData = filter_by_countries(data, selectedCountries);
+        filteredData = filter_by_countries(data, selectedCountries);
+        console.log(selectedCountries);
+        labelStuff.select(".filterLabel").text("Active filter: dedd" + selectedCountries);
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
     
     window.addEventListener("lineCountrySelect", (event) => {
         let selectedCountries = event.detail;
-        let filteredData = filter_by_countries(data, selectedCountries);
+        filteredData = filter_by_countries(data, selectedCountries);
+        labelStuff.select(".filterLabel").text("Active filter: " + selectedCountries);
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     window.addEventListener("filterByColour", function(event) {
-        let filteredData = event.detail;
+        filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
@@ -262,13 +266,18 @@ dataCSV.then(function (data) {
         const { value, attribute } = event.detail;
         filterVal = value;
         selectedVariable = attribute;
+
+        radioContainer.selectAll(".radioOptions input[type='radio']")
+            .property("checked", function(d) {
+                return d.value === selectedVariable;
+            });
         
-        counts = get_counts(data, selectedVariable, filterVal);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        counts = get_counts(data, selectedVariable, filterVal);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
     whyWouldYouDoThisToMe.observe(container.node());

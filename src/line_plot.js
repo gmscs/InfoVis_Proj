@@ -165,12 +165,14 @@ dataCSV.then(function (data) {
                     .on("mouseover", function(event, d) {
                         d3.select(this)
                             .attr("stroke-width", stroke_width * 2);
-                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
                     })
                     .on("mouseout", function() {
                         d3.select(this)
                             .attr("stroke-width", stroke_width);
-                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
                     .attr("d", d => {
                     const points = d.map(point => [point[0], y(0)]);
@@ -253,7 +255,8 @@ dataCSV.then(function (data) {
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
-                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
+                    if(selectedCountries.length === 0)
+                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                 })
                 .on("mouseover", function(event, d) {
                     const key = `${x(d.date)},${y(d.observations)}`;
@@ -265,7 +268,8 @@ dataCSV.then(function (data) {
                     d3.select(this)
                         .attr("r", symbol_size * 1.5)
                         .style("opacity", 1);
-                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
+                    if(selectedCountries.length === 0)
+                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
                 })
                 .on("click", function(event, d) {
                     if(selectedGranularity === "year") {
