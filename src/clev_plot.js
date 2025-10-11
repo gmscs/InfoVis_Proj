@@ -1,9 +1,12 @@
 import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, filter_by_countries, update_legend_title} from "./stuff.js";
 
 const container = d3.select("#clev");
-const margin = { top: 20, right: 20, bottom: 50, left: 200 };
+const margin = { top: 20, right: 20, bottom: 60, left: 210 };
 const padding = 20;
 const svg = create_svg(container, margin);
+
+const labelStuff = svg.append("g")
+    .attr("class", "labelStuff");
 
 let selectedVariable = "commonname";
 let selectedDot = null;
@@ -56,6 +59,13 @@ dataCSV.then(function (data) {
             .style("top", (event.pageY - containerRect.top + 10) + "px");
     }
 
+    labelStuff.append("text")
+        .attr("class", "filterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .text("Active filter: None")
+
     svg.append("g")
         .attr("class","x axis")
         .attr("transform", `translate(0,${height})`)
@@ -78,18 +88,22 @@ dataCSV.then(function (data) {
         const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
 
-        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, `Observations by ${selectedLabel}`);
+        labelStuff.select(".filterLabel")
+            .attr("x", -200)
+            .attr("y", innerHeight + margin.bottom / 1.5);
+
+        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 5, `Observations by ${selectedLabel}`);
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
             .range([0, innerWidth]);
         const visibleCategories = get_visible_categories(selectedVariable, counts);
         const y = d3.scaleBand()
-            .range([0, innerHeight])
+            .range([0, innerHeight * 0.98])
             .domain(visibleCategories).padding(1);
 
         svg.select(".x.axis")
-            .attr("transform", `translate(0,${innerHeight})`)
+            .attr("transform", `translate(0,${innerHeight - 6.5})`)
             .transition()
             .duration(duration * 2)
             .call(d3.axisBottom(x).ticks(Math.min(maxCount, 10)).tickFormat(d3.format("d")));
@@ -119,6 +133,7 @@ dataCSV.then(function (data) {
                 .attr("class","dot")
                 .attr("r", symbol_size)
                 .style("fill", shared_color)
+                .style("opacity", d => (d === filterVal) ? 1 : dot_opacity)
                 .on("mouseover", mouseover)
                 .on("mousemove", mousemove)
                 .on("mouseleave", mouseleave)
@@ -126,20 +141,27 @@ dataCSV.then(function (data) {
                     const prevDot = selectedDot;
                     selectedDot = d;
                     if (selectedDot != null && prevDot == selectedDot) {
-                        svg.selectAll(".dot").style("opacity", 1);
+                        svg.selectAll(".dot").style("opacity", dot_opacity);
                         selectedDot = null;
+                        filterVal = null;
+                        counts = get_counts(data, selectedVariable, filterVal);
+                        labelStuff.select(".filterLabel").text("Active filter: None");
                         const filterEvent = new CustomEvent("filterReset");
                         window.dispatchEvent(filterEvent);
+                        updateVis(counts);
                     }
                     else if(selectedDot != null) {
                         svg.selectAll(".dot")
                             .style("opacity", d => d === prevDot ? dot_opacity : null)
                             .style("opacity", d => d === selectedDot ? 1 : dot_opacity);
                         filterVal = d;
+                        counts = get_counts(data, selectedVariable, filterVal);
+                        labelStuff.select(".filterLabel").text("Active filter: " + filterVal);
                         const filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
                         });
                         window.dispatchEvent(filterEvent);
+                        updateVis(counts);
                     }
                 }),
               update => update,
@@ -165,7 +187,7 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
-                counts = get_counts(data, selectedVariable);
+                counts = get_counts(data, selectedVariable, filterVal);
                 updateVis(counts);
             });
             div.append("label")
@@ -176,6 +198,7 @@ dataCSV.then(function (data) {
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
             filterVal = null;
+            labelStuff.select(".filterLabel").text("Active filter: None");
             selectedDot = null;
             svg.selectAll(".dot")
                 .style("opacity", 1);
@@ -186,40 +209,40 @@ dataCSV.then(function (data) {
     window.addEventListener("dateChanged", function(event) {
         let filteredData = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     window.addEventListener("sizeChanged", function(event) {
         let filteredData = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     window.addEventListener("countryChanged", (event) => {
         let selectedCountries = event.detail;
         let filteredData = filter_by_countries(data, selectedCountries);
-        counts = get_counts(filteredData, selectedVariable);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
     
     window.addEventListener("lineCountrySelect", (event) => {
         let selectedCountries = event.detail;
         let filteredData = filter_by_countries(data, selectedCountries);
-        counts = get_counts(filteredData, selectedVariable);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     window.addEventListener("filterByColour", function(event) {
         let filteredData = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable);
+        counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        counts = get_counts(data, selectedVariable);
+        counts = get_counts(data, selectedVariable, filterVal);
         updateVis(counts);
     });
     whyWouldYouDoThisToMe.observe(container.node());

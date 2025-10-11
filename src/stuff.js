@@ -2,13 +2,20 @@ export const shared_color = "#2e83be";
 export const duration = 1000;
 export const symbol_size = 4;
 export const stroke_width = 1.5;
-export const dot_opacity = 0.4;
+export const dot_opacity = 0.5;
 
 export const dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
 
 export function get_counts(data, varName, filter = null) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
-    const filteredData = filter ? data.filter(filter) : data;
+    let filteredData;
+    if (filter != null) {
+        filteredData = data.filter(row =>
+            Object.values(row).some(val =>
+                String(val) == filter
+            )
+        );
+    } else filteredData = data;
 
     const countMap = d3.rollup(filteredData, v => v.length, d => d[varName]);
     const counts = new Map();
