@@ -242,7 +242,6 @@ dataCSV.then(function (data) {
     window.addEventListener("countryChanged", (event) => {
         let selectedCountries = event.detail;
         filteredData = filter_by_countries(data, selectedCountries);
-        console.log(selectedCountries);
         labelStuff.select(".filterLabel").text("Active filter: dedd" + selectedCountries);
         counts = get_counts(filteredData, selectedVariable, filterVal);
         updateVis(counts);

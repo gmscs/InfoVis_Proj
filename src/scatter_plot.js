@@ -12,9 +12,15 @@ const legendTitle = svg.append("text")
 
 const sexShapes = {
     "Male": "circle",
-    "Female": "triangle-up",
-    "Unknown": "square"
+    "Female": "triangle",
+    "Unknown": "cross"
 }
+
+const sexSymbols = {
+    "Male": "●",
+    "Female": "▲",
+    "Unknown": "✚"
+};
 
 const habitatColours = {
     "Billabongs": "#585858",
@@ -239,10 +245,18 @@ dataCSV.then(function (data) {
                 if (overlappingDots.length > 1) {
                     tooltip_text = `${overlappingDots.length} Species:<br/>`;
                     overlappingDots.forEach(dot => {
-                    tooltip_text += `Species: ${dot.commonname}<br/>${dot.lengthM}m, ${dot.weight}kg<br/>`;
+                    tooltip_text += `
+                        Species: ${dot.commonname}<br/>
+                        Sex: ${sexSymbols[dot.sex]} ${dot.sex}<br/>
+                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitatColours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
+                        ${dot.lengthM}m, ${dot.weight}kg<br/>`;
                     });
                 } else {
-                    tooltip_text = `Species: ${d.commonname}<br/>${d.lengthM}m, ${d.weight}kg<br/>`;
+                    tooltip_text = `
+                        Species: ${d.commonname}<br/>
+                        Sex: ${sexSymbols[d.sex]} ${d.sex}<br/>
+                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitatColours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
+                        ${d.lengthM}m, ${d.weight}kg<br/>`;
                 }
                 
                 tooltip.html(tooltip_text);
@@ -280,10 +294,10 @@ dataCSV.then(function (data) {
             const shape = sexShapes[d.sex];
             if (shape === "circle") {
                 return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
-            } else if (shape === "triangle-up") {
+            } else if (shape === "triangle") {
                 return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
-            } else if (shape === "square") {
-                return d3.symbol().type(d3.symbolSquare).size(symbol_size * 10)();
+            } else if (shape === "cross") {
+                return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
             }
         })
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
