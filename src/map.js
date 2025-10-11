@@ -1,8 +1,32 @@
 import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color, update_legend_title} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
+
 const container = d3.select("#map");
+const customDropdownContainer = container.append("div")
+  .attr("id", "customDropdownContainer")
+  .style("position", "absolute")
+  .style("top", "10px")
+  .style("right", "10px")
+  .style("z-index", "1000")
+  .style("width", "210px");
 const svg = create_svg(container, margin);
+
+const searchInput = customDropdownContainer.append("input")
+  .attr("type", "text")
+  .attr("id", "countrySearch")
+  .attr("placeholder", "Search countries...")
+  .style("width", "200px")
+  .style("padding", "5px");
+
+const countryList = customDropdownContainer.append("div")
+  .attr("id", "countryList")
+  .style("border", "1px solid #ccc")
+  .style("max-height", "320px")
+  .style("max-width", "210px")
+  .style("overflow-y", "auto")
+  .style("background-color", "#ffffff")
+  .style("display", "none");
 
 const mapStuff = svg.append("g")
     .attr("class", "mapStuff")
@@ -20,6 +44,7 @@ let selectedVariable = "commonname";
 let selectedCountries = [];
 let selectedColour = false;
 let counts;
+let isFocused = false;
 
 var colourScale;
 var width = container.node().getBoundingClientRect().width;
@@ -51,40 +76,71 @@ Promise.all([
         .style("z-index", 100)
         .text("Active filter: None")
 
-    const countries = Array.from(new Set(dataCSV.map(d => d.country)));
-    countries.sort();
     const tooltip = create_tooltip("body");
-    const countryDropdown = container.append("select")
-    .attr("class", "dropContainer")
-    .style("position", "absolute")
-    .style("top", "10px")
-    .style("right", "10px")
-    .style("z-index", "10")
-    .on("change", function(event, d) {
-        let country = d3.select(this).property("value");
-        if(country != "global" && !(selectedCountries.includes(country)))
-            selectedCountries.push(country);
-        else if(country != "global" && (selectedCountries.includes(country)))
-            selectedCountries = selectedCountries = selectedCountries.filter(c => c !== country);
-        else if(country == "global")
-            selectedCountries = [];
-        highlightSelectedCountry();
-        updateDropdownOptions();
-        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
-    });
 
-    countryDropdown.append("option")
-        .attr("value", "global")
-        .text("All Countries");
-    countryDropdown.selectAll("countryOptions")
-        .data(countries)
-        .join("option")
-        .attr("class", "countryOption")
-        .attr("value", d => d)
-        .text(d => d);
+    const countries = Array.from(new Set(dataCSV.map(d => d.country)));
+    countries.push("All Countries");
+    countries.sort();
+    
+    function updateCountryList(filter = "") {
+        const filteredCountries = countries.filter(country =>
+            country.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        const options = countryList.selectAll(".countryOption")
+            .data(filteredCountries, d => d);
+
+        options.exit().remove();
+
+        options.enter()
+            .append("div")
+            .attr("class", "countryOption")
+            .style("padding", "5px")
+            .style("cursor", "pointer")
+            .text(d => d)
+            .on("mousemove", function() {
+                d3.select(this).style("background-color", "#6bb0d7");
+            })
+            .on("mouseleave", function(event, d) {
+                d3.select(this).style("background-color",
+                    (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bed8e7" : "white");
+            })
+            .on("click", function(event, d) {
+                if (d === "All Countries") {
+                    selectedCountries = [];
+                } else if (!selectedCountries.includes(d)) {
+                    selectedCountries.push(d);
+                } else {
+                    selectedCountries = selectedCountries.filter(c => c !== d);
+                }
+                highlightSelectedCountry();
+                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                updateCountryList(searchInput.property("value"));
+            })
+            .merge(options)
+            .style("background-color", (d, i) => {
+                if (selectedCountries.length === 0 && i === 0) return "#bed8e7"
+                else if (selectedCountries.includes(d)) return "#bed8e7";
+                else return "white";
+            });
+    }
+    
+    searchInput
+        .on("click", () => {
+            if(isFocused) {
+                searchInput.node().blur();
+                countryList.style("display", "none");
+                isFocused = false;
+            } else {
+                searchInput.node().focus();
+                countryList.style("display", "block");
+                isFocused = true;
+            }
+        })
+        .on("input", () => updateCountryList(searchInput.property("value")));
 
     function updateDropdownOptions() {
-        countryDropdown.selectAll("option.countryOption")
+        customDropdownContainer.selectAll("option.countryOption")
             .classed("selected", d => selectedCountries.includes(d));
     }
 
@@ -123,6 +179,8 @@ Promise.all([
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
+        updateCountryList();
+
         update_legend_title(legendTitle, width, height, 1, 1, "Observations per Country");
 
         labelStuff.select(".filterLabel")
@@ -136,6 +194,7 @@ Promise.all([
 
         const legendItems = colourLegend
             .selectAll("g.legend-item")
+            .style("cursor", "pointer")
             .data(colourScale.range(), (d) => d);
 
         const enterItems = legendItems
@@ -195,7 +254,7 @@ Promise.all([
                 const key = d.properties.name;
                 const count = counts.get(key);
                 return count === (0 || undefined) ? "#c0c0c0ff" : colourScale(count);
-            })
+            }).style("cursor", "pointer")
             
             .on("mouseover", function(event, d) {
                 const countryName = d.properties.name;
@@ -230,7 +289,7 @@ Promise.all([
                 }
                 highlightSelectedCountry();
                 updateDropdownOptions();
-                countryDropdown.property("value", d.properties.name);
+                updateCountryList();
                 window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
             }
         })
@@ -277,7 +336,6 @@ Promise.all([
     });
 
     window.addEventListener("filterReset", (event) => {
-        countryDropdown.property("value", "global");
         selectedCountries = [];
 
         counts = get_counts_by_country(dataCSV, selectedVariable);
@@ -292,8 +350,8 @@ Promise.all([
 
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
-            countryDropdown.property("value", "global");
             selectedCountries = [];
+            updateCountryList();
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
 
             counts = get_counts_by_country(dataCSV, selectedVariable);

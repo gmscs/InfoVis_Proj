@@ -89,6 +89,7 @@ dataCSV.then(function (data) {
     checkboxContainer.append("input")
         .attr("type", "checkbox")
         .attr("id", "globalDisplay")
+        .style("cursor", "pointer")
         .property("checked", true)
         .on("change", function() {
             updateVis(dateObservations);
@@ -96,6 +97,7 @@ dataCSV.then(function (data) {
 
     checkboxContainer.append("label")
         .attr("for", "globalDisplay")
+        .style("cursor", "pointer")
         .text("Merge data");
 
     function updateVis(dateObservations) {
@@ -144,6 +146,7 @@ dataCSV.then(function (data) {
                 .attr("stroke-width", stroke_width)
                 .attr("stroke-linejoin", "round")
                 .attr("stroke-linecap", "round")
+                .style("cursor", "pointer")
                 .selectAll("path")
                 .data(groups.values())
                 .join("path")
@@ -207,6 +210,7 @@ dataCSV.then(function (data) {
                 .attr("cy", d => y(0))
                 .attr("r", symbol_size)
                 .attr("fill", d => colorScale(d.country))
+                .style("cursor", "pointer")
                 .style("opacity", dot_opacity)
                 .on("mouseover", function(event, d) {
                     tooltip.style("opacity", .9);
@@ -308,6 +312,7 @@ dataCSV.then(function (data) {
                 .attr("id", `granularity_radio_${i}`)
                 .attr("name", "granularityGroup")
                 .attr("value", option.value)
+                .style("cursor", "pointer")
                 .property("checked", option.value === selectedGranularity)
                 .property("disabled", option.value === "day")
                 .on("change", function() {
@@ -317,6 +322,7 @@ dataCSV.then(function (data) {
                 });
             div.append("label")
                 .attr("for", `granularity_radio_${i}`)
+                .style("cursor", "pointer")
                 .text(option.label);
         });
 
@@ -331,6 +337,7 @@ dataCSV.then(function (data) {
                 .attr("id", `chart_radio_${i}`)
                 .attr("name", "chart_radio")
                 .attr("value", option.value)
+                .style("cursor", "pointer")
                 .property("checked", option.value === selectedChart)
                 .on("change", function() {
                     selectedChart = this.value;
@@ -338,6 +345,7 @@ dataCSV.then(function (data) {
                 });
             div.append("label")
                 .attr("for", `chart_radio_${i}`)
+                .style("cursor", "pointer")
                 .text(option.label);
         });
     

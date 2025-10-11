@@ -49,8 +49,13 @@ dataCSV.then(function (data) {
 
     var mouseleave = function (d) {
         tooltip.transition().duration(duration / 5).style("opacity", 0);
-        d3.select(this).attr("r", symbol_size);
-        d3.select(this).style("opacity", dot_opacity);
+        if(selectedDot == null) {
+            d3.select(this).attr("r", symbol_size);
+            d3.select(this).style("opacity", dot_opacity);
+        } else {
+            d3.select(this).attr("r", symbol_size * 2);
+            d3.select(this).style("opacity", 1);
+        }
     }
 
     var mousemove = (event, d) => {
@@ -133,13 +138,15 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", d => (d === filterVal) ? symbol_size * 2 : symbol_size)
+                .attr("r", d => (d == filterVal) ? symbol_size * 2 : symbol_size)
                 .style("fill", shared_color)
-                .style("opacity", d => (d === filterVal) ? 1 : dot_opacity)
+                .style("opacity", d => (d == filterVal) ? 1 : dot_opacity)
+                .style("cursor", "pointer")
                 .on("mouseover", mouseover)
                 .on("mousemove", mousemove)
                 .on("mouseleave", mouseleave)
                 .on("click", function(event, d) {
+                    let filterEvent;
                     const prevDot = selectedDot;
                     selectedDot = d;
                     if (selectedDot != null && prevDot == selectedDot) {
@@ -148,9 +155,8 @@ dataCSV.then(function (data) {
                         filterVal = null;
                         counts = get_counts(data, selectedVariable, filterVal);
                         labelStuff.select(".filterLabel").text("Active filter: None");
-                        const filterEvent = new CustomEvent("filterReset");
-                        window.dispatchEvent(filterEvent);
-                        updateVis(counts);
+                        filterEvent = new CustomEvent("filterReset");
+
                     }
                     else if(selectedDot != null) {
                         svg.selectAll(".dot")
@@ -158,12 +164,12 @@ dataCSV.then(function (data) {
                         filterVal = d;
                         counts = get_counts(data, selectedVariable, filterVal);
                         labelStuff.select(".filterLabel").text("Active filter: " + filterVal);
-                        const filterEvent = new CustomEvent("filterByValue", {
+                        filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
                         });
-                        window.dispatchEvent(filterEvent);
-                        updateVis(counts);
                     }
+                    window.dispatchEvent(filterEvent);
+                    updateVis(counts);
                 }),
               update => update,
               exit => exit.remove()
@@ -184,6 +190,7 @@ dataCSV.then(function (data) {
             .attr("id", `radio_${i}`)
             .attr("name", "radioGroup")
             .attr("value", d.value)
+            .style("cursor", "pointer")
             .property("checked", d.value === selectedVariable)
             .on("change", function() {
                 selectedVariable = this.value;
@@ -193,6 +200,7 @@ dataCSV.then(function (data) {
             });
             div.append("label")
             .attr("for", `radio_${i}`)
+            .style("cursor", "pointer")
             .text(d.label);
     });
 

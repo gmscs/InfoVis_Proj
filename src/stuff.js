@@ -50,7 +50,6 @@ export function filter_by_countries(data, selectedCountries) {
             return (selectedCountries.includes(country));
         });
     }
-    //console.log(filteredData);
     return filteredData;
 }
 

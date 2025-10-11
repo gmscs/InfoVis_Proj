@@ -15,6 +15,7 @@ var filteredData;
 var regressionLine = true;
 
 svg.append("rect")
+    .attr("id", "clearBox")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
@@ -182,6 +183,7 @@ dataCSV.then(function (data) {
             .attr("r", symbol_size)
             .style("fill", shared_color)
             .style("opacity", dot_opacity)
+            .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
                 tooltip.style("opacity", .9);
                 d3.select(this)
@@ -240,7 +242,7 @@ dataCSV.then(function (data) {
     }
 
     window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="rect"){
+        if(event.target.id==="clearBox"){
             window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
 
             filteredData = filter_by_countries(data, selectedCountries);
