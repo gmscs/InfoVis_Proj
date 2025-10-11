@@ -252,10 +252,16 @@ dataCSV.then(function (data) {
                     window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                 })
                 .on("mouseover", function(event, d) {
+                    const key = `${x(d.date)},${y(d.observations)}`;
+                    const overlappingDots = dotMap.get(key);
+                    let hoveredCountries = [];
+                    overlappingDots.forEach(dot => {
+                        hoveredCountries.push(dot.country);
+                    });
                     d3.select(this)
                         .attr("r", symbol_size * 2)
                         .style("opacity", 1);
-                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: d.country }));
+                    window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
                 })
                 .on("click", function(event, d) {
                     if(selectedGranularity === "year") {

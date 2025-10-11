@@ -261,10 +261,10 @@ Promise.all([
     })
 
     window.addEventListener("lineCountryHighlight", function(event) {
-        let highlightedCountry = event.detail;
+        let highlightedCountries = event.detail;
         mapStuff.selectAll("path")
-            .attr("stroke", d => highlightedCountry.includes(d.properties.name) ? "black" : "none")
-            .attr("stroke-width", d => highlightedCountry.includes(d.properties.name) ? stroke_width : null);
+            .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? "black" : "none")
+            .attr("stroke-width", d => highlightedCountries.includes(d.properties.name) ? stroke_width : null);
     })
 
     window.addEventListener("filterByValue", function(event) {
