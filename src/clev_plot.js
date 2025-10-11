@@ -44,11 +44,13 @@ dataCSV.then(function (data) {
     var mouseover = function (d) {
         tooltip.style("opacity", 2).style("s");
         d3.select(this).attr("r", symbol_size * 2);
+        d3.select(this).style("opacity", 1);
     }
 
     var mouseleave = function (d) {
         tooltip.transition().duration(duration / 5).style("opacity", 0);
         d3.select(this).attr("r", symbol_size);
+        d3.select(this).style("opacity", dot_opacity);
     }
 
     var mousemove = (event, d) => {
@@ -96,7 +98,7 @@ dataCSV.then(function (data) {
         
         const x = d3.scaleLinear()
             .domain([0, maxCount])
-            .range([0, innerWidth]);
+            .range([0, innerWidth * 0.98]);
         const visibleCategories = get_visible_categories(selectedVariable, counts);
         const y = d3.scaleBand()
             .range([0, innerHeight * 0.98])
@@ -131,7 +133,7 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", symbol_size)
+                .attr("r", d => (d === filterVal) ? symbol_size * 2 : symbol_size)
                 .style("fill", shared_color)
                 .style("opacity", d => (d === filterVal) ? 1 : dot_opacity)
                 .on("mouseover", mouseover)
@@ -152,7 +154,6 @@ dataCSV.then(function (data) {
                     }
                     else if(selectedDot != null) {
                         svg.selectAll(".dot")
-                            .style("opacity", d => d === prevDot ? dot_opacity : null)
                             .style("opacity", d => d === selectedDot ? 1 : dot_opacity);
                         filterVal = d;
                         counts = get_counts(data, selectedVariable, filterVal);
@@ -198,11 +199,15 @@ dataCSV.then(function (data) {
     window.addEventListener("click", function(event) {
         if(event.target.nodeName==="rect"){
             filterVal = null;
+            counts = get_counts(data, selectedVariable, filterVal);
             labelStuff.select(".filterLabel").text("Active filter: None");
             selectedDot = null;
             svg.selectAll(".dot")
                 .style("opacity", 1);
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
+            svg.selectAll(".dot").style("opacity", dot_opacity);
+            svg.selectAll(".dot").attr("r", symbol_size);
+            updateVis(counts);
         }
     });
 
