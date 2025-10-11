@@ -10,6 +10,12 @@ var height = container.node().getBoundingClientRect().height;
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
 
+const sexShapes = {
+    "Male": "circle",
+    "Female": "triangle-up",
+    "Unknown": "square"
+}
+
 let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
@@ -178,7 +184,7 @@ dataCSV.then(function (data) {
         svg.selectAll(".dot")
         .data(filteredData)
         .join(
-            enter => enter.append("circle")
+            enter => enter.append("path")
             .attr("class", "dot")
             .attr("r", symbol_size)
             .style("fill", shared_color)
@@ -236,9 +242,19 @@ dataCSV.then(function (data) {
         update => update,
         exit => exit.remove()
         )
-        .transition().duration(duration)
-            .attr("cx", d => x(d.lengthM || 0))
-            .attr("cy", d => y(d.weight));
+        .transition()
+        .duration(duration)
+        .attr("d", d => {
+            const shape = sexShapes[d.sex];
+            if (shape === "circle") {
+                return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
+            } else if (shape === "triangle-up") {
+                return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
+            } else if (shape === "square") {
+                return d3.symbol().type(d3.symbolSquare).size(symbol_size * 10)();
+            }
+        })
+        .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
 
     window.addEventListener("click", function(event) {
