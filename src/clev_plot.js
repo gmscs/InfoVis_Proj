@@ -49,7 +49,7 @@ dataCSV.then(function (data) {
 
     var mouseleave = function (d) {
         tooltip.transition().duration(duration / 5).style("opacity", 0);
-        if(selectedDot == null) {
+        if(selectedDot != d.target.__data__) {
             d3.select(this).attr("r", symbol_size);
             d3.select(this).style("opacity", dot_opacity);
         } else {
