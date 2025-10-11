@@ -89,6 +89,12 @@ dataCSV.then(function (data) {
     function updateVis(counts) {
         const maxCount = d3.max(Array.from(counts.values()));
 
+        if(filterVal != null) {
+            labelStuff.select(".filterLabel").text("Active filter: " + filterVal);
+        } else {
+            labelStuff.select(".filterLabel").text("Active filter: None");
+        }
+
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
@@ -154,7 +160,6 @@ dataCSV.then(function (data) {
                         selectedDot = null;
                         filterVal = null;
                         counts = get_counts(data, selectedVariable, filterVal);
-                        labelStuff.select(".filterLabel").text("Active filter: None");
                         filterEvent = new CustomEvent("filterReset");
 
                     }
@@ -163,7 +168,6 @@ dataCSV.then(function (data) {
                             .style("opacity", d => d === selectedDot ? 1 : dot_opacity);
                         filterVal = d;
                         counts = get_counts(data, selectedVariable, filterVal);
-                        labelStuff.select(".filterLabel").text("Active filter: " + filterVal);
                         filterEvent = new CustomEvent("filterByValue", {
                             detail: { value: filterVal, attribute: selectedVariable}
                         });
@@ -251,6 +255,15 @@ dataCSV.then(function (data) {
         let filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
+        updateVis(counts);
+    });
+
+    window.addEventListener("filterByValueScatter", function(event) {
+        const { value, attribute } = event.detail;
+        filterVal = value;
+        selectedVariable = attribute;
+        
+        counts = get_counts(data, selectedVariable, filterVal);
         updateVis(counts);
     });
 

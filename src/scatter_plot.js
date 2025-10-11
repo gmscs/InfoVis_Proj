@@ -235,7 +235,7 @@ dataCSV.then(function (data) {
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);
-                window.dispatchEvent(new CustomEvent("filterByValue", {
+                window.dispatchEvent(new CustomEvent("filterByValueScatter", {
                     detail: { value: clickedSpecies, attribute: "commonname"}
                 }));
             }),

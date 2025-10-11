@@ -372,6 +372,14 @@ dataCSV.then(function (data) {
         updateVis(dateObservations);
     });
 
+    window.addEventListener("filterByValueScatter", function(event) {
+        const { value, attribute } = event.detail;
+        filteredData = data.filter(row => row[attribute] === value);
+
+        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
+    });
+
     window.addEventListener("sizeChanged", function(event) {
         filteredData = event.detail;
 

@@ -335,6 +335,15 @@ Promise.all([
         updateMap(counts, "clevValueChanged");
     });
 
+    window.addEventListener("filterByValueScatter", function(event) {
+        const { value, attribute } = event.detail;
+        const filteredData = dataCSV.filter(row => row[attribute] === value);
+
+        counts = get_counts_by_country(filteredData);
+        d3.select("text").text("Active filter: " + value)
+        updateMap(counts, "clevValueChanged");
+    });
+
     window.addEventListener("filterReset", (event) => {
         selectedCountries = [];
 
