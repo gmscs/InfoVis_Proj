@@ -263,7 +263,7 @@ dataCSV.then(function (data) {
                         hoveredCountries.push(dot.country);
                     });
                     d3.select(this)
-                        .attr("r", symbol_size * 2)
+                        .attr("r", symbol_size * 1.5)
                         .style("opacity", 1);
                     window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
                 })

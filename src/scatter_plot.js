@@ -16,6 +16,38 @@ const sexShapes = {
     "Unknown": "square"
 }
 
+const habitatColours = {
+    "Billabongs": "#585858",
+    "Brackish Rivers": "#0600a3",
+    "Coastal Lagoons": "#8b8b8b",
+    "Coastal Wetlands": "#dabb77",
+    "Estuaries": "#793f00",
+    "Estuarine Systems": "#b45d00ff",
+    "Flooded Savannas": "#a4f833",
+    "Forest Rivers": "#00a39c",
+    "Forest Swamps": "#be9100",
+    "Freshwater Marshes": "#ffc200",
+    "Freshwater Rivers": "#00fff4",
+    "Freshwater Wetlands": "#ffdf7a",
+    "Gorges": "#ff00dc",
+    "Lagoons": "#009f18",
+    "Lakes": "#00fd26",
+    "Large Rivers": "#00aaff",
+    "Mangroves": "#8200c1",
+    "Marshes": "#d58000",
+    "Oases": "#006300ff",
+    "Oxbow Lakes": "#75b407ff",
+    "Ponds": "#26fd8e",
+    "Reservoirs": "#610091",
+    "Rivers": "#65ccff",
+    "Shaded Forest Rivers": "#004eff",
+    "Slow Rivers": "#6588ff",
+    "Slow Streams": "#760000",
+    "Small Streams": "#ff0000",
+    "Swamps": "#614a00",
+    "Tidal Rivers": "#2b8eb6ff"
+}
+
 let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
@@ -187,13 +219,13 @@ dataCSV.then(function (data) {
             enter => enter.append("path")
             .attr("class", "dot")
             .attr("r", symbol_size)
-            .style("fill", shared_color)
+            .style("fill", d => habitatColours[d.habitat])
             .style("opacity", dot_opacity)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
                 tooltip.style("opacity", .9);
                 d3.select(this)
-                    .attr("r", symbol_size * 2)
+                    .attr("r", symbol_size * 1.5)
                     .style("opacity", 1);
             })
             .on("mousemove", function(event, d) {
@@ -272,6 +304,13 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("filterByValue", function(event) {
+        const { value, attribute } = event.detail;
+        filteredData = data.filter(row => row[attribute] === value);
+
+        updateVis(filteredData);
+    });
+
+    window.addEventListener("filterByValueScatter", function(event) {
         const { value, attribute } = event.detail;
         filteredData = data.filter(row => row[attribute] === value);
 

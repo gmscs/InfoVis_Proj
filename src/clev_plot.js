@@ -43,7 +43,7 @@ dataCSV.then(function (data) {
 
     var mouseover = function (d) {
         tooltip.style("opacity", 2).style("s");
-        d3.select(this).attr("r", symbol_size * 2);
+        d3.select(this).attr("r", symbol_size * 1.5);
         d3.select(this).style("opacity", 1);
     }
 
@@ -53,7 +53,7 @@ dataCSV.then(function (data) {
             d3.select(this).attr("r", symbol_size);
             d3.select(this).style("opacity", dot_opacity);
         } else {
-            d3.select(this).attr("r", symbol_size * 2);
+            d3.select(this).attr("r", symbol_size * 1.5);
             d3.select(this).style("opacity", 1);
         }
     }
@@ -144,7 +144,7 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", d => (d == filterVal) ? symbol_size * 2 : symbol_size)
+                .attr("r", d => (d == filterVal) ? symbol_size * 1.5 : symbol_size)
                 .style("fill", shared_color)
                 .style("opacity", d => (d == filterVal) ? 1 : dot_opacity)
                 .style("cursor", "pointer")
