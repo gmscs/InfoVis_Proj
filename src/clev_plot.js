@@ -17,6 +17,7 @@ let filteredData;
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var filterVal = null;
+var useHabitatColors = false;
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -100,7 +101,8 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .on("change", function() {
             const counts = get_counts(filteredData, selectedVariable, filterVal);
-            updateVis(counts, this.checked);
+            useHabitatColors = this.checked;
+            updateVis(counts);
         });
 
     habitatCheckboxContainer.append("label")
@@ -108,7 +110,7 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("Show Habitat Colours");
 
-    function updateVis(counts, useHabitatColors = false) {
+    function updateVis(counts) {
         const maxCount = d3.max(Array.from(counts.values()));
 
         if(filterVal != null) {
@@ -196,7 +198,7 @@ dataCSV.then(function (data) {
                         });
                     }
                     window.dispatchEvent(filterEvent);
-                    updateVis(counts);
+                    updateVis(counts, useHabitatColors);
                 }),
               update => update
                 .style("fill", d => useHabitatColors ? habitat_colours[d] || shared_color : shared_color),
@@ -224,8 +226,8 @@ dataCSV.then(function (data) {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
                 counts = get_counts(filteredData, selectedVariable, filterVal);
-                let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-                updateVis(counts, useHabitatColors);
+                useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+                updateVis(counts);
             });
             div.append("label")
             .attr("for", `radio_${i}`)
@@ -244,8 +246,8 @@ dataCSV.then(function (data) {
             window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
             svg.selectAll(".dot").style("opacity", dot_opacity);
             svg.selectAll(".dot").attr("r", symbol_size);
-            let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+            useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
         }
     });
 
@@ -253,16 +255,16 @@ dataCSV.then(function (data) {
         filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
 
     window.addEventListener("sizeChanged", function(event) {
         filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
 
     window.addEventListener("countryChanged", (event) => {
@@ -270,8 +272,8 @@ dataCSV.then(function (data) {
         filteredData = filter_by_countries(data, selectedCountries);
         labelStuff.select(".filterLabel").text("Active filter: dedd" + selectedCountries);
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
     
     window.addEventListener("lineCountrySelect", (event) => {
@@ -279,16 +281,16 @@ dataCSV.then(function (data) {
         filteredData = filter_by_countries(data, selectedCountries);
         labelStuff.select(".filterLabel").text("Active filter: " + selectedCountries);
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
 
     window.addEventListener("filterByColour", function(event) {
         filteredData = event.detail;
 
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
 
     window.addEventListener("filterByValueScatter", function(event) {
@@ -302,16 +304,16 @@ dataCSV.then(function (data) {
             });
         
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         counts = get_counts(filteredData, selectedVariable, filterVal);
-        let useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts, useHabitatColors);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis(counts);
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    updateVis(counts);
+    updateVis(counts, false);
 });
