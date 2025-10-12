@@ -11,6 +11,9 @@ var height = container.node().getBoundingClientRect().height;
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
 
+const labelStuff = svg.append("g")
+    .attr("class", "labelStuff");
+
 let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
@@ -56,6 +59,12 @@ dataCSV.then(function (data) {
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
                 .text("Weight (kg)"));
+
+    labelStuff.append("text")
+        .attr("class", "legend")
+        .attr("y", 0)
+        .style("z-index", 100)
+        .text("Male: ●   Female: ▲   Unknown: ✚")
     
     function brushed(event) {
         if(!event.selection) return;
@@ -74,6 +83,28 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
 
+        labelStuff.select(".legend")
+            .attr("x", innerWidth / 2.3)
+            .on("mouseover", function() {
+                tooltip.style("opacity", .9);
+                tooltip.html("Habitat Colours Shown in Cleveland Plot");
+            })
+            .on("mousemove", function(event) {
+                const containerRect = container.node().getBoundingClientRect();
+                tooltip.style("left", (event.pageX - containerRect.left + 10) + "px")
+                    .style("top", (event.pageY - containerRect.top + 10) + "px");
+                const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                let leftPos = event.pageX - containerRect.left + 10;
+                if (leftPos + tooltipWidth > containerRect.width) {
+                    leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                }
+                tooltip.style("left", leftPos + "px")
+                    .style("top", (event.pageY - containerRect.top + 10) + "px");
+            })
+            .on("mouseout", function() {
+                tooltip.style("opacity", 0);
+            });
+                    
         update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, "Weight-Length Correlation");
 
         const {type, a, b, c} = quadratic_regression(filteredData);
@@ -153,7 +184,6 @@ dataCSV.then(function (data) {
                     const containerRect = container.node().getBoundingClientRect();
                     tooltip.style("left", (event.pageX - containerRect.left + 10) + "px")
                         .style("top", (event.pageY - containerRect.top + 10) + "px");
-                    // tooltip.html(tooltip_text);
                     const tooltipWidth = tooltip.node().getBoundingClientRect().width;
                     let leftPos = event.pageX - containerRect.left + 10;
                     if (leftPos + tooltipWidth > containerRect.width) {
