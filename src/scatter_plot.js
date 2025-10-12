@@ -343,7 +343,7 @@ dataCSV.then(function (data) {
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateVis(data);
+        updateVis(filteredData);
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
