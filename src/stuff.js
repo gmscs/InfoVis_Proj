@@ -83,13 +83,9 @@ export function create_tooltip(id) {
 export function get_visible_categories(varName, countsMap) {
     if (varName === "commonname" || varName === "habitat") {
         return Array.from(countsMap.entries())
-            .filter(([k, v]) => v > 0)
+            // .filter(([k, v]) => v > 0)
             .map(([k]) => k)
             .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
-    }
-    else if (varName === "country") {
-        return Array.from(countsMap.keys())
-        .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: "base" }));
     }
     else {
         let order;
