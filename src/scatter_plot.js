@@ -1,4 +1,5 @@
-import {dataCSV, shared_color, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression } from "./stuff.js";
+import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
+    dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 40, bottom: 50, left: 40 };
@@ -9,50 +10,6 @@ var height = container.node().getBoundingClientRect().height;
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
-
-const sexShapes = {
-    "Male": "circle",
-    "Female": "triangle",
-    "Unknown": "cross"
-}
-
-const sexSymbols = {
-    "Male": "●",
-    "Female": "▲",
-    "Unknown": "✚"
-};
-
-const habitatColours = {
-    "Billabongs": "#585858",
-    "Brackish Rivers": "#0600a3",
-    "Coastal Lagoons": "#8b8b8b",
-    "Coastal Wetlands": "#dabb77",
-    "Estuaries": "#793f00",
-    "Estuarine Systems": "#b45d00ff",
-    "Flooded Savannas": "#a4f833",
-    "Forest Rivers": "#00a39c",
-    "Forest Swamps": "#be9100",
-    "Freshwater Marshes": "#ffc200",
-    "Freshwater Rivers": "#00fff4",
-    "Freshwater Wetlands": "#ffdf7a",
-    "Gorges": "#ff00dc",
-    "Lagoons": "#009f18",
-    "Lakes": "#00fd26",
-    "Large Rivers": "#00aaff",
-    "Mangroves": "#8200c1",
-    "Marshes": "#d58000",
-    "Oases": "#006300ff",
-    "Oxbow Lakes": "#75b407ff",
-    "Ponds": "#26fd8e",
-    "Reservoirs": "#610091",
-    "Rivers": "#65ccff",
-    "Shaded Forest Rivers": "#004eff",
-    "Slow Rivers": "#6588ff",
-    "Slow Streams": "#760000",
-    "Small Streams": "#ff0000",
-    "Swamps": "#614a00",
-    "Tidal Rivers": "#2b8eb6ff"
-}
 
 let selectedCountries = [];
 var filteredData;
@@ -225,7 +182,7 @@ dataCSV.then(function (data) {
             enter => enter.append("path")
             .attr("class", "dot")
             .attr("r", symbol_size)
-            .style("fill", d => habitatColours[d.habitat])
+            .style("fill", d => habitat_colours[d.habitat])
             .style("opacity", dot_opacity)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
@@ -247,15 +204,15 @@ dataCSV.then(function (data) {
                     overlappingDots.forEach(dot => {
                     tooltip_text += `
                         Species: ${dot.commonname}<br/>
-                        Sex: ${sexSymbols[dot.sex]} ${dot.sex}<br/>
-                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitatColours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
+                        Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
                         ${dot.lengthM}m, ${dot.weight}kg<br/>`;
                     });
                 } else {
                     tooltip_text = `
                         Species: ${d.commonname}<br/>
-                        Sex: ${sexSymbols[d.sex]} ${d.sex}<br/>
-                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitatColours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
+                        Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
                         ${d.lengthM}m, ${d.weight}kg<br/>`;
                 }
                 
@@ -291,7 +248,7 @@ dataCSV.then(function (data) {
         .transition()
         .duration(duration)
         .attr("d", d => {
-            const shape = sexShapes[d.sex];
+            const shape = sex_shapes[d.sex];
             if (shape === "circle") {
                 return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
             } else if (shape === "triangle") {
