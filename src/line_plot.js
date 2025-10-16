@@ -50,7 +50,23 @@ svg.append("rect")
     .style("pointer-events", "all")
     .lower();
 
+const labelStuff = svg.append("g")
+    .attr("class", "labelStuff");
+
 dataCSV.then(function (data) {
+    
+    labelStuff.append("text")
+        .attr("class", "filterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .style("font-size", 20)
+        .style("cursor", "pointer")
+        .text("♻")
+        .on("click", function() {
+            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+        })
+
     const tooltip = create_tooltip("#line");
     filteredData = filter_by_countries(data, selectedCountries);
     dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
@@ -108,6 +124,10 @@ dataCSV.then(function (data) {
         const innerHeight = height - margin.top - margin.bottom;
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
+        
+        labelStuff.select(".filterLabel")
+            .attr("x", -28)
+            .attr("y", innerHeight + margin.bottom - 20);
 
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
@@ -353,19 +373,17 @@ dataCSV.then(function (data) {
                 .text(option.label);
         });
     
-    window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="rect"){
-            selectedGranularity = "month"
-            radioContainer.selectAll(".radioOption input[value='month']")
-                            .property("checked", true);
-            radioContainer.property("value", selectedGranularity);
-            radioContainer.dispatch("change");
-            window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
+    window.addEventListener("resetChart", function(event) {
+        selectedGranularity = "month"
+        radioContainer.selectAll(".radioOption input[value='month']")
+                        .property("checked", true);
+        radioContainer.property("value", selectedGranularity);
+        radioContainer.dispatch("change");
+        window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
 
-            filteredData = filter_by_countries(data, selectedCountries);
-            dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-            updateVis(dateObservations);
-        }
+        filteredData = filter_by_countries(data, selectedCountries);
+        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        updateVis(dateObservations);
     });
 
     window.addEventListener("filterByValue", function(event) {

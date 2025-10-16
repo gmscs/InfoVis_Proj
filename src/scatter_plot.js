@@ -28,12 +28,25 @@ svg.append("rect")
     .style("pointer-events", "all")
     .lower();
 
+const labelStuffReset = svg.append("g")
+    .attr("class", "labelStuff");
+
 dataCSV.then(function (data) {
     const tooltip = create_tooltip("#scatter");
     filteredData = filter_by_countries(data, selectedCountries);
     
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
+    labelStuffReset.append("text")
+        .attr("class", "filterLabel")
+        .style("z-index", 100)
+        .style("font-size", 20)
+        .style("cursor", "pointer")
+        .text("♻")
+        .on("click", function() {
+            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+        })
     
     let x = d3.scaleLinear()
         .domain(d3.extent(filteredData, d => d.lengthM))
@@ -46,8 +59,8 @@ dataCSV.then(function (data) {
         .attr("class","x axis")
         .attr("transform", `translate(0,${innerHeight})`)
         .call(g => g.append("text")
-                .attr("x", -20)
-                .attr("y", 30)
+                .attr("x", -10)
+                .attr("y", 27)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
                 .text("Length (m)"));
@@ -158,7 +171,11 @@ dataCSV.then(function (data) {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
         const innerWidth = newWidth - margin.left - margin.right;
-        const innerHeight = newHeight - margin.top - margin.bottom;
+        const innerHeight = newHeight - margin.top - margin.bottom - 16;
+
+        labelStuffReset.select(".filterLabel")
+            .attr("x", -28)
+            .attr("y", newHeight - margin.top - 16);
 
         labelStuff.selectAll(".legend")
             .on("mouseover", function() {
@@ -181,7 +198,7 @@ dataCSV.then(function (data) {
                 tooltip.style("opacity", 0);
             });
                     
-        update_legend_title(legendTitle, innerWidth, innerHeight, -30, 4, "Weight-Length Correlation");
+        update_legend_title(legendTitle, innerWidth, newHeight - margin.bottom - margin.top, -30, 4, "Weight-Length Correlation");
 
         const {type, a, b, c} = quadratic_regression(filteredData);
         let lineData;
@@ -233,7 +250,6 @@ dataCSV.then(function (data) {
             .duration(duration)
             .call(d3.axisLeft(y));
 
-               
         svg.selectAll(".regression-line").remove(); 
         if(regressionLine) {
             const line = d3.line()
@@ -366,17 +382,15 @@ dataCSV.then(function (data) {
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
 
-    window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="rect"){
-            window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
+    window.addEventListener("resetChart", function(event) {
+        window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
 
-            sexApplied = "";
-            labelStuff.selectAll(".legend")
-                .style("opacity", 1);
+        sexApplied = "";
+        labelStuff.selectAll(".legend")
+            .style("opacity", 1);
 
-            filteredData = filter_by_countries(data, selectedCountries);
-            updateVis(filteredData);
-        }
+        filteredData = filter_by_countries(data, selectedCountries);
+        updateVis(filteredData);
     });
 
     window.addEventListener("dateChanged", function(event) {

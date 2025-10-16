@@ -9,21 +9,21 @@ const customDropdownContainer = container.append("div")
   .style("top", "10px")
   .style("right", "10px")
   .style("z-index", "1000")
-  .style("width", "210px");
+  .style("width", "170px");
 const svg = create_svg(container, margin);
 
 const searchInput = customDropdownContainer.append("input")
   .attr("type", "text")
   .attr("id", "countrySearch")
   .attr("placeholder", "Search countries...")
-  .style("width", "200px")
+  .style("width", "150px")
   .style("padding", "5px");
 
 const countryList = customDropdownContainer.append("div")
   .attr("id", "countryList")
   .style("border", "1px solid #ccc")
   .style("max-height", "320px")
-  .style("max-width", "210px")
+  .style("max-width", "162px")
   .style("overflow-y", "auto")
   .style("background-color", "#ffffff")
   .style("display", "none");
@@ -75,6 +75,17 @@ Promise.all([
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
         .text("Active filter: None")
+    labelStuff.append("text")
+        .attr("class", "filterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .style("font-size", 20)
+        .style("cursor", "pointer")
+        .text("♻")
+        .on("click", function() {
+            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+        })
 
     const tooltip = create_tooltip("body");
 
@@ -99,11 +110,11 @@ Promise.all([
             .style("cursor", "pointer")
             .text(d => d)
             .on("mousemove", function() {
-                d3.select(this).style("background-color", "#6bb0d7");
+                d3.select(this).style("background-color", "#bbe5b5");
             })
             .on("mouseleave", function(event, d) {
                 d3.select(this).style("background-color",
-                    (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bed8e7" : "white");
+                    (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bbe5b5" : "white");
             })
             .on("click", function(event, d) {
                 if (d === "All Countries") {
@@ -119,12 +130,11 @@ Promise.all([
             })
             .merge(options)
             .style("background-color", (d, i) => {
-                if (selectedCountries.length === 0 && i === 0) return "#bed8e7"
-                else if (selectedCountries.includes(d)) return "#bed8e7";
+                if (selectedCountries.length === 0 && i === 0) return "#bbe5b5"
+                else if (selectedCountries.includes(d)) return "#bbe5b5";
                 else return "white";
             });
-    }
-    
+    }    
     searchInput
         .on("click", () => {
             if(isFocused) {
@@ -138,6 +148,17 @@ Promise.all([
             }
         })
         .on("input", () => updateCountryList(searchInput.property("value")));
+    
+    document.addEventListener("mousedown", function(event) {
+        const searchBox = searchInput.node();
+        const dropdown = countryList.node();
+
+        if (!searchBox.contains(event.target) && !dropdown.contains(event.target)) {
+            searchInput.node().blur();
+            countryList.style("display", "none");
+            isFocused = false;
+        }
+    });
 
     function updateDropdownOptions() {
         customDropdownContainer.selectAll("option.countryOption")
@@ -357,21 +378,19 @@ Promise.all([
         svg.call(zoom.transform,zoomDefault)
     });
 
-    window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="rect"){
-            selectedCountries = [];
-            updateCountryList();
-            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+    window.addEventListener("resetChart", function(event) {
+        selectedCountries = [];
+        updateCountryList();
+        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
 
-            counts = get_counts_by_country(dataCSV, selectedVariable);
-            d3.select("text").text("Active filter: None");
-            selectedColour = false;
-            selectedCountries = [];
-            highlightSelectedCountry();
-            updateDropdownOptions();
-            updateMap(counts, "resetToGlobal");
-            svg.call(zoom.transform,zoomDefault)
-        }
+        counts = get_counts_by_country(dataCSV, selectedVariable);
+        d3.select("text").text("Active filter: None");
+        selectedColour = false;
+        selectedCountries = [];
+        highlightSelectedCountry();
+        updateDropdownOptions();
+        updateMap(counts, "resetToGlobal");
+        svg.call(zoom.transform,zoomDefault)
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {

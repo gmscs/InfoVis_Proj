@@ -81,6 +81,17 @@ dataCSV.then(function (data) {
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
         .text("Active filter: None")
+    labelStuff.append("text")
+        .attr("class", "filterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .style("font-size", 20)
+        .style("cursor", "pointer")
+        .text("♻")
+        .on("click", function() {
+            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+        })
 
     svg.append("g")
         .attr("class","x axis")
@@ -125,7 +136,7 @@ dataCSV.then(function (data) {
         const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
 
-        labelStuff.select(".filterLabel")
+        labelStuff.selectAll(".filterLabel")
             .attr("x", -200)
             .attr("y", innerHeight + margin.bottom / 1.5);
 
@@ -235,20 +246,18 @@ dataCSV.then(function (data) {
             .text(d.label);
     });
 
-    window.addEventListener("click", function(event) {
-        if(event.target.nodeName==="rect"){
-            filterVal = null;
-            counts = get_counts(data, selectedVariable, filterVal);
-            labelStuff.select(".filterLabel").text("Active filter: None");
-            selectedDot = null;
-            svg.selectAll(".dot")
-                .style("opacity", 1);
-            window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
-            svg.selectAll(".dot").style("opacity", dot_opacity);
-            svg.selectAll(".dot").attr("r", symbol_size);
-            useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+    window.addEventListener("resetChart", function(event) {
+        filterVal = null;
+        counts = get_counts(data, selectedVariable, filterVal);
+        labelStuff.select(".filterLabel").text("Active filter: None");
+        selectedDot = null;
+        svg.selectAll(".dot")
+            .style("opacity", 1);
+        window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
+        svg.selectAll(".dot").style("opacity", dot_opacity);
+        svg.selectAll(".dot").attr("r", symbol_size);
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis(counts);
-        }
     });
 
     window.addEventListener("dateChanged", function(event) {
