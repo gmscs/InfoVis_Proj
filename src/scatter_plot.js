@@ -17,6 +17,7 @@ const labelStuff = svg.append("g")
 let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
+var sexApplied = "";
 
 svg.append("rect")
     .attr("id", "clearBox")
@@ -62,16 +63,92 @@ dataCSV.then(function (data) {
 
     labelStuff.append("text")
         .attr("class", "legend")
+        .attr("id", "fem_leg")
+        .attr("x", innerWidth / 2.3)
         .attr("y", 0)
         .style("z-index", 100)
-        .text("Male: ▲   Female: ✚   Unknown: ●")
+        .style("cursor", "pointer")
+        .style("opacity", 1)
+        .text("Female: ✚")
+        .on("click", function(event) {
+            if(sexApplied != "f") {
+                sexApplied = "f";
+                let postFilterData = filteredData.filter(row => row.sex === "Female");
+
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 0.3);
+                d3.select(this)
+                    .style("opacity", 1);
+
+                updateVis(postFilterData);
+            } else {
+                sexApplied = "";
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 1);
+                updateVis(filteredData);
+            }
+        })
+    labelStuff.append("text")
+        .attr("class", "legend")
+        .attr("id", "mal_leg")
+        .attr("y", 0)
+        .attr("x", innerWidth / 2.69)
+        .style("z-index", 100)
+        .style("cursor", "pointer")
+        .style("opacity", 1)
+        .text("Male: ▲")
+        .on("click", function(event) {
+            if(sexApplied != "m") {
+                sexApplied = "m";
+                let postFilterData = filteredData.filter(row => row.sex === "Male");
+
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 0.3);
+                d3.select(this)
+                    .style("opacity", 1);
+
+                updateVis(postFilterData);
+            } else {
+                sexApplied = "";
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 1);
+                updateVis(filteredData);
+            }
+        })
+    labelStuff.append("text")
+        .attr("class", "legend")
+        .attr("id", "idk_leg")
+        .attr("y", 0)
+        .attr("x", innerWidth / 1.95)
+        .style("z-index", 100)
+        .style("cursor", "pointer")
+        .style("opacity", 1)
+        .text("Unknown: ●")
+        .on("click", function(event) {
+            if(sexApplied != "idk") {
+                sexApplied = "idk";
+                let postFilterData = filteredData.filter(row => row.sex === "Unknown");
+
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 0.3);
+                d3.select(this)
+                    .style("opacity", 1);
+
+                updateVis(postFilterData);
+            } else {
+                sexApplied = "";
+                labelStuff.selectAll(".legend")
+                    .style("opacity", 1);
+                updateVis(filteredData);
+            }
+        })
     
     function brushed(event) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
 
-        filteredData = filter_by_countries(data, selectedCountries);
-        filteredData = filter_by_length_range(filteredData, find_closest_length(data, x, x0), find_closest_length(data, x, x1));
+        filteredData = filter_by_countries(filteredData, selectedCountries);
+        filteredData = filter_by_length_range(filteredData, find_closest_length(filteredData, x, x0), find_closest_length(filteredData, x, x1));
         
         window.dispatchEvent(new CustomEvent("sizeChanged", { detail: filteredData }));
         updateVis(filteredData);
@@ -83,8 +160,7 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom;
 
-        labelStuff.select(".legend")
-            .attr("x", innerWidth / 2.3)
+        labelStuff.selectAll(".legend")
             .on("mouseover", function() {
                 tooltip.style("opacity", .9);
                 tooltip.html("Habitat Colours Shown in Cleveland Plot");
@@ -291,8 +367,12 @@ dataCSV.then(function (data) {
     }
 
     window.addEventListener("click", function(event) {
-        if(event.target.id==="clearBox"){
+        if(event.target.nodeName==="rect"){
             window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
+
+            sexApplied = "";
+            labelStuff.selectAll(".legend")
+                .style("opacity", 1);
 
             filteredData = filter_by_countries(data, selectedCountries);
             updateVis(filteredData);

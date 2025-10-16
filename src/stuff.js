@@ -1,4 +1,4 @@
-export const shared_color = "#2e83be";
+export const shared_color = "#2ea453";
 export const duration = 1000;
 export const symbol_size = 4;
 export const stroke_width = 1.5;
@@ -156,7 +156,7 @@ export function get_colour_scale(counts) {
         d3.quantile(sortedColours, 0.6),
         d3.quantile(sortedColours, 0.8)
     ].filter(d => d !== undefined);
-    return d3.scaleThreshold().domain(colorDomain).range(d3.schemeBlues[5]);
+    return d3.scaleThreshold().domain(colorDomain).range(d3.schemeGreens[5]);
 }
 
 export function filter_by_date(data, filterMonth, filterYear) {
