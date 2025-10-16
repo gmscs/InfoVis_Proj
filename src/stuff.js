@@ -7,15 +7,15 @@ export const dot_opacity = 0.5;
 export const dataCSV = d3.csv("../dataset/crocodile_dataset_processed.csv");
 
 export const sex_shapes = {
-    "Male": "circle",
-    "Female": "triangle",
-    "Unknown": "cross"
+    "Male": "triangle",
+    "Female": "cross",
+    "Unknown": "circle"
 }
 
 export const sex_symbols = {
-    "Male": "●",
-    "Female": "▲",
-    "Unknown": "✚"
+    "Unknown": "●",
+    "Male": "▲",
+    "Female": "✚"
 };
 
 export const habitat_colours = {

@@ -64,7 +64,7 @@ dataCSV.then(function (data) {
         .attr("class", "legend")
         .attr("y", 0)
         .style("z-index", 100)
-        .text("Male: ●   Female: ▲   Unknown: ✚")
+        .text("Male: ▲   Female: ✚   Unknown: ●")
     
     function brushed(event) {
         if(!event.selection) return;
