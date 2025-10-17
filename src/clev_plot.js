@@ -349,6 +349,8 @@ dataCSV.then(function (data) {
         updateVis();
     });
 
+    window.addEventListener("globalReset", resetChart);
+
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();

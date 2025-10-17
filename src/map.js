@@ -424,6 +424,8 @@ Promise.all([
         updateMap("clevValueChanged");
     });
 
+    window.addEventListener("globalReset", resetChart);
+
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateMap("resizeWindow");
     });

@@ -18,6 +18,38 @@
   <div class="title">🐊 A Study on Crocodiles 🐊</div>
 </body>
 
+<script>
+  const resetButton = document.createElement("button");
+  resetButton.id = "globalResetButton";
+  resetButton.textContent = "♻ Reset Dashboard";
+  resetButton.style.cssText = `
+      position: absolute;
+      top: -5px;
+      margin-left: 20px;
+      padding: 8px 8px;
+      background-color: #2ea453;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+  `;
+
+  resetButton.addEventListener("mouseover", function() {
+      this.style.backgroundColor = "#096d28";
+  });
+  resetButton.addEventListener("mouseout", function() {
+      this.style.backgroundColor = "#2ea453";
+  });
+
+  resetButton.addEventListener("click", function() {
+      window.dispatchEvent(new CustomEvent("globalReset"));
+  });
+
+  document.querySelector(".title").appendChild(resetButton);
+</script>
+
 <style>
   body {
     font-family: Arial, sans-serif;
