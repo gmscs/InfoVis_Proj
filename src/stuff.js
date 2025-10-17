@@ -97,6 +97,31 @@ export function filter_by_countries(data, selectedCountries) {
     return filteredData;
 }
 
+export function filter_by_colour(data, colour, colourScale, counts) {
+    const range = colourScale.range();
+    const domain = colourScale.domain();
+
+    if(!colour) return data;
+
+    const colorIndex = range.indexOf(colour);
+    
+    let lower, upper;
+    if (colorIndex === 0) {
+        lower = d3.min(Array.from(counts.values()));
+        upper = domain[colorIndex];
+    } else {
+        lower = domain[colorIndex - 1];
+        upper = (domain[colorIndex] || d3.max(Array.from(counts.values())) + 1);
+    }
+
+    const filteredData = data.filter(d => {
+        const countryCount = counts.get(d.country);
+        return countryCount >= lower && countryCount < upper;
+    });
+
+    return(filteredData);
+}
+
 export function create_svg(container, margin) {
     let svg = container.append("svg")
     .attr("width", "100%")

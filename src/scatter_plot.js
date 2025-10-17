@@ -1,5 +1,6 @@
 import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
-    dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours } from "./stuff.js";
+    dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours,
+     filter_by_date_range, filter_by_date } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 40, bottom: 50, left: 40 };
@@ -18,6 +19,12 @@ let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
 var sexApplied = "";
+
+var selectedVariable = "commonname";
+var clevFilter = null;
+var selectedDate = [];
+var selectedDateRange = [];
+var selectedSizeRange = [];
 
 svg.append("rect")
     .attr("id", "clearBox")
@@ -45,7 +52,7 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("♻")
         .on("click", function() {
-            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+            resetChart();
         })
     
     let x = d3.scaleLinear()
@@ -156,22 +163,53 @@ dataCSV.then(function (data) {
             }
         })
     
+    function resetChart() {
+        selectedSizeRange = [];
+
+        window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
+            detail: selectedSizeRange
+        }));
+        updateVis();
+    }
+
     function brushed(event) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
-
         filteredData = filter_by_countries(filteredData, selectedCountries);
-        filteredData = filter_by_length_range(filteredData, find_closest_length(filteredData, x, x0), find_closest_length(filteredData, x, x1));
+
+        let start = find_closest_length(filteredData, x, x0);
+        let end = find_closest_length(filteredData, x, x1);
+
+        selectedSizeRange = [start, end];
         
-        window.dispatchEvent(new CustomEvent("sizeChanged", { detail: filteredData }));
-        updateVis(filteredData);
+        window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
+            detail: selectedSizeRange
+        }));
+        updateVis();
     }
     
-    function updateVis(filteredData) {
+    function updateVis() {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom - 16;
+
+        let filteredData = Array.from(data);
+        if (selectedCountries.length > 0) {
+            filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
 
         labelStuffReset.select(".filterLabel")
             .attr("x", -28)
@@ -360,7 +398,7 @@ dataCSV.then(function (data) {
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);
-                window.dispatchEvent(new CustomEvent("filterByValueScatter", {
+                window.dispatchEvent(new CustomEvent("filterByValue", {
                     detail: { value: clickedSpecies, attribute: "commonname"}
                 }));
             }),
@@ -394,50 +432,40 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChanged", function(event) {
-        let filteredData = event.detail;
-        updateVis(filteredData);
+        const { month, year } = event.detail;
+        selectedDate = [month, year]
+
+        updateVis();
+    });
+
+    window.addEventListener("dateChangedBrushed", function(event) {
+        selectedDateRange = event.detail;
+
+        updateVis();
     });
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
-        filteredData = data.filter(row => row[attribute] === value);
+        selectedVariable = attribute;
+        clevFilter = value;
 
-        updateVis(filteredData);
-    });
-
-    window.addEventListener("filterByValueScatter", function(event) {
-        const { value, attribute } = event.detail;
-        filteredData = data.filter(row => row[attribute] === value);
-
-        updateVis(filteredData);
+        updateVis();
     });
 
     window.addEventListener("countryChanged", (event) => {
         selectedCountries = event.detail;
-        filteredData = filter_by_countries(data, selectedCountries);
 
-        updateVis(filteredData);
-    });
-
-    window.addEventListener("lineCountrySelect", (event) => {
-        selectedCountries = event.detail;
-        filteredData = filter_by_countries(data, selectedCountries);
-
-        updateVis(filteredData);
+        updateVis();
     });
 
     window.addEventListener("filterByColour", function(event) {
-        let filteredData = event.detail;
-        updateVis(filteredData);
-    });
+        selectedCountries = event.detail;
 
-    window.addEventListener("filterReset", function(event) {
-        filteredData = filter_by_countries(data, selectedCountries);
-        updateVis(filteredData);
+        updateVis();
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateVis(filteredData);
+        updateVis();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 

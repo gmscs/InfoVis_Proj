@@ -1,4 +1,6 @@
-import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color, update_legend_title} from "./stuff.js";
+import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color, 
+    filter_by_colour, update_legend_title, filter_by_date,
+    filter_by_date_range, filter_by_length_range} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
 
@@ -40,13 +42,18 @@ const legendTitle = svg.append("text")
 const legendItemSize = 20;
 const legendSpacing = 4;
     
-let selectedVariable = "commonname";
-let selectedCountries = [];
-let selectedColour = false;
 let counts;
 let isFocused = false;
 
-var colourScale;
+var selectedCountries = [];
+var selectedVariable = "commonname";
+var clevFilter = null;
+var selectedDate = [];
+var selectedDateRange = [];
+var selectedSizeRange = [];
+var selectedColour = null;
+var colourScale = null;
+
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var zoomDefault = new d3.ZoomTransform(1, 0, 0);
@@ -67,8 +74,6 @@ Promise.all([
     d3.json("./dataset/geo.json"),
     dataCSV
 ]).then(([geo, dataCSV]) => {
-    counts = get_counts_by_country(dataCSV, selectedVariable);
-    
     labelStuff.append("text")
         .attr("class", "filterLabel")
         .attr("x", 20)
@@ -84,7 +89,7 @@ Promise.all([
         .style("cursor", "pointer")
         .text("♻")
         .on("click", function() {
-            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+            resetChart();
         })
 
     const tooltip = create_tooltip("body");
@@ -92,6 +97,16 @@ Promise.all([
     const countries = Array.from(new Set(dataCSV.map(d => d.country)));
     countries.push("All Countries");
     countries.sort();
+
+    function resetChart() {
+        selectedCountries = [];
+        selectedColour = null;
+
+        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+
+        highlightSelectedCountry();
+        updateMap();
+    }
     
     function updateCountryList(filter = "") {
         const filteredCountries = countries.filter(country =>
@@ -171,32 +186,32 @@ Promise.all([
             .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
 
-    function filter_by_colour(colour) {
-        selectedColour = true;
-        const range = colourScale.range();
-        const domain = colourScale.domain();
-        const colorIndex = range.indexOf(colour);
+    function updateMap(origin=null) {
+        //console.log(origin);
         
-        let lower, upper;
-        if (colorIndex === 0) {
-            lower = d3.min(Array.from(counts.values()));
-            upper = domain[colorIndex];
-        } else {
-            lower = domain[colorIndex - 1];
-            upper = (domain[colorIndex] || d3.max(Array.from(counts.values())) + 1);
+        // Data Stuff Here
+        let filteredData = Array.from(dataCSV);
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        var counts = get_counts_by_country(filteredData);
+        colourScale = get_colour_scale(counts);
+
+        if (selectedColour != null) {
+            filteredData = filter_by_colour(filteredData, selectedColour, colourScale, counts);
         }
 
-        const filteredData = dataCSV.filter(d => {
-            const countryCount = counts.get(d.country);
-                return countryCount >= lower && countryCount < upper;
-        });
-
-        return(filteredData);
-    }
-
-    function updateMap(counts, origin=null) {
-        //console.log(origin);
-        colourScale = get_colour_scale(counts);
+        counts = get_counts_by_country(filteredData);
+        
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
@@ -230,17 +245,24 @@ Promise.all([
             .attr("fill", (d) => d)
             .attr("stroke", shared_color)
             .on("click", (event, d) => {
-                if(!selectedColour) {
-                    event.stopPropagation();
-                    let filteredData = filter_by_colour(d);
-                    counts = get_counts_by_country(filteredData);
-                    const filterEvent = new CustomEvent("filterByColour", {
-                        detail: filteredData
-                    });
-                    window.dispatchEvent(filterEvent);
-
-                    updateMap(counts, "filterColour");
+                event.stopPropagation();
+                const legendItem = d3.select(event.currentTarget.parentNode);
+                if (selectedColour !== d) {
+                    selectedColour = d;
+                    colourLegend.selectAll("g.legend-item").style("opacity", 0.3);
+                    legendItem.style("opacity", 1);
+                } else {
+                    selectedColour = null;
+                    colourLegend.selectAll("g.legend-item").style("opacity", 1);
                 }
+                
+                let newFilterData = filter_by_colour(dataCSV, selectedColour, colourScale, counts);
+                const countriesArray = [...new Set(newFilterData.map(d => d.country))];
+                
+                window.dispatchEvent(new CustomEvent("filterByColour", {
+                            detail: countriesArray
+                        }));
+                updateMap("filterColour");
             });
 
         enterItems.append("text")
@@ -321,23 +343,26 @@ Promise.all([
     highlightSelectedCountry();
 
     window.addEventListener("dateChanged", function(event) {
-        const filteredData = event.detail;
-        counts = get_counts_by_country(filteredData);
-        updateMap(counts, "datechanged");
+        const { month, year } = event.detail;
+        selectedDate = [month, year]
+        updateMap("datechanged");
     });
 
-    window.addEventListener("sizeChanged", function(event) {
-        const filteredData = event.detail;
-        counts = get_counts_by_country(filteredData);
-        updateMap(counts, "sizechanged");
+    window.addEventListener("dateChangedBrushed", function(event) {
+        selectedDateRange = event.detail;
+
+        updateMap("datechangedBrushed");
     });
 
-    window.addEventListener("lineCountrySelect", function(event) {
+    window.addEventListener("sizeChangedBrushed", function(event) {
+        selectedSizeRange = event.detail;
+        
+        updateMap("sizechangedBrushed");
+    });
+
+    window.addEventListener("countryChanged", function(event) {
         selectedCountries = event.detail;
-        const filteredData = dataCSV.filter(row => row.country === selectedCountries[0]);
-        counts = get_counts_by_country(filteredData);
-
-        updateMap(counts, "lineCountrySelect");
+        updateMap("lineCountrySelect");
     })
 
     window.addEventListener("lineCountryHighlight", function(event) {
@@ -349,52 +374,15 @@ Promise.all([
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
-        const filteredData = dataCSV.filter(row => row[attribute] === value);
+        selectedVariable = attribute;
+        clevFilter = value;
 
-        counts = get_counts_by_country(filteredData);
         d3.select("text").text("Active filter: " + value)
-        updateMap(counts, "clevValueChanged");
-    });
-
-    window.addEventListener("filterByValueScatter", function(event) {
-        const { value, attribute } = event.detail;
-        const filteredData = dataCSV.filter(row => row[attribute] === value);
-
-        counts = get_counts_by_country(filteredData);
-        d3.select("text").text("Active filter: " + value)
-        updateMap(counts, "clevValueChanged");
-    });
-
-    window.addEventListener("filterReset", (event) => {
-        selectedCountries = [];
-
-        counts = get_counts_by_country(dataCSV, selectedVariable);
-        d3.select("text").text("Active filter: None");
-        selectedColour = false;
-        selectedCountries = [];
-        highlightSelectedCountry();
-        updateDropdownOptions();
-        updateMap(counts, "resetToGlobal");
-        svg.call(zoom.transform,zoomDefault)
-    });
-
-    window.addEventListener("resetChart", function(event) {
-        selectedCountries = [];
-        updateCountryList();
-        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
-
-        counts = get_counts_by_country(dataCSV, selectedVariable);
-        d3.select("text").text("Active filter: None");
-        selectedColour = false;
-        selectedCountries = [];
-        highlightSelectedCountry();
-        updateDropdownOptions();
-        updateMap(counts, "resetToGlobal");
-        svg.call(zoom.transform,zoomDefault)
+        updateMap("clevValueChanged");
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateMap(counts, "resizeWindow");
+        updateMap("resizeWindow");
     });
     whyWouldYouDoThisToMe.observe(container.node());
 

@@ -1,4 +1,6 @@
-import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, symbol_size, dot_opacity, update_legend_title} from "./stuff.js";
+import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
+        find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
+        symbol_size, dot_opacity, update_legend_title, filter_by_length_range} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -11,6 +13,12 @@ let selectedGranularity = "month";
 let dateObservations;
 let selectedChart = "line";
 var filteredData;
+
+var selectedVariable = "commonname";
+var clevFilter = null;
+var selectedDate = [];
+var selectedDateRange = [];
+var selectedSizeRange = [];
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -64,7 +72,7 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("♻")
         .on("click", function() {
-            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+            resetChart();
         })
 
     const tooltip = create_tooltip("#line");
@@ -88,18 +96,34 @@ dataCSV.then(function (data) {
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
                 .text("Observations"));
+    
+    function resetChart() {
+        selectedDate = [];
+        selectedDateRange = [];
 
+        window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+            detail: []
+        }));
+        window.dispatchEvent(new CustomEvent("dateChanged", { 
+            detail: { month: null, year: null } 
+        }));
+        updateVis();
+    }
     
     function brushed(event) {
         if(!event.selection) return;
         const [x0, x1] = event.selection;
-        
-        filteredData = filter_by_countries(data, selectedCountries);
-        filteredData = filter_by_date_range(filteredData, find_closest_date(dateObservations, x, x0), find_closest_date(dateObservations, x, x1));
 
-        window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
+        filteredData = filter_by_countries(data, selectedCountries);
+        let start = find_closest_date(dateObservations, x, x0);
+        let end = find_closest_date(dateObservations, x, x1);
+        
+        selectedDateRange = [start, end];
+
+        window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+            detail: selectedDateRange
+        }));
+        updateVis();
     }
 
     checkboxContainer.append("input")
@@ -116,9 +140,27 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("Merge data");
 
-    function updateVis(dateObservations) {
+    function updateVis() {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
+
+        let filteredData = Array.from(data);
+        if (selectedCountries.length > 0) {
+            filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        var dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
@@ -176,7 +218,7 @@ dataCSV.then(function (data) {
                         const clickedCountry = d.z;
                         if(clickedCountry != "global") {
                             selectedCountries = [clickedCountry];
-                            window.dispatchEvent(new CustomEvent("lineCountrySelect", { detail: selectedCountries }));
+                            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
                             filteredData = filter_by_countries(data, selectedCountries);
                             dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                             updateVis(dateObservations);
@@ -299,7 +341,9 @@ dataCSV.then(function (data) {
                             .property("checked", true);
                         filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, null, selectedDate.date.getFullYear());
-                        window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
+                        window.dispatchEvent(new CustomEvent("dateChanged", { 
+                            detail: { month: null, year: selectedDate.date.getFullYear() } 
+                        }));
                         filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     else if(selectedGranularity === "month") {
@@ -309,7 +353,9 @@ dataCSV.then(function (data) {
                             .property("checked", true);
                         filteredData = filter_by_countries(data, selectedCountries);
                         filteredData = filter_by_date(filteredData, selectedDate.date.getMonth() + 1, selectedDate.date.getFullYear());
-                        window.dispatchEvent(new CustomEvent("dateChanged", { detail: filteredData }));
+                        window.dispatchEvent(new CustomEvent("dateChanged", { 
+                            detail: { month: selectedDate.date.getMonth() + 1, year: selectedDate.date.getFullYear() } 
+                        }));
                         filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     tooltip.transition()
@@ -372,65 +418,35 @@ dataCSV.then(function (data) {
                 .style("cursor", "pointer")
                 .text(option.label);
         });
-    
-    window.addEventListener("resetChart", function(event) {
-        selectedGranularity = "month"
-        radioContainer.selectAll(".radioOption input[value='month']")
-                        .property("checked", true);
-        radioContainer.property("value", selectedGranularity);
-        radioContainer.dispatch("change");
-        window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
-
-        filteredData = filter_by_countries(data, selectedCountries);
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
-    });
 
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
-        filteredData = data.filter(row => row[attribute] === value);
+        selectedVariable = attribute;
+        clevFilter = value;
 
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
+        updateVis();
     });
 
-    window.addEventListener("filterByValueScatter", function(event) {
-        const { value, attribute } = event.detail;
-        filteredData = data.filter(row => row[attribute] === value);
+    window.addEventListener("sizeChangedBrushed", function(event) {
+        selectedSizeRange = event.detail;
 
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
-    });
-
-    window.addEventListener("sizeChanged", function(event) {
-        filteredData = event.detail;
-
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
+        updateVis();
     });
 
     window.addEventListener("filterByColour", function(event) {
-        filteredData = event.detail;
+        selectedCountries = event.detail;
 
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
+        updateVis();
     });
 
     window.addEventListener("countryChanged", (event) => {
         selectedCountries = event.detail;
-        filteredData = filter_by_countries(data, selectedCountries);
 
-        dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-        updateVis(dateObservations);
-    });
-
-    window.addEventListener("filterReset", (event) => {
-        dateObservations = get_date_observations_by_granularity(data, selectedGranularity);
-        updateVis(dateObservations);
+        updateVis();
     });
     
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        updateVis(dateObservations);
+        updateVis();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 

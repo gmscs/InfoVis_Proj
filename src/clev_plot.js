@@ -1,5 +1,6 @@
 import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
-    filter_by_countries, update_legend_title, habitat_colours} from "./stuff.js";
+    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours, 
+    filter_by_length_range, filter_by_colour } from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 60, left: 210 };
@@ -9,15 +10,21 @@ const svg = create_svg(container, margin);
 const labelStuff = svg.append("g")
     .attr("class", "labelStuff");
 
-let selectedVariable = "commonname";
 let selectedDot = null;
 let selectedLabel = "Species";
 let filteredData;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
-var filterVal = null;
 var useHabitatColors = false;
+
+var counts;
+var selectedCountries = [];
+var selectedVariable = "commonname";
+var clevFilter = null;
+var selectedDate = [];
+var selectedDateRange = [];
+var selectedSizeRange = [];
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -45,35 +52,7 @@ svg.append("rect")
     .lower();
 
 dataCSV.then(function (data) {
-    filteredData = data;
-    let counts = get_counts(filteredData, selectedVariable);
-
     const tooltip = create_tooltip("#clev");
-
-    var mouseover = function (d) {
-        tooltip.style("opacity", 2).style("s");
-        d3.select(this).attr("r", symbol_size * 1.5);
-        d3.select(this).style("opacity", 1);
-    }
-
-    var mouseleave = function (d) {
-        tooltip.transition().duration(duration / 5).style("opacity", 0);
-        if(selectedDot != d.target.__data__) {
-            d3.select(this).attr("r", symbol_size);
-            d3.select(this).style("opacity", dot_opacity);
-        } else {
-            d3.select(this).attr("r", symbol_size * 1.5);
-            d3.select(this).style("opacity", 1);
-        }
-    }
-
-    var mousemove = (event, d) => {
-        const key = typeof d === "string" ? d : d[selectedVariable];
-        const containerRect = container.node().getBoundingClientRect();
-        tooltip.html("Observations: " + counts.get(key))
-            .style("left", (event.pageX - containerRect.left + 10) + "px")
-            .style("top", (event.pageY - containerRect.top + 10) + "px");
-    }
 
     labelStuff.append("text")
         .attr("class", "filterLabel")
@@ -90,8 +69,18 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("♻")
         .on("click", function() {
-            window.dispatchEvent(new CustomEvent("resetChart", { detail: 0 }));
+            resetChart();
         })
+    
+    function resetChart() {
+        clevFilter = null;
+        selectedVariable = "commonname";
+
+        window.dispatchEvent(new CustomEvent("filterByValue", {
+            detail: { value: clevFilter, attribute: selectedVariable}
+        }));
+        updateVis();
+    }
 
     svg.append("g")
         .attr("class","x axis")
@@ -111,9 +100,8 @@ dataCSV.then(function (data) {
         .attr("id", "habitatColorCheckbox")
         .style("cursor", "pointer")
         .on("change", function() {
-            const counts = get_counts(filteredData, selectedVariable, filterVal);
             useHabitatColors = this.checked;
-            updateVis(counts);
+            updateVis();
         });
 
     habitatCheckboxContainer.append("label")
@@ -121,11 +109,28 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .text("Show Habitat Colours");
 
-    function updateVis(counts) {
+    function updateVis() {
+
+        // Data Stuff Here
+        let filteredData = Array.from(data);
+        if (selectedCountries.length > 0) {
+            filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        var counts = get_counts(filteredData, selectedVariable, clevFilter);
+
         const maxCount = d3.max(Array.from(counts.values()));
 
-        if(filterVal != null) {
-            labelStuff.select(".filterLabel").text("Active filter: " + filterVal);
+        if(clevFilter != null) {
+            labelStuff.select(".filterLabel").text("Active filter: " + clevFilter);
         } else {
             labelStuff.select(".filterLabel").text("Active filter: None");
         }
@@ -179,13 +184,32 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", d => (d == filterVal) ? symbol_size * 1.5 : symbol_size)
+                .attr("r", d => (d == clevFilter) ? symbol_size * 1.5 : symbol_size)
                 .style("fill", d => useHabitatColors ? habitat_colours[d] || shared_color : shared_color)
-                .style("opacity", d => (d == filterVal) ? 1 : dot_opacity)
+                .style("opacity", d => (d == clevFilter) ? 1 : dot_opacity)
                 .style("cursor", "pointer")
-                .on("mouseover", mouseover)
-                .on("mousemove", mousemove)
-                .on("mouseleave", mouseleave)
+                .on("mouseover", function (d) {
+                    tooltip.style("opacity", 2).style("s");
+                    d3.select(this).attr("r", symbol_size * 1.5);
+                    d3.select(this).style("opacity", 1);
+                })
+                .on("mousemove", (event, d) => {
+                    const key = typeof d === "string" ? d : d[selectedVariable];
+                    const containerRect = container.node().getBoundingClientRect();
+                    tooltip.html("Observations: " + counts.get(key))
+                        .style("left", (event.pageX - containerRect.left + 10) + "px")
+                        .style("top", (event.pageY - containerRect.top + 10) + "px");
+                })
+                .on("mouseleave", function (d) {
+                    tooltip.transition().duration(duration / 5).style("opacity", 0);
+                    if(selectedDot != d.target.__data__) {
+                        d3.select(this).attr("r", symbol_size);
+                        d3.select(this).style("opacity", dot_opacity);
+                    } else {
+                        d3.select(this).attr("r", symbol_size * 1.5);
+                        d3.select(this).style("opacity", 1);
+                    }
+                })
                 .on("click", function(event, d) {
                     let filterEvent;
                     const prevDot = selectedDot;
@@ -193,23 +217,22 @@ dataCSV.then(function (data) {
                     if (selectedDot != null && prevDot == selectedDot) {
                         svg.selectAll(".dot").style("opacity", dot_opacity);
                         selectedDot = null;
-                        filterVal = null;
-                        counts = get_counts(filteredData, selectedVariable, filterVal);
-                        filterEvent = new CustomEvent("filterReset");
-
+                        clevFilter = null;
+                        filterEvent = new CustomEvent("filterByValue", {
+                            detail: { value: clevFilter, attribute: selectedVariable}
+                        });
                     }
                     else if(selectedDot != null) {
                         svg.selectAll(".dot")
                             .style("opacity", d => d === selectedDot ? 1 : dot_opacity)
                             .attr("r", d => (d == selectedDot) ? symbol_size * 1.5 : symbol_size);
-                        filterVal = d;
-                        counts = get_counts(filteredData, selectedVariable, filterVal);
+                        clevFilter = d;
                         filterEvent = new CustomEvent("filterByValue", {
-                            detail: { value: filterVal, attribute: selectedVariable}
+                            detail: { value: clevFilter, attribute: selectedVariable}
                         });
                     }
                     window.dispatchEvent(filterEvent);
-                    updateVis(counts, useHabitatColors);
+                    updateVis();
                 }),
               update => update
                 .style("fill", d => useHabitatColors ? habitat_colours[d] || shared_color : shared_color),
@@ -236,9 +259,8 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
-                counts = get_counts(filteredData, selectedVariable, filterVal);
                 useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-                updateVis(counts);
+                updateVis();
             });
             div.append("label")
             .attr("for", `radio_${i}`)
@@ -246,65 +268,45 @@ dataCSV.then(function (data) {
             .text(d.label);
     });
 
-    window.addEventListener("resetChart", function(event) {
-        filterVal = null;
-        counts = get_counts(data, selectedVariable, filterVal);
-        labelStuff.select(".filterLabel").text("Active filter: None");
-        selectedDot = null;
-        svg.selectAll(".dot")
-            .style("opacity", 1);
-        window.dispatchEvent(new CustomEvent("countryChanged", { detail: [] }));
-        svg.selectAll(".dot").style("opacity", dot_opacity);
-        svg.selectAll(".dot").attr("r", symbol_size);
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
-    });
-
     window.addEventListener("dateChanged", function(event) {
-        filteredData = event.detail;
+        const { month, year } = event.detail;
+        selectedDate = [month, year]
 
-        counts = get_counts(filteredData, selectedVariable, filterVal);
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
     });
 
-    window.addEventListener("sizeChanged", function(event) {
-        filteredData = event.detail;
+    window.addEventListener("dateChangedBrushed", function(event) {
+        selectedDateRange = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable, filterVal);
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
+    });
+
+    window.addEventListener("sizeChangedBrushed", function(event) {
+        selectedSizeRange = event.detail;
+
+        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis();
     });
 
     window.addEventListener("countryChanged", (event) => {
-        let selectedCountries = event.detail;
-        filteredData = filter_by_countries(data, selectedCountries);
-        labelStuff.select(".filterLabel").text("Active filter: dedd" + selectedCountries);
-        counts = get_counts(filteredData, selectedVariable, filterVal);
+        selectedCountries = event.detail;
+
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
-    });
-    
-    window.addEventListener("lineCountrySelect", (event) => {
-        let selectedCountries = event.detail;
-        filteredData = filter_by_countries(data, selectedCountries);
-        labelStuff.select(".filterLabel").text("Active filter: " + selectedCountries);
-        counts = get_counts(filteredData, selectedVariable, filterVal);
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
     });
 
     window.addEventListener("filterByColour", function(event) {
-        filteredData = event.detail;
+        selectedCountries = event.detail;
 
-        counts = get_counts(filteredData, selectedVariable, filterVal);
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
     });
 
-    window.addEventListener("filterByValueScatter", function(event) {
+    window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
-        filterVal = value;
+        clevFilter = value;
         selectedVariable = attribute;
 
         radioContainer.selectAll(".radioOptions input[type='radio']")
@@ -312,17 +314,15 @@ dataCSV.then(function (data) {
                 return d.value === selectedVariable;
             });
         
-        counts = get_counts(filteredData, selectedVariable, filterVal);
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
     });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        counts = get_counts(filteredData, selectedVariable, filterVal);
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
-        updateVis(counts);
+        updateVis();
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    updateVis(counts, false);
+    updateVis();
 });
