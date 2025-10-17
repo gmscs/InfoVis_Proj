@@ -118,8 +118,7 @@ dataCSV.then(function (data) {
                 .text("Weight (kg)"));
 
     labelStuff.append("text")
-        .attr("class", "legend")
-        .attr("id", "fem_leg")
+        .attr("class", "legend fem_legend")
         .attr("x", innerWidth / 2.3)
         .attr("y", 0)
         .style("z-index", 100)
@@ -145,8 +144,7 @@ dataCSV.then(function (data) {
             }
         })
     labelStuff.append("text")
-        .attr("class", "legend")
-        .attr("id", "mal_leg")
+        .attr("class", "legend mal_legend")
         .attr("y", 0)
         .attr("x", innerWidth / 2.69)
         .style("z-index", 100)
@@ -172,8 +170,7 @@ dataCSV.then(function (data) {
             }
         })
     labelStuff.append("text")
-        .attr("class", "legend")
-        .attr("id", "idk_leg")
+        .attr("class", "legend idk_legend")
         .attr("y", 0)
         .attr("x", innerWidth / 1.95)
         .style("z-index", 100)
@@ -257,6 +254,15 @@ dataCSV.then(function (data) {
         labelStuffReset.select(".resetFilterLabel")
             .attr("x", -30)
             .attr("y", newHeight - 37);
+        
+        labelStuff.select(".fem_legend")
+            .attr("x", innerWidth / 2.3)
+        
+        labelStuff.select(".mal_legend")
+            .attr("x", innerWidth / 2.69)
+        
+        labelStuff.select(".idk_legend")
+            .attr("x", innerWidth / 1.95)
 
         labelStuff.selectAll(".legend")
             .on("mouseover", function() {
