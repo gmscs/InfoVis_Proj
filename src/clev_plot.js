@@ -55,13 +55,29 @@ dataCSV.then(function (data) {
     const tooltip = create_tooltip("#clev");
 
     labelStuff.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel activeFilterLabel")
         .attr("x", 20)
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
+        .style("cursor", "pointer")
         .text("Active filter: None")
+        .on("click", function() {
+            resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
     labelStuff.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel resetFilterLabel")
         .attr("x", 20)
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
@@ -70,6 +86,18 @@ dataCSV.then(function (data) {
         .text("♻")
         .on("click", function() {
             resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
     
     function resetChart() {
@@ -141,9 +169,13 @@ dataCSV.then(function (data) {
         const innerWidth = width - margin.left - margin.right - padding;
         const innerHeight = height - margin.top - margin.bottom;
 
-        labelStuff.selectAll(".filterLabel")
+        labelStuff.select(".activeFilterLabel")
+            .attr("x", -180)
+            .attr("y", innerHeight + margin.bottom / 1.4);
+
+        labelStuff.select(".resetFilterLabel")
             .attr("x", -200)
-            .attr("y", innerHeight + margin.bottom / 1.5);
+            .attr("y", innerHeight + margin.bottom / 1.32);
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -30, 5, `Observations by ${selectedLabel}`);
         
@@ -269,8 +301,7 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChanged", function(event) {
-        const { month, year } = event.detail;
-        selectedDate = [month, year]
+        selectedDate = event.detail;
 
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();

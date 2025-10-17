@@ -46,13 +46,49 @@ dataCSV.then(function (data) {
     const innerHeight = height - margin.top - margin.bottom;
 
     labelStuffReset.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel activeFilterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .style("cursor", "pointer")
+        .text("Active filter: None")
+        .on("click", function() {
+            resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
+    labelStuffReset.append("text")
+        .attr("class", "filterLabel resetFilterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
         .style("z-index", 100)
         .style("font-size", 20)
         .style("cursor", "pointer")
         .text("♻")
         .on("click", function() {
             resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
     
     let x = d3.scaleLinear()
@@ -194,6 +230,7 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom - 16;
 
+        let filterText = " None";
         let filteredData = Array.from(data);
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
@@ -209,11 +246,17 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+            filterText = selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
         }
 
-        labelStuffReset.select(".filterLabel")
-            .attr("x", -28)
-            .attr("y", newHeight - margin.top - 16);
+        labelStuffReset.select(".activeFilterLabel")
+            .attr("x", -10)
+            .attr("y", newHeight - 40)
+            .text("Active filter: " + filterText);
+
+        labelStuffReset.select(".resetFilterLabel")
+            .attr("x", -30)
+            .attr("y", newHeight - 37);
 
         labelStuff.selectAll(".legend")
             .on("mouseover", function() {
@@ -432,8 +475,7 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChanged", function(event) {
-        const { month, year } = event.detail;
-        selectedDate = [month, year]
+        selectedDate = event.detail;
 
         updateVis();
     });

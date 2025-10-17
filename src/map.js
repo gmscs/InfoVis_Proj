@@ -75,13 +75,29 @@ Promise.all([
     dataCSV
 ]).then(([geo, dataCSV]) => {
     labelStuff.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel activeFilterLabel")
         .attr("x", 20)
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
+        .style("cursor", "pointer")
         .text("Active filter: None")
+        .on("click", function() {
+            resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this map.")
+                .style("left", (event.pageX - containerRect.left + 30) + "px")
+                .style("top", (event.pageY - containerRect.top + 30) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
     labelStuff.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel resetFilterLabel")
         .attr("x", 20)
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
@@ -91,12 +107,20 @@ Promise.all([
         .on("click", function() {
             resetChart();
         })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this map.")
+                .style("left", (event.pageX - containerRect.left + 30) + "px")
+                .style("top", (event.pageY - containerRect.top + 30) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
 
     const tooltip = create_tooltip("body");
-
-    const countries = Array.from(new Set(dataCSV.map(d => d.country)));
-    countries.push("All Countries");
-    countries.sort();
 
     function resetChart() {
         selectedCountries = [];
@@ -107,6 +131,10 @@ Promise.all([
         highlightSelectedCountry();
         updateMap();
     }
+
+    var countries = Array.from(new Set(dataCSV.map(d => d.country)));
+    countries.push("All Countries");
+    countries.sort();
     
     function updateCountryList(filter = "") {
         const filteredCountries = countries.filter(country =>
@@ -211,6 +239,10 @@ Promise.all([
         }
 
         counts = get_counts_by_country(filteredData);
+
+        countries = Array.from(new Set(filteredData.map(d => d.country)));
+        countries.push("All Countries");
+        countries.sort();
         
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
@@ -219,9 +251,14 @@ Promise.all([
 
         update_legend_title(legendTitle, width, height, 1, 1, "Observations per Country");
 
-        labelStuff.select(".filterLabel")
+        labelStuff.select(".activeFilterLabel")
+            .attr("x", 40)
+            .attr("y", height + 2)
+            .text("Active filter: " + selectedCountries.length + " selected countries");
+
+        labelStuff.select(".resetFilterLabel")
             .attr("x", 20)
-            .attr("y", height + margin.bottom);
+            .attr("y", height + 5);
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 
@@ -343,8 +380,8 @@ Promise.all([
     highlightSelectedCountry();
 
     window.addEventListener("dateChanged", function(event) {
-        const { month, year } = event.detail;
-        selectedDate = [month, year]
+        selectedDate = event.detail;
+
         updateMap("datechanged");
     });
 
@@ -356,7 +393,7 @@ Promise.all([
 
     window.addEventListener("sizeChangedBrushed", function(event) {
         selectedSizeRange = event.detail;
-        
+
         updateMap("sizechangedBrushed");
     });
 
@@ -377,7 +414,6 @@ Promise.all([
         selectedVariable = attribute;
         clevFilter = value;
 
-        d3.select("text").text("Active filter: " + value)
         updateMap("clevValueChanged");
     });
 

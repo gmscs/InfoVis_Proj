@@ -64,7 +64,29 @@ const labelStuff = svg.append("g")
 dataCSV.then(function (data) {
     
     labelStuff.append("text")
-        .attr("class", "filterLabel")
+        .attr("class", "filterLabel activeFilterLabel")
+        .attr("x", 20)
+        .attr("y", height + margin.bottom)
+        .style("z-index", 100)
+        .style("cursor", "pointer")
+        .text("Active filter: None")
+        .on("click", function() {
+            resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
+    labelStuff.append("text")
+        .attr("class", "filterLabel resetFilterLabel")
         .attr("x", 20)
         .attr("y", height + margin.bottom)
         .style("z-index", 100)
@@ -73,6 +95,18 @@ dataCSV.then(function (data) {
         .text("♻")
         .on("click", function() {
             resetChart();
+        })
+        .on("mouseover", function (d) {
+            tooltip.style("opacity", 2).style("s");
+        })
+        .on("mousemove", (event, d) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Click here to remove the filters applied by this chart.")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function (d) {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
 
     const tooltip = create_tooltip("#line");
@@ -105,7 +139,7 @@ dataCSV.then(function (data) {
             detail: []
         }));
         window.dispatchEvent(new CustomEvent("dateChanged", { 
-            detail: { month: null, year: null } 
+            detail: selectedDate 
         }));
         updateVis();
     }
@@ -143,7 +177,7 @@ dataCSV.then(function (data) {
     function updateVis() {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
-
+        let filterText = " None";
         let filteredData = Array.from(data);
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
@@ -153,9 +187,14 @@ dataCSV.then(function (data) {
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+            if(selectedDate[0] != null) filterText = selectedDate[0] + "/" + selectedDate[1];
+            else filterText = "" + selectedDate[1];
         }
         if (selectedDateRange.length > 0) {
             filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+            let month0 = selectedDateRange[0].getMonth() + 1;
+            let month1 = selectedDateRange[1].getMonth() + 1;
+            filterText =  month0 + "/" + selectedDateRange[0].getFullYear() + " - " + month1 + "/" + selectedDateRange[1].getFullYear();
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
@@ -167,9 +206,14 @@ dataCSV.then(function (data) {
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
         
-        labelStuff.select(".filterLabel")
-            .attr("x", -28)
-            .attr("y", innerHeight + margin.bottom - 20);
+        labelStuff.select(".activeFilterLabel")
+            .attr("x", -10)
+            .attr("y", height - 80)
+            .text("Active filter: " + filterText);
+
+        labelStuff.select(".resetFilterLabel")
+            .attr("x", -30)
+            .attr("y", height - 78);
 
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
@@ -246,13 +290,13 @@ dataCSV.then(function (data) {
         }
             
         svg.select(".x.axis")
-            .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
+            .attr("transform", `translate(0,${innerHeight - 17})`)
             .transition()
             .duration(duration)
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
         svg.selectAll(".y.axis")
-            .attr("transform", `translate(0,0)`)
+            .attr("transform", `translate(0,-17)`)
             .transition()
             .duration(duration)
             .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
@@ -335,33 +379,29 @@ dataCSV.then(function (data) {
                 })
                 .on("click", function(event, d) {
                     if(selectedGranularity === "year") {
-                        const selectedDate = d;
+                        const clickedDate = d;
                         selectedGranularity = "month";
                         radioContainer.selectAll(".radioOption input[value='month']")
                             .property("checked", true);
-                        filteredData = filter_by_countries(data, selectedCountries);
-                        filteredData = filter_by_date(filteredData, null, selectedDate.date.getFullYear());
+                        selectedDate = [null, clickedDate.date.getFullYear()]
                         window.dispatchEvent(new CustomEvent("dateChanged", { 
-                            detail: { month: null, year: selectedDate.date.getFullYear() } 
+                            detail: selectedDate
                         }));
-                        filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     else if(selectedGranularity === "month") {
-                        const selectedDate = d;
+                        const clickedDate = d;
                         selectedGranularity = "day";
                         radioContainer.selectAll(".radioOption input[value='day']")
                             .property("checked", true);
-                        filteredData = filter_by_countries(data, selectedCountries);
-                        filteredData = filter_by_date(filteredData, selectedDate.date.getMonth() + 1, selectedDate.date.getFullYear());
+                        selectedDate = [clickedDate.date.getMonth() + 1, clickedDate.date.getFullYear()]
                         window.dispatchEvent(new CustomEvent("dateChanged", { 
-                            detail: { month: selectedDate.date.getMonth() + 1, year: selectedDate.date.getFullYear() } 
+                            detail: selectedDate 
                         }));
-                        filteredDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
                     }
                     tooltip.transition()
                         .duration(duration / 2)
                         .style("opacity", 0);
-                    updateVis(filteredDateObservations);
+                    updateVis();
                 }),
                 update => update,
                 exit => exit.remove()
