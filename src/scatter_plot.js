@@ -192,7 +192,8 @@ dataCSV.then(function (data) {
         sexApplied = "";
         labelStuff.selectAll(".legend")
             .style("opacity", 1);
-
+            
+        window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
         window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
             detail: selectedSizeRange
         }));
