@@ -128,6 +128,7 @@ Promise.all([
 
         window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
 
+        svg.call(zoom.transform,zoomDefault)
         highlightSelectedCountry();
         updateMap();
     }
@@ -180,23 +181,29 @@ Promise.all([
     }    
     searchInput
         .on("click", () => {
-            if(isFocused) {
-                searchInput.node().blur();
-                countryList.style("display", "none");
-                isFocused = false;
-            } else {
                 searchInput.node().focus();
                 countryList.style("display", "block");
                 isFocused = true;
-            }
-        })
+            })
         .on("input", () => updateCountryList(searchInput.property("value")));
     
     document.addEventListener("mousedown", function(event) {
+        if (event.defaultPrevented) {
+            console.log("Event was prevented");
+            return;
+        }
         const searchBox = searchInput.node();
         const dropdown = countryList.node();
 
         if (!searchBox.contains(event.target) && !dropdown.contains(event.target)) {
+            searchInput.node().blur();
+            countryList.style("display", "none");
+            isFocused = false;
+        }
+    });
+
+    svg.on("mousedown", function(event) {
+        if (!searchInput.node().contains(event.target) && !countryList.node().contains(event.target)) {
             searchInput.node().blur();
             countryList.style("display", "none");
             isFocused = false;
