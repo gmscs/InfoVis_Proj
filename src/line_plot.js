@@ -19,6 +19,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var sexApplied = "";
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -184,6 +185,9 @@ dataCSV.then(function (data) {
         }
         if (clevFilter != null) {
             filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
@@ -463,6 +467,12 @@ dataCSV.then(function (data) {
         const { value, attribute } = event.detail;
         selectedVariable = attribute;
         clevFilter = value;
+
+        updateVis();
+    });
+
+    window.addEventListener("sexChanged", function(event) {
+        sexApplied = event.detail;
 
         updateVis();
     });

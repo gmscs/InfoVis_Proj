@@ -126,22 +126,19 @@ dataCSV.then(function (data) {
         .style("opacity", 1)
         .text("Female: ✚")
         .on("click", function(event) {
-            if(sexApplied != "f") {
-                sexApplied = "f";
-                let postFilterData = filteredData.filter(row => row.sex === "Female");
-
+            if(sexApplied != "Female") {
+                sexApplied = "Female";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 0.3);
                 d3.select(this)
                     .style("opacity", 1);
-
-                updateVis(postFilterData);
             } else {
                 sexApplied = "";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 1);
-                updateVis(filteredData);
             }
+            window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
+            updateVis();
         })
     labelStuff.append("text")
         .attr("class", "legend mal_legend")
@@ -152,22 +149,19 @@ dataCSV.then(function (data) {
         .style("opacity", 1)
         .text("Male: ▲")
         .on("click", function(event) {
-            if(sexApplied != "m") {
-                sexApplied = "m";
-                let postFilterData = filteredData.filter(row => row.sex === "Male");
-
+            if(sexApplied != "Male") {
+                sexApplied = "Male";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 0.3);
                 d3.select(this)
                     .style("opacity", 1);
-
-                updateVis(postFilterData);
             } else {
                 sexApplied = "";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 1);
-                updateVis(filteredData);
             }
+            window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
+            updateVis();
         })
     labelStuff.append("text")
         .attr("class", "legend idk_legend")
@@ -178,26 +172,26 @@ dataCSV.then(function (data) {
         .style("opacity", 1)
         .text("Unknown: ●")
         .on("click", function(event) {
-            if(sexApplied != "idk") {
-                sexApplied = "idk";
-                let postFilterData = filteredData.filter(row => row.sex === "Unknown");
-
+            if(sexApplied != "Unknown") {
+                sexApplied = "Unknown";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 0.3);
                 d3.select(this)
                     .style("opacity", 1);
-
-                updateVis(postFilterData);
             } else {
                 sexApplied = "";
                 labelStuff.selectAll(".legend")
                     .style("opacity", 1);
-                updateVis(filteredData);
             }
+            window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
+            updateVis();
         })
     
     function resetChart() {
         selectedSizeRange = [];
+        sexApplied = "";
+        labelStuff.selectAll(".legend")
+            .style("opacity", 1);
 
         window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
             detail: selectedSizeRange
@@ -229,11 +223,16 @@ dataCSV.then(function (data) {
 
         let filterText = " None";
         let filteredData = Array.from(data);
+
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
         if (clevFilter != null) {
             filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
+            filterText = sexApplied;
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
@@ -243,7 +242,7 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
-            filterText = selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
+            filterText += " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
         }
 
         labelStuffReset.select(".activeFilterLabel")
@@ -468,17 +467,6 @@ dataCSV.then(function (data) {
         })
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
-
-    window.addEventListener("resetChart", function(event) {
-        window.dispatchEvent(new CustomEvent("dateChanged", { detail: data }));
-
-        sexApplied = "";
-        labelStuff.selectAll(".legend")
-            .style("opacity", 1);
-
-        filteredData = filter_by_countries(data, selectedCountries);
-        updateVis(filteredData);
-    });
 
     window.addEventListener("dateChanged", function(event) {
         selectedDate = event.detail;

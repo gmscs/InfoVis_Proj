@@ -9,7 +9,7 @@ const customDropdownContainer = container.append("div")
   .attr("id", "customDropdownContainer")
   .style("position", "absolute")
   .style("top", "10px")
-  .style("right", "10px")
+  .style("right", "4px")
   .style("z-index", "1000")
   .style("width", "170px");
 const svg = create_svg(container, margin);
@@ -53,6 +53,7 @@ var selectedDateRange = [];
 var selectedSizeRange = [];
 var selectedColour = null;
 var colourScale = null;
+var sexApplied = "";
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -125,7 +126,8 @@ Promise.all([
     function resetChart() {
         selectedCountries = [];
         selectedColour = null;
-
+        
+        colourLegend.selectAll("g.legend-item").style("opacity", 1);
         window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
 
         svg.call(zoom.transform,zoomDefault)
@@ -228,6 +230,9 @@ Promise.all([
         let filteredData = Array.from(dataCSV);
         if (clevFilter != null) {
             filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
@@ -390,6 +395,12 @@ Promise.all([
         selectedDate = event.detail;
 
         updateMap("datechanged");
+    });
+
+    window.addEventListener("sexChanged", function(event) {
+        sexApplied = event.detail;
+
+        updateMap("sexChanged");
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {

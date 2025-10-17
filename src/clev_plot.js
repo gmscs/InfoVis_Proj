@@ -25,6 +25,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var sexApplied = "";
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -141,6 +142,9 @@ dataCSV.then(function (data) {
 
         // Data Stuff Here
         let filteredData = Array.from(data);
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
+        }
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
@@ -303,6 +307,12 @@ dataCSV.then(function (data) {
             .attr("for", `radio_${i}`)
             .style("cursor", "pointer")
             .text(d.label);
+    });
+
+    window.addEventListener("sexChanged", function(event) {
+        sexApplied = event.detail;
+
+        updateVis();
     });
 
     window.addEventListener("dateChanged", function(event) {
