@@ -155,6 +155,17 @@ dataCSV.then(function (data) {
         }
         var counts = get_counts(filteredData, selectedVariable, clevFilter);
 
+        function mousemoveFunc(event, d) {
+            const key = typeof d === "string" ? d : d[selectedVariable];
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Observations: " + counts.get(key))
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        }
+
+        svg.selectAll(".dot")
+            .on("mousemove", mousemoveFunc);
+
         const maxCount = d3.max(Array.from(counts.values()));
 
         if(clevFilter != null) {
@@ -225,13 +236,7 @@ dataCSV.then(function (data) {
                     d3.select(this).attr("r", symbol_size * 1.5);
                     d3.select(this).style("opacity", 1);
                 })
-                .on("mousemove", (event, d) => {
-                    const key = typeof d === "string" ? d : d[selectedVariable];
-                    const containerRect = container.node().getBoundingClientRect();
-                    tooltip.html("Observations: " + counts.get(key))
-                        .style("left", (event.pageX - containerRect.left + 10) + "px")
-                        .style("top", (event.pageY - containerRect.top + 10) + "px");
-                })
+                .on("mousemove", mousemoveFunc)
                 .on("mouseleave", function (d) {
                     tooltip.transition().duration(duration / 5).style("opacity", 0);
                     if(selectedDot != d.target.__data__) {
