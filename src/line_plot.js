@@ -290,13 +290,13 @@ dataCSV.then(function (data) {
         }
             
         svg.select(".x.axis")
-            .attr("transform", `translate(0,${innerHeight - 17})`)
+            .attr("transform", `translate(0,${innerHeight})`)
             .transition()
             .duration(duration)
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
         svg.selectAll(".y.axis")
-            .attr("transform", `translate(0,-17)`)
+            .attr("transform", `translate(0,0)`)
             .transition()
             .duration(duration)
             .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
