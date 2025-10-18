@@ -163,6 +163,17 @@ dataCSV.then(function (data) {
             window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
             updateVis();
         })
+    labelStuff.append("text")
+        .attr("class", "legend habitats_legend")
+        .attr("y", 0)
+        .attr("x", innerWidth / 1.65)
+        .style("z-index", 100)
+        .style("cursor", "pointer")
+        .style("opacity", 1)
+        .text("Habitats")
+        .on("click", function(event) {
+            window.dispatchEvent(new CustomEvent("showHabitats"));
+        })
     
     function resetChart() {
         selectedSizeRange = [];
@@ -256,18 +267,33 @@ dataCSV.then(function (data) {
         
         labelStuff.select(".fem_legend")
             .attr("x", innerWidth / 2.3)
+            .on("mouseover", function() {
+                tooltip.style("opacity", .9);
+                tooltip.html("Click to only show females");
+            });
         
         labelStuff.select(".mal_legend")
             .attr("x", innerWidth / 2.69)
+            .on("mouseover", function() {
+                tooltip.style("opacity", .9);
+                tooltip.html("Click to only show males");
+            });
         
         labelStuff.select(".idk_legend")
             .attr("x", innerWidth / 1.95)
-
-        labelStuff.selectAll(".legend")
             .on("mouseover", function() {
                 tooltip.style("opacity", .9);
-                tooltip.html("Habitat Colours Shown in Cleveland Plot");
-            })
+                tooltip.html("Click to only show unknown sexes");
+            });
+        
+        labelStuff.select(".habitats_legend")
+            .attr("x", innerWidth / 1.67)
+            .on("mouseover", function() {
+                tooltip.style("opacity", .9);
+                tooltip.html("Click to show habitat colours on the left");
+            });
+
+        labelStuff.selectAll(".legend")
             .on("mousemove", function(event) {
                 const containerRect = container.node().getBoundingClientRect();
                 tooltip.style("left", (event.pageX - containerRect.left + 10) + "px")
@@ -283,6 +309,9 @@ dataCSV.then(function (data) {
             .on("mouseout", function() {
                 tooltip.style("opacity", 0);
             });
+        
+        labelStuff.select()
+            
                     
         update_legend_title(legendTitle, innerWidth, newHeight - margin.bottom - margin.top, -30, 4, "Weight-Length Correlation");
 

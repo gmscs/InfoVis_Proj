@@ -105,6 +105,9 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .on("change", function() {
             useHabitatColors = this.checked;
+            radioContainer.selectAll(".radioOptions input[value='habitat']")
+                .property("checked", true);
+            selectedVariable = "habitat";
             updateVis();
         });
 
@@ -329,6 +332,14 @@ dataCSV.then(function (data) {
         selectedCountries = event.detail;
 
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis();
+    });
+
+    window.addEventListener("showHabitats", function(event) {
+        useHabitatColors = true;
+        habitatCheckboxContainer.select("#habitatColorCheckbox")
+            .property("checked", true);
+        selectedVariable = "habitat";
         updateVis();
     });
 
