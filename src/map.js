@@ -133,11 +133,11 @@ Promise.all([
             .style("cursor", "pointer")
             .text(d => d)
             .on("mousemove", function() {
-                d3.select(this).style("background-color", "#bbe5b5");
+                d3.select(this).style("background-color", "#bed8e7");
             })
             .on("mouseleave", function(event, d) {
                 d3.select(this).style("background-color",
-                    (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bbe5b5" : "white");
+                    (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bed8e7" : "white");
             })
             .on("click", function(event, d) {
                 if (d === "All Countries") {
@@ -153,8 +153,8 @@ Promise.all([
             })
             .merge(options)
             .style("background-color", (d, i) => {
-                if (selectedCountries.length === 0 && i === 0) return "#bbe5b5"
-                else if (selectedCountries.includes(d)) return "#bbe5b5";
+                if (selectedCountries.length === 0 && i === 0) return "#bed8e7"
+                else if (selectedCountries.includes(d)) return "#bed8e7";
                 else return "white";
             });
     }    

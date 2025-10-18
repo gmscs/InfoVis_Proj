@@ -251,7 +251,7 @@ dataCSV.then(function (data) {
 
         const colorScale = d3.scaleOrdinal()
             .domain(Array.from(groups.keys()))
-            .range(globalDisplay ? ["#2ea453"] : d3.schemeCategory10);
+            .range(globalDisplay ? ["#2e83be"] : d3.schemeCategory10);
 
         if(selectedChart === "line") {
             const line = d3.line();
