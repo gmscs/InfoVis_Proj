@@ -199,9 +199,6 @@ Promise.all([
             .attr("stroke", d => selectedCountries.includes(d.properties.name) ? "black" : "none")
             .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
-    let ogCounts = get_counts_by_country(dataCSV);
-    const maxOGCount = d3.max(Array.from(ogCounts.values()));
-    const minOGCount = d3.min(Array.from(ogCounts.values()));
 
     function updateMap(origin=null) {
         //console.log(origin);
@@ -240,9 +237,6 @@ Promise.all([
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
-        const maxCount = d3.max(Array.from(counts.values()));
-        const minCount = d3.min(Array.from(counts.values()));
-
         const colourCounts = [];
         counts.forEach((count, country) => {
             if(count > 0) {
@@ -250,6 +244,7 @@ Promise.all([
                 colourCounts[colour] = (colourCounts[colour] || 0) + 1;
             }
         })
+        var totalCount = 0;
         const colourRanges = [];
         counts.forEach((count, country) => {
             if(count > 0) {
@@ -260,6 +255,13 @@ Promise.all([
                     colourRanges[colour].min = Math.min(colourRanges[colour].min, count);
                     colourRanges[colour].max = Math.max(colourRanges[colour].max, count);
                 }
+            }
+            if(selectedCountries.length > 0) {
+                if(selectedCountries.includes(country)) {
+                    totalCount+=count;
+                }
+            } else {
+                totalCount+=count;
             }
         })
 
@@ -302,6 +304,9 @@ Promise.all([
                 .text("None")
                 .attr("fill", "black");
         }
+        label.append("tspan")
+                .text(" (" + totalCount + " observations)")
+                .attr("fill", "black");
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 
@@ -337,8 +342,6 @@ Promise.all([
                 let newColourScale = get_colour_scale(counts);
                 let newFilterData = filter_by_colour(filteredData, selectedColour, newColourScale, counts);
                 const countriesArray = [...new Set(newFilterData.map(d => d.country))];
-
-                console.log(colourScale)
                 
                 window.dispatchEvent(new CustomEvent("filterByColour", {
                     detail: countriesArray
@@ -373,6 +376,8 @@ Promise.all([
                 }
             });
         legendItems.select("rect")
+            .attr("opacity", (d) => colourCounts[d] > 0 ? 1 : 0.3);
+        legendItems.select("text")
             .attr("opacity", (d) => colourCounts[d] > 0 ? 1 : 0.3);
 
         legendItems.attr("transform", (_, i) => `translate(0, ${i * (legendItemSize + legendSpacing)})`);

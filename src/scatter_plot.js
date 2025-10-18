@@ -442,6 +442,7 @@ dataCSV.then(function (data) {
                     tooltip_text += `
                         Species: ${dot.commonname}<br/>
                         Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                        Age: ${dot.age}<br/>
                         Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
                         ${dot.lengthM}m, ${dot.weight}kg<br/>`;
                     });
@@ -449,6 +450,7 @@ dataCSV.then(function (data) {
                     tooltip_text = `
                         Species: ${d.commonname}<br/>
                         Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                        Age: ${d.age}<br/>
                         Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
                         ${d.lengthM}m, ${d.weight}kg<br/>`;
                 }
