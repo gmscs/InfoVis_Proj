@@ -67,29 +67,6 @@ dataCSV.then(function (data) {
         .on("mouseleave", function (d) {
             tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
-    labelStuffReset.append("text")
-        .attr("class", "filterLabel resetFilterLabel")
-        .attr("x", 20)
-        .attr("y", height + margin.bottom)
-        .style("z-index", 100)
-        .style("font-size", 20)
-        .style("cursor", "pointer")
-        .text("♻")
-        .on("click", function() {
-            resetChart();
-        })
-        .on("mouseover", function (d) {
-            tooltip.style("opacity", 2).style("s");
-        })
-        .on("mousemove", (event, d) => {
-            const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
-                .style("left", (event.pageX - containerRect.left + 10) + "px")
-                .style("top", (event.pageY - containerRect.top + 10) + "px");
-        })
-        .on("mouseleave", function (d) {
-            tooltip.transition().duration(duration / 5).style("opacity", 0);
-        })
     
     let x = d3.scaleLinear()
         .domain(d3.extent(filteredData, d => d.lengthM))
@@ -222,7 +199,7 @@ dataCSV.then(function (data) {
         const innerWidth = newWidth - margin.left - margin.right;
         const innerHeight = newHeight - margin.top - margin.bottom - 16;
 
-        let filterText = " None";
+        let filterText = "";
         let filteredData = Array.from(data);
 
         if (selectedCountries.length > 0) {
@@ -233,7 +210,6 @@ dataCSV.then(function (data) {
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
-            filterText = sexApplied;
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
@@ -243,17 +219,40 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
-            filterText += " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
         }
 
         labelStuffReset.select(".activeFilterLabel")
-            .attr("x", -10)
-            .attr("y", newHeight - 40)
-            .text("Active filter: " + filterText);
+            .attr("x", -36)
+            .attr("y", newHeight - 33)
+            .text("");
+        
+        const label = labelStuffReset.select(".activeFilterLabel");
+        label.append("tspan")
+            .text("♻ ")
+            .attr("fill", "black")
+            .style("font-size", 20)
+            .style("baseline-shift", "-3px");
+        label.append("tspan")
+            .text("Active filter: ")
+            .attr("fill", "black");
+        if (sexApplied != "") { 
+            filterText = sexApplied;
+            label.append("tspan")
+                .text(" " + filterText)
+                .attr("fill", "black");
+        }
+        if (selectedSizeRange.length > 0) { 
+            filterText = " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
+            label.append("tspan")
+                .text(" " + filterText)
+                .attr("fill", "black");
+        }
+        if (filterText === "") {
+            label.append("tspan")
+                .text("None")
+                .attr("fill", "black");
+        }
 
-        labelStuffReset.select(".resetFilterLabel")
-            .attr("x", -30)
-            .attr("y", newHeight - 37);
         
         labelStuff.select(".fem_legend")
             .attr("x", innerWidth / 2.3)

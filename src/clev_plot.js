@@ -12,13 +12,11 @@ const labelStuff = svg.append("g")
 
 let selectedDot = null;
 let selectedLabel = "Species";
-let filteredData;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var useHabitatColors = false;
 
-var counts;
 var selectedCountries = [];
 var selectedVariable = "commonname";
 var clevFilter = null;
@@ -62,29 +60,6 @@ dataCSV.then(function (data) {
         .style("z-index", 100)
         .style("cursor", "pointer")
         .text("Active filter: None")
-        .on("click", function() {
-            resetChart();
-        })
-        .on("mouseover", function (d) {
-            tooltip.style("opacity", 2).style("s");
-        })
-        .on("mousemove", (event, d) => {
-            const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
-                .style("left", (event.pageX - containerRect.left + 10) + "px")
-                .style("top", (event.pageY - containerRect.top + 10) + "px");
-        })
-        .on("mouseleave", function (d) {
-            tooltip.transition().duration(duration / 5).style("opacity", 0);
-        })
-    labelStuff.append("text")
-        .attr("class", "filterLabel resetFilterLabel")
-        .attr("x", 20)
-        .attr("y", height + margin.bottom)
-        .style("z-index", 100)
-        .style("font-size", 20)
-        .style("cursor", "pointer")
-        .text("♻")
         .on("click", function() {
             resetChart();
         })
@@ -172,12 +147,6 @@ dataCSV.then(function (data) {
 
         const maxCount = d3.max(Array.from(counts.values()));
 
-        if(clevFilter != null) {
-            labelStuff.select(".filterLabel").text("Active filter: " + clevFilter);
-        } else {
-            labelStuff.select(".filterLabel").text("Active filter: None");
-        }
-
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
 
@@ -185,12 +154,25 @@ dataCSV.then(function (data) {
         const innerHeight = height - margin.top - margin.bottom;
 
         labelStuff.select(".activeFilterLabel")
-            .attr("x", -180)
-            .attr("y", innerHeight + margin.bottom / 1.4);
-
-        labelStuff.select(".resetFilterLabel")
-            .attr("x", -200)
-            .attr("y", innerHeight + margin.bottom / 1.32);
+            .attr("x", -206)
+            .attr("y", innerHeight + margin.bottom / 1.3)
+            .text("");
+        
+        const label = labelStuff.select(".activeFilterLabel");
+        label.append("tspan")
+            .text("♻ ")
+            .attr("fill", "black")
+            .style("font-size", 20)
+            .style("baseline-shift", "-3px");
+        if(clevFilter != null) {
+            label.append("tspan")
+                .text("Active filter: " + clevFilter)
+                .attr("fill", "black");
+        } else {
+            label.append("tspan")
+                .text("Active filter: None")
+                .attr("fill", "black");
+        }
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -30, 5, `Observations by ${selectedLabel}`);
         

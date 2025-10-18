@@ -97,29 +97,6 @@ Promise.all([
         .on("mouseleave", function (d) {
             tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
-    labelStuff.append("text")
-        .attr("class", "filterLabel resetFilterLabel")
-        .attr("x", 20)
-        .attr("y", height + margin.bottom)
-        .style("z-index", 100)
-        .style("font-size", 20)
-        .style("cursor", "pointer")
-        .text("♻")
-        .on("click", function() {
-            resetChart();
-        })
-        .on("mouseover", function (d) {
-            tooltip.style("opacity", 2).style("s");
-        })
-        .on("mousemove", (event, d) => {
-            const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this map.")
-                .style("left", (event.pageX - containerRect.left + 30) + "px")
-                .style("top", (event.pageY - containerRect.top + 30) + "px");
-        })
-        .on("mouseleave", function (d) {
-            tooltip.transition().duration(duration / 5).style("opacity", 0);
-        })
 
     const tooltip = create_tooltip("body");
 
@@ -227,6 +204,7 @@ Promise.all([
         //console.log(origin);
         
         // Data Stuff Here
+        let filterText = "";
         let filteredData = Array.from(dataCSV);
         if (clevFilter != null) {
             filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
@@ -264,13 +242,38 @@ Promise.all([
         update_legend_title(legendTitle, width, height, 1, 1, "Observations per Country");
 
         labelStuff.select(".activeFilterLabel")
-            .attr("x", 40)
-            .attr("y", height + 2)
-            .text("Active filter: " + selectedCountries.length + " selected countries");
-
-        labelStuff.select(".resetFilterLabel")
-            .attr("x", 20)
-            .attr("y", height + 5);
+            .attr("x", 14)
+            .attr("y", height + 7)
+            .text("");
+        
+        const label = labelStuff.select(".activeFilterLabel");
+        label.append("tspan")
+            .text("♻ ")
+            .attr("fill", "black")
+            .style("font-size", 20)
+            .style("baseline-shift", "-3px");
+        label.append("tspan")
+            .text("Active filter: ")
+            .attr("fill", "black");
+        if (selectedColour != null) {
+            filterText = "■";
+            label.append("tspan")
+                .text(filterText)
+                .attr("fill", selectedColour)
+                .style("font-size", 20)
+                .style("baseline-shift", "-2px");
+        }
+        if (selectedCountries.length > 0) {
+            filterText = selectedCountries.length + " selected countries";
+            label.append("tspan")
+                .text(" " + filterText)
+                .attr("fill", "black");
+        }
+        if (filterText === "") {
+            label.append("tspan")
+                .text("None")
+                .attr("fill", "black");
+        }
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 

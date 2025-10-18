@@ -86,29 +86,6 @@ dataCSV.then(function (data) {
         .on("mouseleave", function (d) {
             tooltip.transition().duration(duration / 5).style("opacity", 0);
         })
-    labelStuff.append("text")
-        .attr("class", "filterLabel resetFilterLabel")
-        .attr("x", 20)
-        .attr("y", height + margin.bottom)
-        .style("z-index", 100)
-        .style("font-size", 20)
-        .style("cursor", "pointer")
-        .text("♻")
-        .on("click", function() {
-            resetChart();
-        })
-        .on("mouseover", function (d) {
-            tooltip.style("opacity", 2).style("s");
-        })
-        .on("mousemove", (event, d) => {
-            const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
-                .style("left", (event.pageX - containerRect.left + 10) + "px")
-                .style("top", (event.pageY - containerRect.top + 10) + "px");
-        })
-        .on("mouseleave", function (d) {
-            tooltip.transition().duration(duration / 5).style("opacity", 0);
-        })
 
     const tooltip = create_tooltip("#line");
     filteredData = filter_by_countries(data, selectedCountries);
@@ -135,6 +112,7 @@ dataCSV.then(function (data) {
     function resetChart() {
         selectedDate = [];
         selectedDateRange = [];
+        selectedGranularity = "month";
 
         window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
             detail: []
@@ -142,6 +120,8 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("dateChanged", { 
             detail: selectedDate 
         }));
+        radioContainer.selectAll(".radioOption input[value='month']")
+            .property("checked", true);
         updateVis();
     }
     
@@ -178,7 +158,7 @@ dataCSV.then(function (data) {
     function updateVis() {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
-        let filterText = " None";
+        let filterText = "";
         let filteredData = Array.from(data);
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
@@ -211,13 +191,39 @@ dataCSV.then(function (data) {
         update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
         
         labelStuff.select(".activeFilterLabel")
-            .attr("x", -10)
-            .attr("y", height - 80)
-            .text("Active filter: " + filterText);
+            .attr("x", -36)
+            .attr("y", height - 73)
+            .text("");
 
-        labelStuff.select(".resetFilterLabel")
-            .attr("x", -30)
-            .attr("y", height - 78);
+        const label = labelStuff.select(".activeFilterLabel");
+        label.append("tspan")
+            .text("♻ ")
+            .attr("fill", "black")
+            .style("font-size", 20)
+            .style("baseline-shift", "-3px");
+        label.append("tspan")
+            .text("Active filter: ")
+            .attr("fill", "black");
+        if (selectedDate.length > 0) {
+            if(selectedDate[0] != null) filterText = selectedDate[0] + "/" + selectedDate[1];
+            else filterText = "" + selectedDate[1];
+            label.append("tspan")
+                .text(" " + filterText)
+                .attr("fill", "black"); 
+        }
+        if (selectedDateRange.length > 0) {
+            let month0 = selectedDateRange[0].getMonth() + 1;
+            let month1 = selectedDateRange[1].getMonth() + 1;
+            filterText =  month0 + "/" + selectedDateRange[0].getFullYear() + " - " + month1 + "/" + selectedDateRange[1].getFullYear();
+            label.append("tspan")
+                .text(" " + filterText)
+                .attr("fill", "black");
+        }
+        if (filterText === "") {
+            label.append("tspan")
+                .text("None")
+                .attr("fill", "black");
+        }
 
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
