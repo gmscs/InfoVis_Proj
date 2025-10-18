@@ -79,6 +79,9 @@ dataCSV.then(function (data) {
     function resetChart() {
         clevFilter = null;
         selectedVariable = "commonname";
+        svg.selectAll(".dot")
+            .attr("r", symbol_size)
+            .style("opacity", dot_opacity);
 
         window.dispatchEvent(new CustomEvent("filterByValue", {
             detail: { value: clevFilter, attribute: selectedVariable}

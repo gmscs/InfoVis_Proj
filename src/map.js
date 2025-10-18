@@ -199,6 +199,9 @@ Promise.all([
             .attr("stroke", d => selectedCountries.includes(d.properties.name) ? "black" : "none")
             .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
+    let ogCounts = get_counts_by_country(dataCSV);
+    const maxOGCount = d3.max(Array.from(ogCounts.values()));
+    const minOGCount = d3.min(Array.from(ogCounts.values()));
 
     function updateMap(origin=null) {
         //console.log(origin);
@@ -236,6 +239,31 @@ Promise.all([
         
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
+
+        const maxCount = d3.max(Array.from(counts.values()));
+        const minCount = d3.min(Array.from(counts.values()));
+
+        const colourCounts = [];
+        counts.forEach((count, country) => {
+            if(count > 0) {
+                const colour = colourScale(count);
+                colourCounts[colour] = (colourCounts[colour] || 0) + 1;
+            }
+        })
+        const colourRanges = [];
+        counts.forEach((count, country) => {
+            if(count > 0) {
+                const colour = colourScale(count);
+                if (!colourRanges[colour]) {
+                    colourRanges[colour] = { min: count, max: count };
+                } else {
+                    colourRanges[colour].min = Math.min(colourRanges[colour].min, count);
+                    colourRanges[colour].max = Math.max(colourRanges[colour].max, count);
+                }
+            }
+        })
+
+        const legendData = colourScale.range();
 
         updateCountryList();
 
@@ -277,20 +305,19 @@ Promise.all([
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 
-        const maxCount = d3.max(Array.from(counts.values()));
-        const minCount = d3.min(Array.from(counts.values()));
-
         const legendItems = colourLegend
             .selectAll("g.legend-item")
             .style("cursor", "pointer")
-            .data(colourScale.range(), (d) => d);
+            .data(legendData, (d) => d);
+
+        legendItems.exit().remove();
 
         const enterItems = legendItems
             .enter()
             .append("g")
             .attr("class", "legend-item")
-            .attr("transform", (_, colour) => `translate(0, ${colour * (legendItemSize + legendSpacing)})`);
-
+            .attr("transform", (_, i) => `translate(0, ${i * (legendItemSize + legendSpacing)})`);
+        
         enterItems.append("rect")
             .attr("width", legendItemSize)
             .attr("height", legendItemSize)
@@ -307,13 +334,15 @@ Promise.all([
                     selectedColour = null;
                     colourLegend.selectAll("g.legend-item").style("opacity", 1);
                 }
-                
-                let newFilterData = filter_by_colour(dataCSV, selectedColour, colourScale, counts);
+                let newColourScale = get_colour_scale(counts);
+                let newFilterData = filter_by_colour(filteredData, selectedColour, newColourScale, counts);
                 const countriesArray = [...new Set(newFilterData.map(d => d.country))];
+
+                console.log(colourScale)
                 
                 window.dispatchEvent(new CustomEvent("filterByColour", {
-                            detail: countriesArray
-                        }));
+                    detail: countriesArray
+                }));
                 updateMap("filterColour");
             });
 
@@ -323,15 +352,31 @@ Promise.all([
             .attr("dy", "0.32em");
 
         legendItems.select("text")
-            .text((_, i) => {
-                const domain = colourScale.domain();
-                const lower = Math.floor(domain[i - 1] || minCount);
-                const upper = Math.floor(domain[i]) || maxCount;
-                return `${lower} - ${upper}`;
+            .text((d) => {
+                const colour = d;
+                const count = colourCounts[colour] || 0;
+                const range = colourRanges[colour];
+
+                if (!range) {
+                    return "0";
+                }
+
+                const min = range.min;
+                const max = range.max;
+
+                if (min === max) {
+                    return count > 0 ? `${min}` : "0";
+                } else if (max == min + 1) {
+                    return count > 0 ? `${min}, ${max}` : "0";
+                } else {
+                    return count > 0 ? `${min} ... ${max}` : "0";
+                }
             });
+        legendItems.select("rect")
+            .attr("opacity", (d) => colourCounts[d] > 0 ? 1 : 0.3);
 
         legendItems.attr("transform", (_, i) => `translate(0, ${i * (legendItemSize + legendSpacing)})`);
-        legendItems.exit().remove();
+        colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * legendData.length) - 20})`);
 
         svg.select(".zoomable")
             .attr("width", width)
@@ -447,6 +492,9 @@ Promise.all([
 
     const zoom = d3.zoom()
         .scaleExtent([1 , 10])
+        .filter((event) => {
+            return !event.ctrlKey && event.type !== "dblclick";
+        })
         .on("zoom", function(event) {
             mapStuff.attr("transform", event.transform);
         });

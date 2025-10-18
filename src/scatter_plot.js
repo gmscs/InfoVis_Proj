@@ -347,7 +347,7 @@ dataCSV.then(function (data) {
         svg.selectAll(".dot").remove();
 
         const brush = d3.brushX()
-            .extent([[0, 0 ], [innerWidth, innerHeight]])
+            .extent([[0, 5], [innerWidth, innerHeight - 1]])
             .on("end", brushed);
         svg.select(".brush").remove();
         svg.append("g")
