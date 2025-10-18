@@ -340,6 +340,8 @@ dataCSV.then(function (data) {
         habitatCheckboxContainer.select("#habitatColorCheckbox")
             .property("checked", true);
         selectedVariable = "habitat";
+        radioContainer.selectAll(".radioOptions input[value='habitat']")
+            .property("checked", true);
         updateVis();
     });
 

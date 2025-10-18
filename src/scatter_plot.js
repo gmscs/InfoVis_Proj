@@ -454,13 +454,22 @@ dataCSV.then(function (data) {
                 }
                 
                 tooltip.html(tooltip_text);
-                const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                const tooltipRect = tooltip.node().getBoundingClientRect();
+                const tooltipHeight = tooltipRect.height;
+                const tooltipWidth = tooltipRect.width;
                 let leftPos = event.pageX - containerRect.left + 10;
                 if (leftPos + tooltipWidth > containerRect.width) {
                     leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
                 }
+
+                const mouseY = event.pageY - containerRect.top;
+                const spaceBelow = containerRect.height - mouseY;
+                const flipTooltip = spaceBelow < tooltipHeight;
+
+                let topPos = flipTooltip ? mouseY - tooltipHeight : mouseY + 20;
+
                 tooltip.style("left", leftPos + "px")
-                    .style("top", (event.pageY - containerRect.top + 10) + "px");
+                    .style("top", topPos + "px");
             })
             .on("mouseout", function(d) {
                 d3.select(this)
