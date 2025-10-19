@@ -1,6 +1,7 @@
 import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
     dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours,
-     filter_by_date_range, filter_by_date } from "./stuff.js";
+     filter_by_date_range, filter_by_date, 
+     shared_color} from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 40, bottom: 50, left: 40 };
@@ -237,28 +238,52 @@ dataCSV.then(function (data) {
             .attr("y", newHeight - 33)
             .text("");
         
+        let filterBool = false;
         const label = labelStuffReset.select(".activeFilterLabel");
-        label.append("tspan")
-            .text("♻ ")
-            .attr("fill", "black")
-            .style("font-size", 20)
-            .style("baseline-shift", "-3px");
-        label.append("tspan")
-            .text("Active filter: ")
-            .attr("fill", "black");
         if (sexApplied != "") { 
             filterText = sexApplied;
+            filterBool = true;
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", shared_color)
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
             label.append("tspan")
                 .text(" " + filterText)
                 .attr("fill", "black");
         }
         if (selectedSizeRange.length > 0) { 
             filterText = " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
-            label.append("tspan")
-                .text(" " + filterText)
-                .attr("fill", "black");
+            if(filterBool) {
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            } else {
+                label.append("tspan")
+                    .text("♻ ")
+                    .attr("fill", shared_color)
+                    .style("font-size", 20)
+                    .style("baseline-shift", "-3px");
+                label.append("tspan")
+                    .text("Active filter: ")
+                    .attr("fill", "black");
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            }
         }
-        if (filterText === "") {
+        else if (filterText === "") {
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", "black")
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
             label.append("tspan")
                 .text("None")
                 .attr("fill", "black");
@@ -441,8 +466,8 @@ dataCSV.then(function (data) {
                     overlappingDots.forEach(dot => {
                         tooltip_text += `
                             Species: ${dot.commonname}<br/>
-                            Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
                             Age: ${dot.age}<br/>
+                            Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
                             Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
                             Status: ${d.conservation}<br/>
                             ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
@@ -450,8 +475,8 @@ dataCSV.then(function (data) {
                 } else {
                     tooltip_text = `
                         Species: ${d.commonname}<br/>
-                        Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
                         Age: ${d.age}<br/>
+                        Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
                         Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
                         Status: ${d.conservation}<br/>
                         ${d.lengthM}m, ${d.weight}kg<br/>`;

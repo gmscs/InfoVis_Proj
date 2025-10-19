@@ -139,7 +139,11 @@ dataCSV.then(function (data) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
         }
         var counts = get_counts(filteredData, selectedVariable, clevFilter);
-        console.log(counts)
+        
+        let totalCount = 0;
+        counts.forEach((count, country) => {
+            totalCount += count;
+        });
 
         function mousemoveFunc(event, d) {
             const key = typeof d === "string" ? d : d[selectedVariable];
@@ -166,20 +170,28 @@ dataCSV.then(function (data) {
             .text("");
         
         const label = labelStuff.select(".activeFilterLabel");
-        label.append("tspan")
-            .text("♻ ")
-            .attr("fill", "black")
-            .style("font-size", 20)
-            .style("baseline-shift", "-3px");
         if(clevFilter != null) {
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", shared_color)
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: " + clevFilter)
                 .attr("fill", "black");
         } else {
             label.append("tspan")
+                .text("♻ ")
+                .attr("fill", "black")
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
                 .text("Active filter: None")
                 .attr("fill", "black");
         }
+        label.append("tspan")
+            .text(" (" + totalCount + " observations)")
+            .attr("fill", "black");
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -30, 5, `Observations by ${selectedLabel}`);
         

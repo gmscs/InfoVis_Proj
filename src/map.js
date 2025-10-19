@@ -244,7 +244,6 @@ Promise.all([
                 colourCounts[colour] = (colourCounts[colour] || 0) + 1;
             }
         })
-        var totalCount = 0;
         const colourRanges = [];
         counts.forEach((count, country) => {
             if(count > 0) {
@@ -255,13 +254,6 @@ Promise.all([
                     colourRanges[colour].min = Math.min(colourRanges[colour].min, count);
                     colourRanges[colour].max = Math.max(colourRanges[colour].max, count);
                 }
-            }
-            if(selectedCountries.length > 0) {
-                if(selectedCountries.includes(country)) {
-                    totalCount+=count;
-                }
-            } else {
-                totalCount+=count;
             }
         })
 
@@ -277,15 +269,18 @@ Promise.all([
             .text("");
         
         const label = labelStuff.select(".activeFilterLabel");
-        label.append("tspan")
-            .text("♻ ")
-            .attr("fill", "black")
-            .style("font-size", 20)
-            .style("baseline-shift", "-3px");
-        label.append("tspan")
-            .text("Active filter: ")
-            .attr("fill", "black");
+        let filterBool = false;
         if (selectedColour != null) {
+            filterBool = true;
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", shared_color)
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
+
             filterText = "■";
             label.append("tspan")
                 .text(filterText)
@@ -294,19 +289,39 @@ Promise.all([
                 .style("baseline-shift", "-2px");
         }
         if (selectedCountries.length > 0) {
-            filterText = selectedCountries.length + " selected countries";
-            label.append("tspan")
-                .text(" " + filterText)
-                .attr("fill", "black");
+            if(filterBool) {
+                filterText = selectedCountries.length + " selected countries";
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            } else {
+                label.append("tspan")
+                    .text("♻ ")
+                    .attr("fill", shared_color)
+                    .style("font-size", 20)
+                    .style("baseline-shift", "-3px");
+                label.append("tspan")
+                    .text("Active filter: ")
+                    .attr("fill", "black");
+                filterText = selectedCountries.length + " selected countries";
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            }
         }
-        if (filterText === "") {
+        else if (filterText === "") {
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", "black")
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
             label.append("tspan")
                 .text("None")
                 .attr("fill", "black");
         }
-        label.append("tspan")
-                .text(" (" + totalCount + " observations)")
-                .attr("fill", "black");
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
 

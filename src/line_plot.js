@@ -1,6 +1,7 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
-        symbol_size, dot_opacity, update_legend_title, filter_by_length_range} from "./stuff.js";
+        symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
+        shared_color} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -196,17 +197,19 @@ dataCSV.then(function (data) {
             .text("");
 
         const label = labelStuff.select(".activeFilterLabel");
-        label.append("tspan")
-            .text("♻ ")
-            .attr("fill", "black")
-            .style("font-size", 20)
-            .style("baseline-shift", "-3px");
-        label.append("tspan")
-            .text("Active filter: ")
-            .attr("fill", "black");
+        let filterBool = false;
         if (selectedDate.length > 0) {
+            filterBool = true;
             if(selectedDate[0] != null) filterText = selectedDate[0] + "/" + selectedDate[1];
             else filterText = "" + selectedDate[1];
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", shared_color)
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
             label.append("tspan")
                 .text(" " + filterText)
                 .attr("fill", "black"); 
@@ -215,11 +218,34 @@ dataCSV.then(function (data) {
             let month0 = selectedDateRange[0].getMonth() + 1;
             let month1 = selectedDateRange[1].getMonth() + 1;
             filterText =  month0 + "/" + selectedDateRange[0].getFullYear() + " - " + month1 + "/" + selectedDateRange[1].getFullYear();
-            label.append("tspan")
-                .text(" " + filterText)
-                .attr("fill", "black");
+            if(filterBool) {
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            } else {
+                label.append("tspan")
+                    .text("♻ ")
+                    .attr("fill", shared_color)
+                    .style("font-size", 20)
+                    .style("baseline-shift", "-3px");
+                label.append("tspan")
+                    .text("Active filter: ")
+                    .attr("fill", "black");
+                label.append("tspan")
+                    .text(" " + filterText)
+                    .attr("fill", "black");
+            }
         }
-        if (filterText === "") {
+        else if (filterText === "") {
+            label.append("tspan")
+                .text("♻ ")
+                .attr("fill", "black")
+                .style("font-size", 20)
+                .style("baseline-shift", "-3px");
+            label.append("tspan")
+                .text("Active filter: ")
+                .attr("fill", "black");
+
             label.append("tspan")
                 .text("None")
                 .attr("fill", "black");
