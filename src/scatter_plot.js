@@ -60,7 +60,7 @@ dataCSV.then(function (data) {
         })
         .on("mousemove", (event, d) => {
             const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
+            tooltip.html("Click here to remove the filters applied by this chart")
                 .style("left", (event.pageX - containerRect.left + 10) + "px")
                 .style("top", (event.pageY - containerRect.top + 10) + "px");
         })
@@ -437,14 +437,15 @@ dataCSV.then(function (data) {
                 
                 let tooltip_text;
                 if (overlappingDots.length > 1) {
-                    tooltip_text = `${overlappingDots.length} Species:<br/>`;
+                    tooltip_text = `${overlappingDots.length} Species:<br/><br/>`;
                     overlappingDots.forEach(dot => {
-                    tooltip_text += `
-                        Species: ${dot.commonname}<br/>
-                        Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
-                        Age: ${dot.age}<br/>
-                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
-                        ${dot.lengthM}m, ${dot.weight}kg<br/>`;
+                        tooltip_text += `
+                            Species: ${dot.commonname}<br/>
+                            Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                            Age: ${dot.age}<br/>
+                            Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
+                            Status: ${d.conservation}<br/>
+                            ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
                     });
                 } else {
                     tooltip_text = `
@@ -452,6 +453,7 @@ dataCSV.then(function (data) {
                         Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
                         Age: ${d.age}<br/>
                         Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
+                        Status: ${d.conservation}<br/>
                         ${d.lengthM}m, ${d.weight}kg<br/>`;
                 }
                 

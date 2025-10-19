@@ -90,7 +90,7 @@ Promise.all([
         })
         .on("mousemove", (event, d) => {
             const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this map.")
+            tooltip.html("Click here to remove the filters applied by this map")
                 .style("left", (event.pageX - containerRect.left + 30) + "px")
                 .style("top", (event.pageY - containerRect.top + 30) + "px");
         })
@@ -341,8 +341,8 @@ Promise.all([
                 }
                 let newColourScale = get_colour_scale(counts);
                 let newFilterData = filter_by_colour(filteredData, selectedColour, newColourScale, counts);
-                const countriesArray = [...new Set(newFilterData.map(d => d.country))];
-                
+                var countriesArray = [...new Set(newFilterData.map(d => d.country))];
+                if(selectedCountries.length > 0) countriesArray = countriesArray.filter(country => selectedCountries.includes(country));
                 window.dispatchEvent(new CustomEvent("filterByColour", {
                     detail: countriesArray
                 }));

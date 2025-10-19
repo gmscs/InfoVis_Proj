@@ -79,7 +79,7 @@ dataCSV.then(function (data) {
         })
         .on("mousemove", (event, d) => {
             const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
+            tooltip.html("Click here to remove the filters applied by this chart")
                 .style("left", (event.pageX - containerRect.left + 10) + "px")
                 .style("top", (event.pageY - containerRect.top + 10) + "px");
         })
@@ -347,7 +347,7 @@ dataCSV.then(function (data) {
                     
                     let tooltip_text;
                     if (overlappingDots.length > 1) {
-                        tooltip_text = `${overlappingDots.length} Countries:<br/>`;
+                        tooltip_text = `${overlappingDots.length} Countries:<br/><br/>`;
                         overlappingDots.forEach(dot => {
                         tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
                         });

@@ -68,7 +68,7 @@ dataCSV.then(function (data) {
         })
         .on("mousemove", (event, d) => {
             const containerRect = container.node().getBoundingClientRect();
-            tooltip.html("Click here to remove the filters applied by this chart.")
+            tooltip.html("Click here to remove the filters applied by this chart")
                 .style("left", (event.pageX - containerRect.left + 10) + "px")
                 .style("top", (event.pageY - containerRect.top + 10) + "px");
         })
@@ -139,6 +139,7 @@ dataCSV.then(function (data) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
         }
         var counts = get_counts(filteredData, selectedVariable, clevFilter);
+        console.log(counts)
 
         function mousemoveFunc(event, d) {
             const key = typeof d === "string" ? d : d[selectedVariable];
