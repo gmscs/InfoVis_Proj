@@ -1,7 +1,7 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
         symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
-        shared_color} from "./stuff.js";
+        shared_color_light, shared_color_dark} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -14,6 +14,7 @@ let selectedGranularity = "month";
 let dateObservations;
 let selectedChart = "line";
 var filteredData;
+var shared_color = shared_color_light;
 
 var selectedVariable = "commonname";
 var clevFilter = null;
@@ -209,10 +210,8 @@ dataCSV.then(function (data) {
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
             label.append("tspan")
                 .text(" " + filterText)
-                .attr("fill", "black"); 
         }
         if (selectedDateRange.length > 0) {
             let month0 = selectedDateRange[0].getMonth() + 1;
@@ -221,7 +220,6 @@ dataCSV.then(function (data) {
             if(filterBool) {
                 label.append("tspan")
                     .text(" " + filterText)
-                    .attr("fill", "black");
             } else {
                 label.append("tspan")
                     .text("♻ ")
@@ -230,25 +228,20 @@ dataCSV.then(function (data) {
                     .style("baseline-shift", "-3px");
                 label.append("tspan")
                     .text("Active filter: ")
-                    .attr("fill", "black");
                 label.append("tspan")
                     .text(" " + filterText)
-                    .attr("fill", "black");
             }
         }
         else if (filterText === "") {
             label.append("tspan")
                 .text("♻ ")
-                .attr("fill", "black")
                 .style("font-size", 20)
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
 
             label.append("tspan")
                 .text("None")
-                .attr("fill", "black");
         }
 
         svg.selectAll(".lines").remove();
@@ -277,7 +270,7 @@ dataCSV.then(function (data) {
 
         const colorScale = d3.scaleOrdinal()
             .domain(Array.from(groups.keys()))
-            .range(globalDisplay ? ["#2e83be"] : d3.schemeCategory10);
+            .range(globalDisplay ? [shared_color] : d3.schemeCategory10);
 
         if(selectedChart === "line") {
             const line = d3.line();
@@ -292,7 +285,6 @@ dataCSV.then(function (data) {
                 .selectAll("path")
                 .data(groups.values())
                 .join("path")
-                    .style("mix-blend-mode", "multiply")
                     .attr("stroke", d => colorScale(d.z))
                     .on("click", function(event, d) {
                         const clickedCountry = d.z;
@@ -524,6 +516,16 @@ dataCSV.then(function (data) {
     window.addEventListener("countryChanged", (event) => {
         selectedCountries = event.detail;
 
+        updateVis();
+    });
+
+    window.addEventListener("darkMode", function(event) {
+        shared_color = shared_color_dark;
+        updateVis();
+    });
+
+    window.addEventListener("lightMode", function(event) {
+        shared_color = shared_color_light;
         updateVis();
     });
 

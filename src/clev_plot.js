@@ -1,5 +1,5 @@
-import {dataCSV, shared_color, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
-    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours, 
+import {dataCSV, shared_color_light, shared_color_dark, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
+    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, 
     filter_by_length_range, filter_by_colour } from "./stuff.js";
 
 const container = d3.select("#clev");
@@ -16,6 +16,7 @@ let selectedLabel = "Species";
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var useHabitatColors = false;
+var habitat_colours = habitat_colours_light;
 
 var selectedCountries = [];
 var selectedVariable = "commonname";
@@ -24,6 +25,7 @@ var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
+var shared_color = shared_color_light;
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -178,20 +180,16 @@ dataCSV.then(function (data) {
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: " + clevFilter)
-                .attr("fill", "black");
         } else {
             label.append("tspan")
                 .text("♻ ")
-                .attr("fill", "black")
                 .style("font-size", 20)
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: None")
-                .attr("fill", "black");
         }
         label.append("tspan")
             .text(" (" + totalCount + " observations)")
-            .attr("fill", "black");
 
         update_legend_title(legendTitle, innerWidth, innerHeight, -30, 5, `Observations by ${selectedLabel}`);
         
@@ -372,6 +370,18 @@ dataCSV.then(function (data) {
             });
         
         useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
+        updateVis();
+    });
+
+    window.addEventListener("darkMode", function(event) {
+        habitat_colours = habitat_colours_dark;
+        shared_color = shared_color_dark;
+        updateVis();
+    });
+
+    window.addEventListener("lightMode", function(event) {
+        habitat_colours = habitat_colours_light;
+        shared_color = shared_color_light;
         updateVis();
     });
 

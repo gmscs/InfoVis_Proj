@@ -1,4 +1,5 @@
-export const shared_color = "#2e83be";
+export const shared_color_dark = "#6bb0d7";
+export const shared_color_light = "#2e83be";
 export const duration = 1000;
 export const symbol_size = 4;
 export const stroke_width = 1.5;
@@ -18,37 +19,69 @@ export const sex_symbols = {
     "Female": "✚"
 };
 
-export const habitat_colours = {
-    "Billabongs": "#585858",
-    "Brackish Rivers": "#0600a3",
-    "Coastal Lagoons": "#8b8b8b",
-    "Coastal Wetlands": "#dabb77",
-    "Estuaries": "#793f00",
-    "Estuarine Systems": "#b45d00ff",
-    "Flooded Savannas": "#7ad800ff",
-    "Forest Rivers": "#00a39c",
-    "Forest Swamps": "#be9100",
-    "Freshwater Marshes": "#ffc200",
-    "Freshwater Rivers": "#00fff4",
-    "Freshwater Wetlands": "#b6a671ff",
-    "Gorges": "#ff00dc",
-    "Lagoons": "#009f18",
-    "Lakes": "#00fd26",
-    "Large Rivers": "#00aaff",
-    "Mangroves": "#8200c1",
-    "Marshes": "#d58000",
-    "Oases": "#006300ff",
-    "Oxbow Lakes": "#75b407ff",
-    "Ponds": "#26fd8e",
-    "Reservoirs": "#610091",
-    "Rivers": "#65ccff",
-    "Shaded Forest Rivers": "#004eff",
-    "Slow Rivers": "#6588ff",
-    "Slow Streams": "#760000",
-    "Small Streams": "#ff0000",
-    "Swamps": "#614a00",
-    "Tidal Rivers": "#2b8eb6ff"
-}
+export const habitat_colours_light = {
+    "Billabongs": "#FF5733",
+    "Brackish Rivers": "#4eb862ff",
+    "Coastal Lagoons": "#3357FF",
+    "Coastal Wetlands": "#b8aa35ff",
+    "Estuaries": "#8B0000",
+    "Estuarine Systems": "#008B8B",
+    "Flooded Savannas": "#B8860B",
+    "Forest Rivers": "#006400",
+    "Forest Swamps": "#FF8C00",
+    "Freshwater Marshes": "#d4b500ff",
+    "Freshwater Rivers": "#00FFFF",
+    "Freshwater Wetlands": "#8B4513",
+    "Gorges": "#FF1493",
+    "Lagoons": "#00a179ff",
+    "Lakes": "#32CD32",
+    "Large Rivers": "#4169E1",
+    "Mangroves": "#800080",
+    "Marshes": "#FF4500",
+    "Oases": "#2E8B57",
+    "Oxbow Lakes": "#82ad2aff",
+    "Ponds": "#20B2AA",
+    "Reservoirs": "#8A2BE2",
+    "Rivers": "#46ad8bff",
+    "Shaded Forest Rivers": "#556B2F",
+    "Slow Rivers": "#FF69B4",
+    "Slow Streams": "#DC143C",
+    "Small Streams": "#00BFFF",
+    "Swamps": "#420042ff",
+    "Tidal Rivers": "#5e9b99ff"
+};
+
+export const habitat_colours_dark = {
+    "Billabongs": "#FF8C61",
+    "Brackish Rivers": "#66FF99",
+    "Coastal Lagoons": "#6699FF",
+    "Coastal Wetlands": "#FFF68F",
+    "Estuaries": "#FF6E6E",
+    "Estuarine Systems": "#00CCCC",
+    "Flooded Savannas": "#E6C229",
+    "Forest Rivers": "#00AA00",
+    "Forest Swamps": "#FFB347",
+    "Freshwater Marshes": "#FFEE93",
+    "Freshwater Rivers": "#7FFFD4",
+    "Freshwater Wetlands": "#CD853F",
+    "Gorges": "#FF80BF",
+    "Lagoons": "#7CFC00",
+    "Lakes": "#90EE90",
+    "Large Rivers": "#87CEFA",
+    "Mangroves": "#DDA0DD",
+    "Marshes": "#FF7F50",
+    "Oases": "#98FB98",
+    "Oxbow Lakes": "#BDB76B",
+    "Ponds": "#AFEEEE",
+    "Reservoirs": "#E6E6FA",
+    "Rivers": "#B0E0E6",
+    "Shaded Forest Rivers": "#C0FF3E",
+    "Slow Rivers": "#FFB6C1",
+    "Slow Streams": "#FF6347",
+    "Small Streams": "#87CEEB",
+    "Swamps": "#D8BFD8",
+    "Tidal Rivers": "#20B2AA"
+};
 
 export function get_counts(data, varName, filter = null) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
@@ -145,7 +178,8 @@ export function create_tooltip(id) {
         .style("position", "absolute")
         .style("z-index", 1000)
         .style("pointer-events", "none")
-        .style("background-color", "rgba(255, 255, 255)");
+        .style("background-color", "rgba(255, 255, 255)")
+        .style("color", "black");
     return tooltip;
 }
 
@@ -314,7 +348,6 @@ export function update_legend_title(legendTitle, width, height, paddingX, paddin
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "ideographic")
         .style("font-weight", "bold")
-        .style("fill", "#555")
         .text("Crocodile " + text);
 }
 

@@ -1,7 +1,7 @@
 import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
-    dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours,
+    dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours_light, habitat_colours_dark,
      filter_by_date_range, filter_by_date, 
-     shared_color} from "./stuff.js";
+     shared_color_light, shared_color_dark} from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 20, right: 40, bottom: 50, left: 40 };
@@ -20,12 +20,14 @@ let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
 var sexApplied = "";
+var habitat_colours = habitat_colours_light;
 
 var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var shared_color = shared_color_light;
 
 svg.append("rect")
     .attr("id", "clearBox")
@@ -250,10 +252,8 @@ dataCSV.then(function (data) {
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
             label.append("tspan")
                 .text(" " + filterText)
-                .attr("fill", "black");
         }
         if (selectedSizeRange.length > 0) { 
             filterText = " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
@@ -269,24 +269,19 @@ dataCSV.then(function (data) {
                     .style("baseline-shift", "-3px");
                 label.append("tspan")
                     .text("Active filter: ")
-                    .attr("fill", "black");
                 label.append("tspan")
                     .text(" " + filterText)
-                    .attr("fill", "black");
             }
         }
         else if (filterText === "") {
             label.append("tspan")
                 .text("♻ ")
-                .attr("fill", "black")
                 .style("font-size", 20)
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
             label.append("tspan")
                 .text("None")
-                .attr("fill", "black");
         }
 
         
@@ -564,6 +559,18 @@ dataCSV.then(function (data) {
     window.addEventListener("filterByColour", function(event) {
         selectedCountries = event.detail;
 
+        updateVis();
+    });
+
+    window.addEventListener("darkMode", function(event) {
+        habitat_colours = habitat_colours_dark;
+        shared_color = shared_color_dark;
+        updateVis();
+    });
+
+    window.addEventListener("lightMode", function(event) {
+        habitat_colours = habitat_colours_light;
+        shared_color = shared_color_light;
         updateVis();
     });
 

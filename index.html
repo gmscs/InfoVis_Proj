@@ -48,6 +48,43 @@
   });
 
   document.querySelector(".title").appendChild(resetButton);
+
+  const darkModeToggle = document.createElement("button");
+  darkModeToggle.id = "darkModeToggle";
+  darkModeToggle.textContent = "🌙 Dark Mode";
+  darkModeToggle.style.cssText = `
+      position: absolute;
+      top: -5px;
+      margin-left: -400px;
+      padding: 8px 8px;
+      background-color: #2a84bf;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+  `;
+
+  darkModeToggle.addEventListener("click", function() {
+      document.body.classList.toggle("dark-mode");
+      if (document.body.classList.contains("dark-mode")) {
+          darkModeToggle.textContent = "☀️ Light Mode";
+          window.dispatchEvent(new CustomEvent("darkMode"));
+      } else {
+          darkModeToggle.textContent = "🌙 Dark Mode";
+          window.dispatchEvent(new CustomEvent("lightMode"));
+      }
+  });
+
+  darkModeToggle.addEventListener("mouseover", function() {
+      this.style.backgroundColor = "#00509d";
+  });
+  darkModeToggle.addEventListener("mouseout", function() {
+      this.style.backgroundColor = "#2a84bf";
+  });
+
+  document.querySelector(".title").appendChild(darkModeToggle);
 </script>
 
 <style>
@@ -203,22 +240,83 @@
     z-index: 10;
   }
 
-.radioContainer input[type="radio"] {
-    margin-right: 10px;
+  .radioContainer input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #2e83be;
+  }
+
+  .radioContainer2 input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #2e83be;
+  }
+
+  .checkboxContainer input[type="checkbox"] {
     accent-color: #2e83be;
-}
+  }
 
-.radioContainer2 input[type="radio"] {
-    margin-right: 10px;
+  .habitatCheckboxContainer input[type="checkbox"] {
     accent-color: #2e83be;
-}
+  }
 
-.checkboxContainer input[type="checkbox"] {
-  accent-color: #2e83be;
-}
+  .legend-title {
+    fill: #555;
+  }
 
-.habitatCheckboxContainer input[type="checkbox"] {
-  accent-color: #2e83be;
-}
+  body.dark-mode {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+
+  body.dark-mode .cell {
+    background-color: #2d2d2d;
+    border-color: #555;
+  }
+
+  body.dark-mode svg text {
+    fill: #e0e0e0;
+  }
+
+  body.dark-mode .axis text {
+    fill: #e0e0e0;
+  }
+
+  body.dark-mode .title {
+    color: #e0e0e0;
+  }
+
+  body.dark-mode #darkModeToggle {
+    background-color: #555;
+  }
+
+  body.dark-mode #globalResetButton {
+    background-color: #1e5a87;
+  }
+
+  body.dark-mode #map .hovered {
+    stroke: white;
+    stroke-width: 1.5px;
+  }
+
+  body.dark-mode .legend-title {
+    fill: #e0e0e0d2;
+  }
+
+  body.dark-mode .radioContainer input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #6bb0d7;
+  }
+
+  body.dark-mode .radioContainer2 input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #6bb0d7;
+  }
+
+  body.dark-mode .checkboxContainer input[type="checkbox"] {
+    accent-color: #6bb0d7;
+  }
+
+  body.dark-mode .habitatCheckboxContainer input[type="checkbox"] {
+    accent-color: #6bb0d7;
+  }
 </style>
 

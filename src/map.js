@@ -1,4 +1,4 @@
-import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color, 
+import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color_light, shared_color_dark, 
     filter_by_colour, update_legend_title, filter_by_date,
     filter_by_date_range, filter_by_length_range} from "./stuff.js";
 
@@ -54,6 +54,9 @@ var selectedSizeRange = [];
 var selectedColour = null;
 var colourScale = null;
 var sexApplied = "";
+var shared_color = shared_color_light;
+
+var darkMode = false;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -131,6 +134,7 @@ Promise.all([
             .attr("class", "countryOption")
             .style("padding", "5px")
             .style("cursor", "pointer")
+            .style("color", "black")
             .text(d => d)
             .on("mousemove", function() {
                 d3.select(this).style("background-color", "#bed8e7");
@@ -195,8 +199,9 @@ Promise.all([
     }
 
     function highlightSelectedCountry() {
+        let highlightColour = darkMode === true ? "white" : "black";
         mapStuff.selectAll("path")
-            .attr("stroke", d => selectedCountries.includes(d.properties.name) ? "black" : "none")
+            .attr("stroke", d => selectedCountries.includes(d.properties.name) ? highlightColour : "none")
             .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
 
@@ -279,7 +284,6 @@ Promise.all([
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
 
             filterText = "■";
             label.append("tspan")
@@ -293,7 +297,6 @@ Promise.all([
                 filterText = selectedCountries.length + " selected countries";
                 label.append("tspan")
                     .text(" " + filterText)
-                    .attr("fill", "black");
             } else {
                 label.append("tspan")
                     .text("♻ ")
@@ -302,25 +305,20 @@ Promise.all([
                     .style("baseline-shift", "-3px");
                 label.append("tspan")
                     .text("Active filter: ")
-                    .attr("fill", "black");
                 filterText = selectedCountries.length + " selected countries";
                 label.append("tspan")
                     .text(" " + filterText)
-                    .attr("fill", "black");
             }
         }
         else if (filterText === "") {
             label.append("tspan")
                 .text("♻ ")
-                .attr("fill", "black")
                 .style("font-size", 20)
                 .style("baseline-shift", "-3px");
             label.append("tspan")
                 .text("Active filter: ")
-                .attr("fill", "black");
             label.append("tspan")
                 .text("None")
-                .attr("fill", "black");
         }
 
         colourLegend.attr("transform", `translate(20, ${height - ((legendItemSize + legendSpacing) * 5) - 20})`);
@@ -490,8 +488,9 @@ Promise.all([
 
     window.addEventListener("lineCountryHighlight", function(event) {
         let highlightedCountries = event.detail;
+        let highlightColour = darkMode === true ? "white" : "black";
         mapStuff.selectAll("path")
-            .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? "black" : "none")
+            .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? highlightColour : "none")
             .attr("stroke-width", d => highlightedCountries.includes(d.properties.name) ? stroke_width : null);
     })
 
@@ -504,6 +503,20 @@ Promise.all([
     });
 
     window.addEventListener("globalReset", resetChart);
+
+    window.addEventListener("darkMode", function(event) {
+        darkMode = true;
+        shared_color = shared_color_dark;
+        highlightSelectedCountry();
+        updateMap("darkModeChanged");
+    });
+
+    window.addEventListener("lightMode", function(event) {
+        darkMode = false;
+        shared_color = shared_color_light;
+        highlightSelectedCountry();
+        updateMap("lightModeChanged");
+    });
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
         updateMap("resizeWindow");
