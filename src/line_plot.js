@@ -15,6 +15,7 @@ let dateObservations;
 let selectedChart = "line";
 var filteredData;
 var shared_color = shared_color_light;
+var blendMode = "multiply";
 
 var selectedVariable = "commonname";
 var clevFilter = null;
@@ -285,6 +286,7 @@ dataCSV.then(function (data) {
                 .selectAll("path")
                 .data(groups.values())
                 .join("path")
+                    .style("mix-blend-mode", blendMode)
                     .attr("stroke", d => colorScale(d.z))
                     .on("click", function(event, d) {
                         const clickedCountry = d.z;
@@ -521,11 +523,13 @@ dataCSV.then(function (data) {
 
     window.addEventListener("darkMode", function(event) {
         shared_color = shared_color_dark;
+        blendMode = "screen";
         updateVis();
     });
 
     window.addEventListener("lightMode", function(event) {
         shared_color = shared_color_light;
+        blendMode = "multiply";
         updateVis();
     });
 
