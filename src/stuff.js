@@ -274,6 +274,16 @@ export function filter_by_length_range(data, startPos, endPos) {
     return filteredData;
 }
 
+export function filter_by_observations_range(data, minObs, maxObs) {
+    let filteredData;
+
+    filteredData = data.filter(row => {
+        const observations = row.observations;
+        return ((observations >= minObs) && (observations <= maxObs));
+    });
+    return filteredData;
+}
+
 export function find_closest_date(data, x, xVal) {
     const bisect = d3.bisector(d => d.date).left;
     const index = bisect(data, x.invert(xVal), 1);
@@ -304,6 +314,37 @@ export function find_closest_length(data, x, xVal) {
         ? left.lengthM
         : right.lengthM;
 }
+
+export function find_closest_observations_value(data, y, yVal, yMin = null, yMax = null, inclusive = true) {
+    if (!data || data.length === 0) return null;
+
+    let candidates = data;
+    if (yMin != null && yMax != null) {
+        const low = Math.min(yMin, yMax);
+        const high = Math.max(yMin, yMax);
+        candidates = data.filter(d => {
+            const py = y(d.observations ?? 0);
+            return inclusive ? (py >= low && py <= high) : (py > low && py < high);
+        });
+        if (candidates.length === 0) return null;
+    }
+
+    const sorted = candidates.slice().sort((a, b) => (a.observations ?? 0) - (b.observations ?? 0));
+
+    const bisect = d3.bisector(d => d.observations ?? 0).left;
+    const index = bisect(sorted, y.invert(yVal), 1);
+
+    if (index === 0) return sorted[0].observations ?? 0;
+    if (index >= sorted.length) return sorted[sorted.length - 1].observations ?? 0;
+
+    const left = sorted[index - 1];
+    const right = sorted[index];
+
+    return (Math.abs(yVal - y(left.observations ?? 0)) < Math.abs(y(right.observations ?? 0) - yVal))
+        ? (left.observations ?? 0)
+        : (right.observations ?? 0);
+}
+
 
 export function get_date_observations_by_granularity(data, granularity = 'month') {
     const dateCountMap = new Map();

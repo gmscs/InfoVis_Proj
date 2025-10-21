@@ -1,7 +1,8 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
         symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
-        shared_color_light, shared_color_dark} from "./stuff.js";
+        shared_color_light, shared_color_dark , find_closest_observations_value,
+        filter_by_observations_range} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -21,6 +22,7 @@ var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
+var selectedObservationsRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
 var globalDisplay = true;
@@ -92,7 +94,7 @@ dataCSV.then(function (data) {
     dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
     let x = d3.scaleUtc(d3.extent(dateObservations, d => d.date), [0, width - margin.left - margin.right]);
-    let y = d3.scaleLinear([0, d3.max(dateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+    let y = d3.scaleLinear([Math.max(0, d3.min(dateObservations, d => d.observations) - 1), d3.max(dateObservations, d => d.observations) + 1], [height - margin.top - margin.bottom, 0]);
 
     svg.append("g")
         .attr("class","x axis")
@@ -112,10 +114,11 @@ dataCSV.then(function (data) {
     function resetChart() {
         selectedDate = [];
         selectedDateRange = [];
+        selectedObservationsRange = [];
         selectedGranularity = "month";
 
         window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
-            detail: []
+            detail: [[], []]
         }));
         window.dispatchEvent(new CustomEvent("dateChanged", { 
             detail: selectedDate 
@@ -127,16 +130,34 @@ dataCSV.then(function (data) {
     
     function brushed(event) {
         if(!event.selection) return;
-        const [x0, x1] = event.selection;
+        const [[x0, y0], [x1, y1]] = event.selection;
 
         filteredData = filter_by_countries(data, selectedCountries);
-        let start = find_closest_date(dateObservations, x, x0);
-        let end = find_closest_date(dateObservations, x, x1);
+        const brushedDateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
         
+        let start = find_closest_date(brushedDateObservations, x, x0);
+        let end = find_closest_date(brushedDateObservations, x, x1);
+
+        let minObs = find_closest_observations_value(
+            brushedDateObservations,
+            y,
+            Math.min(y0, y1),
+            Math.min(y0, y1),
+            Math.max(y0, y1)
+        );
+        let maxObs = find_closest_observations_value(
+            brushedDateObservations,
+            y,
+            Math.max(y0, y1),
+            Math.min(y0, y1),
+            Math.max(y0, y1)
+        );
+
         selectedDateRange = [start, end];
+        selectedObservationsRange = [Math.min(minObs, maxObs), Math.max(minObs, maxObs)];
 
         window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
-            detail: selectedDateRange
+            detail: [selectedDateRange, selectedObservationsRange]
         }));
         updateVis();
     }
@@ -253,6 +274,7 @@ dataCSV.then(function (data) {
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
         }
+
         var dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
         const innerWidth = width - margin.left - margin.right;
@@ -318,16 +340,30 @@ dataCSV.then(function (data) {
         let filteredDateObservations = globalDisplay
             ? dateObservations.filter(d => d.country === "global")
             : dateObservations.filter(d => d.country !== "global");
+
+        if (selectedObservationsRange.length > 0) {
+            const temp = filter_by_observations_range(filteredDateObservations, selectedObservationsRange[0], selectedObservationsRange[1]);
+            if (temp.length > 0) {
+                filteredDateObservations = temp;
+            } else {
+                selectedObservationsRange = [];
+                window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+                    detail: [selectedDateRange, []]
+                }));
+            }
+        }
         
         x = d3.scaleUtc(d3.extent(filteredDateObservations, d => d.date), [0, width - margin.left - margin.right]);
-        y = d3.scaleLinear([0, d3.max(filteredDateObservations, d => d.observations)], [height - margin.top - margin.bottom, 0]);
+        y = d3.scaleLinear([Math.max(0, d3.min(filteredDateObservations, d => d.observations) - 1), d3.max(filteredDateObservations, d => d.observations) + 1], [height - margin.top - margin.bottom, 0]);
 
-        const uniqueObservations = Array.from(new Set(filteredDateObservations.map(d => d.observations)));
+        const minObs = Math.max(0, d3.min(filteredDateObservations, d => d.observations) - 1);
+        const maxObs = d3.max(filteredDateObservations, d => d.observations) + 1;
+        const allTicks = d3.range(Math.ceil(minObs), Math.floor(maxObs) + 1);
 
         const points = filteredDateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
         const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
         
-        const brush = d3.brushX()
+        const brush = d3.brush()
             .extent([[0, 0], [innerWidth, innerHeight]])
             .on("end", brushed);
         svg.select(".brush").remove();
@@ -394,7 +430,7 @@ dataCSV.then(function (data) {
             .attr("transform", `translate(0,0)`)
             .transition()
             .duration(duration)
-            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
+            .call(d3.axisLeft(y).tickValues(allTicks).tickFormat(d3.format("d")));
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {

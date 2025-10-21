@@ -24,6 +24,7 @@ var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
+var selectedObservationsRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
 var shared_color = shared_color_light;
@@ -348,7 +349,8 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {
-        selectedDateRange = event.detail;
+        selectedDateRange = event.detail[0];
+        selectedObservationsRange = event.detail[1];
         updateVis();
     });
 

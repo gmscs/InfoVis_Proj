@@ -50,6 +50,7 @@ var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
+var selectedObservationsRange = [];
 var selectedSizeRange = [];
 var selectedColour = null;
 var colourScale = null;
@@ -226,6 +227,14 @@ Promise.all([
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
         }
+        if (selectedObservationsRange.length > 0) {
+            const tempCounts = get_counts_by_country(filteredData);
+            const validCountries = Array.from(tempCounts.entries())
+                .filter(([country, count]) => count >= selectedObservationsRange[0] && count <= selectedObservationsRange[1])
+                .map(([country]) => country);
+            filteredData = filteredData.filter(row => validCountries.includes(row.country));
+        }
+        
         var counts = get_counts_by_country(filteredData);
         colourScale = get_colour_scale(counts);
 
@@ -234,8 +243,8 @@ Promise.all([
         }
 
         counts = get_counts_by_country(filteredData);
+        
 
-        countries = Array.from(new Set(filteredData.map(d => d.country)));
         countries.push("All Countries");
         countries.sort();
         
@@ -470,7 +479,8 @@ Promise.all([
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {
-        selectedDateRange = event.detail;
+        selectedDateRange = event.detail[0];
+        selectedObservationsRange = event.detail[1];
 
         updateMap("datechangedBrushed");
     });
