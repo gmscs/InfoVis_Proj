@@ -1,10 +1,10 @@
 import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
     dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours_light, habitat_colours_dark,
      filter_by_date_range, filter_by_date, 
-     shared_color_light, shared_color_dark} from "./stuff.js";
+     shared_color_light, shared_color_dark, age_colours, status_colours} from "./stuff.js";
 
 const container = d3.select("#scatter");
-const margin = { top: 20, right: 40, bottom: 50, left: 40 };
+const margin = { top: 40, right: 40, bottom: 50, left: 40 };
 const svg = create_svg(container, margin);
 
 var width = container.node().getBoundingClientRect().width;
@@ -13,14 +13,19 @@ var height = container.node().getBoundingClientRect().height;
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
 
-const labelStuff = svg.append("g")
+const labelStuff = container.append("div")
     .attr("class", "labelStuff");
+
+const radioContainer = container
+    .append("div")
+    .attr("class", "radioContainer");
 
 let selectedCountries = [];
 var filteredData;
 var regressionLine = true;
 var sexApplied = "";
 var habitat_colours = habitat_colours_light;
+var colorList = age_colours;
 
 var selectedVariable = "commonname";
 var clevFilter = null;
@@ -28,6 +33,13 @@ var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
 var shared_color = shared_color_light;
+var selectedColourVar = "age";
+
+const colourOptions = [
+    { value: "age", label: "Age" },
+    { value: "conservation", label: "Conservation Status" },
+    { value: "habitat", label: "Habitat" }
+];
 
 svg.append("rect")
     .attr("id", "clearBox")
@@ -166,17 +178,6 @@ dataCSV.then(function (data) {
             window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
             updateVis();
         })
-    labelStuff.append("text")
-        .attr("class", "legend habitats_legend")
-        .attr("y", 0)
-        .attr("x", innerWidth / 1.65)
-        .style("z-index", 100)
-        .style("cursor", "pointer")
-        .style("opacity", 1)
-        .text("Habitats")
-        .on("click", function(event) {
-            window.dispatchEvent(new CustomEvent("showHabitats"));
-        })
     
     function resetChart() {
         selectedSizeRange = [];
@@ -237,7 +238,7 @@ dataCSV.then(function (data) {
 
         labelStuffReset.select(".activeFilterLabel")
             .attr("x", -36)
-            .attr("y", newHeight - 33)
+            .attr("y", newHeight - 53)
             .text("");
         
         let filterBool = false;
@@ -439,7 +440,7 @@ dataCSV.then(function (data) {
             enter => enter.append("path")
             .attr("class", "dot")
             .attr("r", symbol_size)
-            .style("fill", d => habitat_colours[d.habitat])
+            .style("fill", d => colorList[d[selectedColourVar]])
             .style("opacity", dot_opacity)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
@@ -459,22 +460,54 @@ dataCSV.then(function (data) {
                 if (overlappingDots.length > 1) {
                     tooltip_text = `${overlappingDots.length} Species:<br/><br/>`;
                     overlappingDots.forEach(dot => {
-                        tooltip_text += `
-                            Species: ${dot.commonname}<br/>
-                            Age: ${dot.age}<br/>
-                            Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
-                            Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[dot.habitat]}; margin-right: 5px;"></span>${dot.habitat}<br/>
-                            Status: ${d.conservation}<br/>
-                            ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                        let info = "";
+                        if(selectedColourVar == "habitat") {
+                            info = `Species: ${dot.commonname}<br/>
+                                Age: ${dot.age}<br/>
+                                Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                Status: ${d.conservation}<br/>
+                                ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                        } else if (selectedColourVar == "age") {
+                            info = `Species: ${dot.commonname}<br/>
+                                Age: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                Habitat: ${dot.habitat}<br/>
+                                Status: ${dot.conservation}<br/>
+                                ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                        } else {
+                            info = `Species: ${dot.commonname}<br/>
+                                Age: ${dot.age}<br/>
+                                Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                Habitat: ${dot.habitat}<br/>
+                                Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                        }
+                        tooltip_text += info;
                     });
                 } else {
-                    tooltip_text = `
-                        Species: ${d.commonname}<br/>
-                        Age: ${d.age}<br/>
-                        Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
-                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${habitat_colours[d.habitat]}; margin-right: 5px;"></span>${d.habitat}<br/>
-                        Status: ${d.conservation}<br/>
-                        ${d.lengthM}m, ${d.weight}kg<br/>`;
+                    if(selectedColourVar == "habitat") {
+                        tooltip_text = `Species: ${d.commonname}<br/>
+                            Age: ${d.age}<br/>
+                            Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                            Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                            Status: ${d.conservation}<br/>
+                            ${d.lengthM}m, ${d.weight}kg<br/>`;
+                    } else if (selectedColourVar == "age") {
+                        tooltip_text = `Species: ${d.commonname}<br/>
+                            Age: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                            Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                            Habitat: ${d.habitat}<br/>
+                            Status: ${d.conservation}<br/>
+                            ${d.lengthM}m, ${d.weight}kg<br/>`;
+                    } else {
+                        tooltip_text = `Species: ${d.commonname}<br/>
+                            Age: ${d.age}<br/>
+                            Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                            Habitat: ${d.habitat}<br/>
+                            Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                            ${d.lengthM}m, ${d.weight}kg<br/>`;
+                    }
                 }
                 
                 tooltip.html(tooltip_text);
@@ -529,6 +562,33 @@ dataCSV.then(function (data) {
         })
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
+
+    radioContainer.selectAll(".colourOptions")
+        .data(colourOptions)
+        .join("div")
+        .attr("class", "colourOptions")
+        .each(function(option, i) {
+            const div = d3.select(this);
+            div.append("input")
+                .attr("type", "radio")
+                .attr("id", `colour_radio_${i}`)
+                .attr("name", "granularityGroup")
+                .attr("value", option.value)
+                .style("cursor", "pointer")
+                .property("checked", option.value === selectedColourVar)
+                .on("change", function() {
+                    selectedColourVar = this.value;
+                    if(selectedColourVar == "age") colorList = age_colours;
+                    else if(selectedColourVar == "conservation") colorList = status_colours;
+                    else colorList = habitat_colours;
+                    window.dispatchEvent(new CustomEvent("filterByValueScatter", { detail: selectedColourVar }));
+                    updateVis();
+                });
+            div.append("label")
+                .attr("for", `colour_radio_${i}`)
+                .style("cursor", "pointer")
+                .text(option.label);
+        });
 
     window.addEventListener("dateChanged", function(event) {
         selectedDate = event.detail;

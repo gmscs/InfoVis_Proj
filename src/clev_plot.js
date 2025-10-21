@@ -1,5 +1,5 @@
 import {dataCSV, shared_color_light, shared_color_dark, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
-    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, 
+    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, age_colours, status_colours,
     filter_by_length_range, filter_by_colour } from "./stuff.js";
 
 const container = d3.select("#clev");
@@ -15,8 +15,9 @@ let selectedLabel = "Species";
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
-var useHabitatColors = false;
+var useHabitatColors = true;
 var habitat_colours = habitat_colours_light;
+var colorList = habitat_colours;
 
 var selectedCountries = [];
 var selectedVariable = "commonname";
@@ -118,10 +119,7 @@ dataCSV.then(function (data) {
             d3.select(this)
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
-                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
-            selectedVariable = "habitat";
-            radioContainer.selectAll(".radioOptions input[value='habitat']")
-                .property("checked", true);
+                .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             updateVis();
         })
         .append("div")
@@ -132,23 +130,20 @@ dataCSV.then(function (data) {
         .style("border-radius", "50%")
         .style("position", "absolute")
         .style("top", "0px")
-        .style("left", useHabitatColors ? "0px" : "0px")
+        .style("left", useHabitatColors ? "20px" : "0px")
         .style("transition", "transform 0.3s");
 
     habitatCheckboxContainer.append("label")
         .attr("for", "useHabitatColors")
         .style("cursor", "pointer")
         .style("padding-top", "6px")
-        .text("Show Habitat Colours")
+        .text("Show Scatter Plot Colours")
         .on("click", function() {
             useHabitatColors = !useHabitatColors;
             d3.select("#toggleContainerClev")
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
-                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
-            selectedVariable = "habitat";
-            radioContainer.selectAll(".radioOptions input[value='habitat']")
-                .property("checked", true);
+                .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             updateVis();
         });
 
@@ -262,7 +257,7 @@ dataCSV.then(function (data) {
               enter => enter.append("circle")
                 .attr("class","dot")
                 .attr("r", d => (d == clevFilter) ? symbol_size * 1.5 : symbol_size)
-                .style("fill", d => useHabitatColors ? habitat_colours[d] || shared_color : shared_color)
+                .style("fill", d => useHabitatColors ? colorList[d] || shared_color : shared_color)
                 .style("opacity", d => (d == clevFilter) ? 1 : dot_opacity)
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
@@ -306,7 +301,7 @@ dataCSV.then(function (data) {
                     updateVis();
                 }),
               update => update
-                .style("fill", d => useHabitatColors ? habitat_colours[d] || shared_color : shared_color),
+                .style("fill", d => useHabitatColors ? colorList[d] || shared_color : shared_color),
               exit => exit.remove()
             )
             .transition().duration(duration)
@@ -330,6 +325,9 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
+                if(selectedVariable == "age") colorList = age_colours;
+                else if(selectedVariable == "conservation") colorList = status_colours;
+                else colorList = habitat_colours;
                 updateVis();
             });
             div.append("label")
@@ -392,6 +390,23 @@ dataCSV.then(function (data) {
                 return d.value === selectedVariable;
             });
         updateVis();
+    });
+
+    window.addEventListener("filterByValueScatter", function(event) {
+        if(useHabitatColors) {
+            selectedVariable = event.detail;
+
+            if(selectedVariable == "age") colorList = age_colours;
+            else if(selectedVariable == "conservation") colorList = status_colours;
+            else colorList = habitat_colours;
+
+            radioContainer.selectAll(".radioOptions input[type='radio']")
+                .property("checked", function(d) {
+                    return d.value === selectedVariable;
+                });
+            
+            updateVis();
+        }
     });
 
     window.addEventListener("darkMode", function(event) {

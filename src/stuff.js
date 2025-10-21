@@ -19,6 +19,21 @@ export const sex_symbols = {
     "Female": "✚"
 };
 
+export const age_colours = {
+    "Adult": "#0084ffff",
+    "Subadult": "#c00000ff",
+    "Juvenile": "#00a81cff",
+    "Hatchling": "#d6af00ff"
+}
+
+export const status_colours = {
+    "Critically Endangered": "#c20000ff",
+    "Endangered": "#eb9a05ff",
+    "Vulnerable": "#c2c500ff",
+    "Least Concern": "#0eb616ff",
+    "Data Deficient": "#ac1aa4ff"
+}
+
 export const habitat_colours_light = {
     "Billabongs": "#FF5733",
     "Brackish Rivers": "#4eb862ff",
