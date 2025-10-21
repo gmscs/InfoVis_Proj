@@ -104,22 +104,53 @@ dataCSV.then(function (data) {
     svg.append("g")
         .attr("class","y axis");
 
-    habitatCheckboxContainer.append("input")
-        .attr("type", "checkbox")
-        .attr("id", "habitatColorCheckbox")
+    habitatCheckboxContainer.append("button")
+        .attr("id", "toggleContainerClev")
+        .style("width", "40px")
+        .style("height", "20px")
+        .style("background-color", useHabitatColors ? shared_color : "#c1c1c1")
+        .style("border-radius", "15px")
+        .style("position", "relative")
         .style("cursor", "pointer")
-        .on("change", function() {
-            useHabitatColors = this.checked;
+        .style("top", "3px")
+        .on("click", function() {
+            useHabitatColors = !useHabitatColors;
+            d3.select(this)
+                .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircleClev")
+                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
+            selectedVariable = "habitat";
             radioContainer.selectAll(".radioOptions input[value='habitat']")
                 .property("checked", true);
-            selectedVariable = "habitat";
             updateVis();
-        });
+        })
+        .append("div")
+        .attr("id", "toggleCircleClev")
+        .style("width", "15px")
+        .style("height", "15px")
+        .style("background-color", "white")
+        .style("border-radius", "50%")
+        .style("position", "absolute")
+        .style("top", "0px")
+        .style("left", useHabitatColors ? "0px" : "0px")
+        .style("transition", "transform 0.3s");
 
     habitatCheckboxContainer.append("label")
-        .attr("for", "habitatColorCheckbox")
+        .attr("for", "useHabitatColors")
         .style("cursor", "pointer")
-        .text("Show Habitat Colours");
+        .style("padding-top", "6px")
+        .text("Show Habitat Colours")
+        .on("click", function() {
+            useHabitatColors = !useHabitatColors;
+            d3.select("#toggleContainerClev")
+                .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircleClev")
+                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
+            selectedVariable = "habitat";
+            radioContainer.selectAll(".radioOptions input[value='habitat']")
+                .property("checked", true);
+            updateVis();
+        });
 
     function updateVis() {
 
@@ -299,7 +330,6 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
-                useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
                 updateVis();
             });
             div.append("label")
@@ -316,43 +346,36 @@ dataCSV.then(function (data) {
 
     window.addEventListener("dateChanged", function(event) {
         selectedDate = event.detail;
-
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {
         selectedDateRange = event.detail;
-
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("sizeChangedBrushed", function(event) {
         selectedSizeRange = event.detail;
-
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("countryChanged", (event) => {
         selectedCountries = event.detail;
-
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("filterByColour", function(event) {
         selectedCountries = event.detail;
-
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("showHabitats", function(event) {
         useHabitatColors = true;
-        habitatCheckboxContainer.select("#habitatColorCheckbox")
-            .property("checked", true);
+        d3.select("#toggleContainerClev")
+                .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
+        d3.select("#toggleCircleClev")
+            .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
+
         selectedVariable = "habitat";
         radioContainer.selectAll(".radioOptions input[value='habitat']")
             .property("checked", true);
@@ -368,27 +391,28 @@ dataCSV.then(function (data) {
             .property("checked", function(d) {
                 return d.value === selectedVariable;
             });
-        
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
 
     window.addEventListener("darkMode", function(event) {
         habitat_colours = habitat_colours_dark;
         shared_color = shared_color_dark;
+        d3.select("#toggleContainerClev")
+            .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
         updateVis();
     });
 
     window.addEventListener("lightMode", function(event) {
         habitat_colours = habitat_colours_light;
         shared_color = shared_color_light;
+        d3.select("#toggleContainerClev")
+            .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
         updateVis();
     });
 
     window.addEventListener("globalReset", resetChart);
 
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
-        useHabitatColors = document.getElementById("habitatColorCheckbox").checked;
         updateVis();
     });
     whyWouldYouDoThisToMe.observe(container.node());

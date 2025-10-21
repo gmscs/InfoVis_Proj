@@ -23,6 +23,8 @@ var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
+var globalDisplay = true;
+var showLines = true;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -34,9 +36,9 @@ const radioContainer = container
     .append("div")
     .attr("class", "radioContainer");
 
-const radioContainer2 = container
+const linesContainer = container
     .append("div")
-    .attr("class", "radioContainer2");
+    .attr("class", "linesContainer");
 
 const checkboxContainer = container
     .append("div")
@@ -47,11 +49,6 @@ const granularityOptions = [
     { value: "day", label: "Daily" },
     { value: "month", label: "Monthly" },
     { value: "year", label: "Yearly" }
-];
-
-const chartOptions = [
-    { label:"Strip Chart", value:"strip" },
-    { label:"Line Chart", value:"line" },
 ];
 
 svg.append("rect")
@@ -144,19 +141,89 @@ dataCSV.then(function (data) {
         updateVis();
     }
 
-    checkboxContainer.append("input")
-        .attr("type", "checkbox")
-        .attr("id", "globalDisplay")
+    checkboxContainer.append("button")
+        .attr("id", "toggleContainer")
+        .style("width", "40px")
+        .style("height", "20px")
+        .style("background-color", globalDisplay ? shared_color : "#c1c1c1")
+        .style("border-radius", "15px")
+        .style("position", "relative")
         .style("cursor", "pointer")
-        .property("checked", true)
-        .on("change", function() {
-            updateVis(dateObservations);
-        });
+        .style("top", "3px")
+        .on("click", function() {
+            globalDisplay = !globalDisplay;
+            d3.select(this)
+                .style("background-color", globalDisplay ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircle")
+                .style("transform", globalDisplay ? "translateX(0px)" : "translateX(-20px)");
+            updateVis();
+        })
+        .append("div")
+        .attr("id", "toggleCircle")
+        .style("width", "15px")
+        .style("height", "15px")
+        .style("background-color", "white")
+        .style("border-radius", "50%")
+        .style("position", "absolute")
+        .style("top", "0px")
+        .style("left", globalDisplay ? "20px" : "2.5px")
+        .style("transition", "transform 0.3s");
 
     checkboxContainer.append("label")
         .attr("for", "globalDisplay")
         .style("cursor", "pointer")
-        .text("Merge data");
+        .style("padding-top", "6px")
+        .text("Merge data")
+        .on("click", function() {
+            globalDisplay = !globalDisplay;
+            d3.select("#toggleContainer")
+                .style("background-color", globalDisplay ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircle")
+                .style("transform", globalDisplay ? "translateX(0px)" : "translateX(-20px)");
+            updateVis();
+        });
+
+    linesContainer.append("button")
+        .attr("id", "toggleContainerLines")
+        .style("width", "40px")
+        .style("height", "20px")
+        .style("background-color", showLines ? shared_color : "#c1c1c1")
+        .style("border-radius", "15px")
+        .style("position", "relative")
+        .style("cursor", "pointer")
+        .style("top", "3px")
+        .on("click", function() {
+            showLines = !showLines;
+            d3.select(this)
+                .style("background-color", showLines ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircleLines")
+                .style("transform", showLines ? "translateX(0px)" : "translateX(-20px)");
+            updateVis();
+        })
+        .append("div")
+        .attr("id", "toggleCircleLines")
+        .style("width", "15px")
+        .style("height", "15px")
+        .style("background-color", "white")
+        .style("border-radius", "50%")
+        .style("position", "absolute")
+        .style("top", "0px")
+        .style("left", showLines ? "20px" : "2.5px")
+        .style("transition", "transform 0.3s");
+
+    linesContainer.append("label")
+        .attr("for", "showLines")
+        .style("cursor", "pointer")
+        .style("padding-top", "6px")
+        .text("Show lines")
+        .on("click", function() {
+            showLines = !showLines;
+            d3.select("#toggleContainerLines")
+                .style("background-color", showLines ? shared_color : "#c1c1c1");
+            d3.select("#toggleCircleLines")
+                .style("transform", showLines ? "translateX(0px)" : "translateX(-20px)");
+            updateVis();
+        });
 
     function updateVis() {
         height = container.node().getBoundingClientRect().height;
@@ -248,7 +315,6 @@ dataCSV.then(function (data) {
         svg.selectAll(".lines").remove();
         svg.selectAll(".dot").remove();
 
-        const globalDisplay = d3.select("#globalDisplay").property("checked");
         let filteredDateObservations = globalDisplay
             ? dateObservations.filter(d => d.country === "global")
             : dateObservations.filter(d => d.country !== "global");
@@ -273,7 +339,7 @@ dataCSV.then(function (data) {
             .domain(Array.from(groups.keys()))
             .range(globalDisplay ? [shared_color] : d3.schemeCategory10);
 
-        if(selectedChart === "line") {
+        if(showLines) {
             const line = d3.line();
 
             svg.append("g")
@@ -294,8 +360,7 @@ dataCSV.then(function (data) {
                             selectedCountries = [clickedCountry];
                             window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
                             filteredData = filter_by_countries(data, selectedCountries);
-                            dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
-                            updateVis(dateObservations);
+                            updateVis();
                         }
                     })
                     .on("mouseover", function(event, d) {
@@ -457,34 +522,10 @@ dataCSV.then(function (data) {
                 .property("disabled", option.value === "day")
                 .on("change", function() {
                     selectedGranularity = this.value;
-                    dateObservations = get_date_observations_by_granularity(filteredData, this.value)
-                    updateVis(dateObservations);
+                    updateVis();
                 });
             div.append("label")
                 .attr("for", `granularity_radio_${i}`)
-                .style("cursor", "pointer")
-                .text(option.label);
-        });
-
-        radioContainer2.selectAll(".radioOption2")
-        .data(chartOptions)
-        .join("div")
-        .attr("class", "radioOption2")
-        .each(function(option, i) {
-            const div = d3.select(this);
-            div.append("input")
-                .attr("type", "radio")
-                .attr("id", `chart_radio_${i}`)
-                .attr("name", "chart_radio")
-                .attr("value", option.value)
-                .style("cursor", "pointer")
-                .property("checked", option.value === selectedChart)
-                .on("change", function() {
-                    selectedChart = this.value;
-                    updateVis(dateObservations);
-                });
-            div.append("label")
-                .attr("for", `chart_radio_${i}`)
                 .style("cursor", "pointer")
                 .text(option.label);
         });
@@ -524,12 +565,20 @@ dataCSV.then(function (data) {
     window.addEventListener("darkMode", function(event) {
         shared_color = shared_color_dark;
         blendMode = "screen";
+        d3.select("#toggleContainer")
+            .style("background-color", globalDisplay ? shared_color : "#c1c1c1");
+        d3.select("#toggleContainerLines")
+                .style("background-color", showLines ? shared_color : "#c1c1c1");
         updateVis();
     });
 
     window.addEventListener("lightMode", function(event) {
         shared_color = shared_color_light;
         blendMode = "multiply";
+        d3.select("#toggleContainer")
+            .style("background-color", globalDisplay ? shared_color : "#c1c1c1");
+        d3.select("#toggleContainerLines")
+                .style("background-color", showLines ? shared_color : "#c1c1c1");
         updateVis();
     });
 
@@ -540,6 +589,6 @@ dataCSV.then(function (data) {
     });
     whyWouldYouDoThisToMe.observe(container.node());
 
-    updateVis(dateObservations);
+    updateVis();
 
 });
