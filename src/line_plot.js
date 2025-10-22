@@ -120,7 +120,7 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("dateChanged", { 
             detail: selectedDate 
         }));
-        radioContainer.selectAll(".radioOption input[value='month']")
+        radioContainer.selectAll(".granularityOptions input[value='month']")
             .property("checked", true);
         updateVis();
     }
@@ -476,7 +476,7 @@ dataCSV.then(function (data) {
                     if(selectedGranularity === "year") {
                         const clickedDate = d;
                         selectedGranularity = "month";
-                        radioContainer.selectAll(".radioOption input[value='month']")
+                        radioContainer.selectAll(".granularityOptions input[value='month']")
                             .property("checked", true);
                         selectedDate = [null, clickedDate.date.getFullYear()]
                         window.dispatchEvent(new CustomEvent("dateChanged", { 
@@ -486,7 +486,7 @@ dataCSV.then(function (data) {
                     else if(selectedGranularity === "month") {
                         const clickedDate = d;
                         selectedGranularity = "day";
-                        radioContainer.selectAll(".radioOption input[value='day']")
+                        radioContainer.selectAll(".granularityOptions input[value='day']")
                             .property("checked", true);
                         selectedDate = [clickedDate.date.getMonth() + 1, clickedDate.date.getFullYear()]
                         window.dispatchEvent(new CustomEvent("dateChanged", { 
@@ -506,10 +506,10 @@ dataCSV.then(function (data) {
                 .attr("cy", d => y(d.observations));
     }
 
-    radioContainer.selectAll(".radioOption")
+    radioContainer.selectAll(".granularityOptions")
         .data(granularityOptions)
         .join("div")
-        .attr("class", "radioOption")
+        .attr("class", "granularityOptions")
         .each(function(option, i) {
             const div = d3.select(this);
             div.append("input")

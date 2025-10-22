@@ -27,6 +27,7 @@ var selectedDateRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
 var shared_color = shared_color_light;
+var scatterVar = "age";
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -120,6 +121,16 @@ dataCSV.then(function (data) {
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
+            if(useHabitatColors) {
+                selectedVariable = scatterVar;
+                if(selectedVariable == "age") colorList = age_colours;
+                else if(selectedVariable == "conservation") colorList = status_colours;
+                else colorList = habitat_colours;
+                radioContainer.selectAll(".radioOptions input[type='radio']")
+                .property("checked", function(d) {
+                    return d.value === selectedVariable;
+                });
+            }
             updateVis();
         })
         .append("div")
@@ -137,13 +148,23 @@ dataCSV.then(function (data) {
         .attr("for", "useHabitatColors")
         .style("cursor", "pointer")
         .style("padding-top", "6px")
-        .text("Show Scatter Plot Colours")
+        .text("Scatter Plot Legend")
         .on("click", function() {
             useHabitatColors = !useHabitatColors;
             d3.select("#toggleContainerClev")
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
+            if(useHabitatColors) {
+                selectedVariable = scatterVar;
+                if(selectedVariable == "age") colorList = age_colours;
+                else if(selectedVariable == "conservation") colorList = status_colours;
+                else colorList = habitat_colours;
+                radioContainer.selectAll(".radioOptions input[type='radio']")
+                .property("checked", function(d) {
+                    return d.value === selectedVariable;
+                });
+            }
             updateVis();
         });
 
@@ -328,6 +349,8 @@ dataCSV.then(function (data) {
                 if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
+                if(useHabitatColors)
+                    window.dispatchEvent(new CustomEvent("scatterChange", { detail: selectedVariable }));
                 updateVis();
             });
             div.append("label")
@@ -393,8 +416,9 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("filterByValueScatter", function(event) {
+        scatterVar = event.detail;
         if(useHabitatColors) {
-            selectedVariable = event.detail;
+            selectedVariable = scatterVar;
 
             if(selectedVariable == "age") colorList = age_colours;
             else if(selectedVariable == "conservation") colorList = status_colours;

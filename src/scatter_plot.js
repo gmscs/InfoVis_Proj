@@ -572,7 +572,7 @@ dataCSV.then(function (data) {
             div.append("input")
                 .attr("type", "radio")
                 .attr("id", `colour_radio_${i}`)
-                .attr("name", "granularityGroup")
+                .attr("name", "colourGroup")
                 .attr("value", option.value)
                 .style("cursor", "pointer")
                 .property("checked", option.value === selectedColourVar)
@@ -587,7 +587,19 @@ dataCSV.then(function (data) {
             div.append("label")
                 .attr("for", `colour_radio_${i}`)
                 .style("cursor", "pointer")
-                .text(option.label);
+                .text(option.label)
+                .on("mouseover", function(event) {
+                    tooltip.style("opacity", 2).style("s");
+                })
+                .on("mousemove", function(event) {
+                    const containerRect = container.node().getBoundingClientRect();
+                    tooltip.html("Colour legends can be toggled on the chart to the left")
+                        .style("left", (event.pageX - containerRect.left + 10) + "px")
+                        .style("top", (event.pageY - containerRect.top + 10) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(duration / 5).style("opacity", 0);
+                });
         });
 
     window.addEventListener("dateChanged", function(event) {
@@ -608,6 +620,27 @@ dataCSV.then(function (data) {
         clevFilter = value;
 
         updateVis();
+    });
+
+    window.addEventListener("scatterChange", function(event) {
+        if(event.detail == "age" || event.detail == "conservation" || event.detail == "habitat") {
+            selectedColourVar = event.detail;
+
+            if(selectedColourVar == "age") {
+                colorList = age_colours;
+            } else if (selectedColourVar == "conservation") {
+                colorList = status_colours;
+            } else {
+                colorList = habitat_colours;
+            }
+
+            radioContainer.selectAll(".colourOptions input[type='radio']")
+                .property("checked", function(d) {
+                    return d.value === selectedColourVar;
+                });
+
+            updateVis();
+        }
     });
 
     window.addEventListener("countryChanged", (event) => {
