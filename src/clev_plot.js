@@ -1,6 +1,6 @@
 import {dataCSV, shared_color_light, shared_color_dark, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
-    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, age_colours, status_colours,
-    filter_by_length_range, filter_by_colour } from "./stuff.js";
+    filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, age_colours, status_colours, 
+    filter_by_length_range, filter_by_colour, filter_by_weight_range } from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 60, left: 210 };
@@ -25,6 +25,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var selectedWeightRange = [];
 var sexApplied = "";
 var shared_color = shared_color_light;
 var scatterVar = "age";
@@ -186,6 +187,9 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
         }
         var counts = get_counts(filteredData, selectedVariable, clevFilter);
         
@@ -376,7 +380,8 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("sizeChangedBrushed", function(event) {
-        selectedSizeRange = event.detail;
+        selectedSizeRange = event.detail[0];
+        selectedWeightRange = event.detail[1];
         updateVis();
     });
 

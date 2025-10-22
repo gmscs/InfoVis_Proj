@@ -1,7 +1,8 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
         symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
-        shared_color_light, shared_color_dark} from "./stuff.js";
+        shared_color_light, shared_color_dark, filter_by_weight_range,
+        filter_by_observations_range} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -22,6 +23,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var selectedWeightRange = [];
 var sexApplied = "";
 var globalDisplay = true;
 var showLines = true;
@@ -252,6 +254,9 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
         }
         var dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
 
@@ -545,8 +550,8 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("sizeChangedBrushed", function(event) {
-        selectedSizeRange = event.detail;
-
+        selectedSizeRange = event.detail[0];
+        selectedWeightRange = event.detail[1];
         updateVis();
     });
 

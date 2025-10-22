@@ -1,5 +1,5 @@
 import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color_light, shared_color_dark, 
-    filter_by_colour, update_legend_title, filter_by_date,
+    filter_by_colour, update_legend_title, filter_by_date, filter_by_weight_range,
     filter_by_date_range, filter_by_length_range} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
@@ -51,6 +51,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var selectedWeightRange = [];
 var selectedColour = null;
 var colourScale = null;
 var sexApplied = "";
@@ -225,6 +226,9 @@ Promise.all([
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
         }
         var counts = get_counts_by_country(filteredData);
         colourScale = get_colour_scale(counts);
@@ -476,8 +480,8 @@ Promise.all([
     });
 
     window.addEventListener("sizeChangedBrushed", function(event) {
-        selectedSizeRange = event.detail;
-
+        selectedSizeRange = event.detail[0];
+        selectedWeightRange = event.detail[1];
         updateMap("sizechangedBrushed");
     });
 

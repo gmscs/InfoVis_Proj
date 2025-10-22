@@ -1,6 +1,6 @@
-import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, find_closest_length, filter_by_length_range, stroke_width, 
+import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, filter_by_length_range, stroke_width, 
     dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours_light, habitat_colours_dark,
-     filter_by_date_range, filter_by_date, 
+     filter_by_date_range, filter_by_date, filter_by_weight_range,
      shared_color_light, shared_color_dark, age_colours, status_colours} from "./stuff.js";
 
 const container = d3.select("#scatter");
@@ -32,6 +32,7 @@ var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
+var selectedWeightRange = [];
 var shared_color = shared_color_light;
 var selectedColourVar = "age";
 
@@ -181,33 +182,18 @@ dataCSV.then(function (data) {
     
     function resetChart() {
         selectedSizeRange = [];
+        selectedWeightRange = [];
         sexApplied = "";
         labelStuff.selectAll(".legend")
             .style("opacity", 1);
             
         window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
         window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
-            detail: selectedSizeRange
+            detail: [selectedSizeRange, selectedWeightRange]
         }));
         updateVis();
     }
 
-    function brushed(event) {
-        if(!event.selection) return;
-        const [x0, x1] = event.selection;
-        filteredData = filter_by_countries(filteredData, selectedCountries);
-
-        let start = find_closest_length(filteredData, x, x0);
-        let end = find_closest_length(filteredData, x, x1);
-
-        selectedSizeRange = [start, end];
-        
-        window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
-            detail: selectedSizeRange
-        }));
-        updateVis();
-    }
-    
     function updateVis() {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
@@ -217,6 +203,8 @@ dataCSV.then(function (data) {
         let filterText = "";
         let filteredData = Array.from(data);
 
+        let brushedDots = [];
+        
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
@@ -234,6 +222,9 @@ dataCSV.then(function (data) {
         }
         if (selectedSizeRange.length > 0) {
             filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
         }
 
         labelStuffReset.select(".activeFilterLabel")
@@ -367,9 +358,39 @@ dataCSV.then(function (data) {
 
         svg.selectAll(".dot").remove();
 
-        const brush = d3.brushX()
+        const brush = d3.brush()
             .extent([[0, 5], [innerWidth, innerHeight - 1]])
-            .on("end", brushed);
+            .on("end", ({selection}) => {
+                if(!selection) return;
+                const [[x0, y0], [x1, y1]] = selection;
+                brushedDots = filteredData.filter(d => {
+                    const cx = x(d.lengthM);
+                    const cy = y(d.weight);
+                    return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
+                });
+                if (brushedDots.length > 0) {
+                    const brushedLengths = brushedDots.map(d => d.lengthM);
+                    const brushedWeights = brushedDots.map(d => d.weight);
+
+                    const minLength = d3.min(brushedLengths);
+                    const maxLength = d3.max(brushedLengths);
+
+                    const minWeight = d3.min(brushedWeights);
+                    const maxWeight = d3.max(brushedWeights);
+                    
+                    selectedSizeRange = [minLength, maxLength];
+                    selectedWeightRange = [minWeight, maxWeight];
+
+                } else {
+                    selectedSizeRange = [];
+                    selectedWeightRange = [];
+                }
+                window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
+                    detail: [selectedSizeRange, selectedWeightRange]
+                }));
+                updateVis();
+            });
+
         svg.select(".brush").remove();
         svg.append("g")
             .attr("class", "brush")
