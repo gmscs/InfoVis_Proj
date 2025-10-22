@@ -379,12 +379,17 @@ dataCSV.then(function (data) {
                         }
                     })
                     .on("mouseover", function(event, d) {
+                        svg.selectAll(".lines path")
+                            .style("opacity", 0.2);
                         d3.select(this)
+                            .style("opacity", 1)
                             .attr("stroke-width", stroke_width * 2);
                         if(selectedCountries.length === 0)
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
                     })
                     .on("mouseout", function() {
+                        svg.selectAll(".lines path")
+                            .style("opacity", 1);
                         d3.select(this)
                             .attr("stroke-width", stroke_width);
                         if(selectedCountries.length === 0)
