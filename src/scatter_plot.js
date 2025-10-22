@@ -498,7 +498,15 @@ dataCSV.then(function (data) {
                     tooltip_text = `${overlappingDots.length} Species:<br/><br/>`;
                     overlappingDots.forEach(dot => {
                         let info = "";
-                        if(selectedColourVar == "habitat") {
+                        if(selectedColourVar == "commonname") {
+                            info = `Species: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                Age: ${dot.age}<br/>
+                                Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                Habitat: ${d.habitat}<br/>
+                                Status: ${d.conservation}<br/>
+                                ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                        }
+                        else if(selectedColourVar == "habitat") {
                             info = `Species: ${dot.commonname}<br/>
                                 Age: ${dot.age}<br/>
                                 Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
@@ -523,7 +531,15 @@ dataCSV.then(function (data) {
                         tooltip_text += info;
                     });
                 } else {
-                    if(selectedColourVar == "habitat") {
+                    if(selectedColourVar == "commonname") {
+                        tooltip_text = `Species: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                            Age: ${d.age}<br/>
+                            Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                            Habitat: ${d.habitat}<br/>
+                            Status: ${d.conservation}<br/>
+                            ${d.lengthM}m, ${d.weight}kg<br/>`;
+                        }
+                    else if(selectedColourVar == "habitat") {
                         tooltip_text = `Species: ${d.commonname}<br/>
                             Age: ${d.age}<br/>
                             Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
