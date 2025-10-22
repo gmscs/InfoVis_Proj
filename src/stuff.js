@@ -140,6 +140,55 @@ export const species_colours_dark = {
     "West African Slender-snouted Crocodile": "#FF7F50"
 }
 
+export const country_colours = {
+    "Belize": "#FF5733",
+    "Venezuela": "#4eb862ff",
+    "Mexico": "#3357FF",
+    "India": "#b8aa35ff",
+    "Thailand": "#8B0000",
+    "Central African Rep.": "#008B8B",
+    "Sudan": "#B8860B",
+    "Liberia": "#006400",
+    "Cambodia": "#FF8C00",
+    "Côte d'Ivoire": "#d4b500ff",
+    "Indonesia": "#00FFFF",
+    "Philippines": "#8B4513",
+    "Malaysia": "#FF1493",
+    "Tanzania": "#00a179ff",
+    "Dem. Rep. Congo": "#32CD32",
+    "Cuba": "#4169E1",
+    "Kenya": "#800080",
+    "Pakistan": "#FF4500",
+    "United States of America": "#2E8B57",
+    "Papua New Guinea": "#82ad2aff",
+    "Australia": "#20B2AA",
+    "Senegal": "#8A2BE2",
+    "South Africa": "#46ad8bff",
+    "Guatemala": "#556B2F",
+    "Colombia": "#FF69B4",
+    "Sierra Leone": "#DC143C",
+    "Guinea": "#00BFFF",
+    "Nigeria": "#420042ff",
+    "Vietnam": "#5e9b99ff",
+    "Cameroon": "#FFD700",
+    "Egypt": "#9370DB",
+    "Mali": "#3CB371",
+    "Gabon": "#DA70D6",
+    "Niger": "#FF6347",
+    "Costa Rica": "#7CFC00",
+    "Chad": "#20B2AA",
+    "Iran": "#FF00FF",
+    "Laos": "#ADFF2F",
+    "Ghana": "#1E90FF",
+    "Mauritania": "#D2691E",
+    "Uganda": "#00FA9A",
+    "Sri Lanka": "#F0E68C",
+    "Nepal": "#6A5ACD",
+    "Congo": "#FF7F50",
+    "Eq. Guinea": "#98FB98"
+};
+
+
 export function get_counts(data, varName, filter = null) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
     let filteredData;
