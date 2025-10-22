@@ -372,12 +372,12 @@ dataCSV.then(function (data) {
                     const brushedLengths = brushedDots.map(d => d.lengthM);
                     const brushedWeights = brushedDots.map(d => d.weight);
 
-                    const minLength = d3.min(brushedLengths);
-                    const maxLength = d3.max(brushedLengths);
+                    const minLength = Math.min(...brushedLengths);
+                    const maxLength = Math.max(...brushedLengths);
 
-                    const minWeight = d3.min(brushedWeights);
-                    const maxWeight = d3.max(brushedWeights);
-                    
+                    const minWeight = Math.min(...brushedWeights);
+                    const maxWeight = Math.max(...brushedWeights);
+
                     selectedSizeRange = [minLength, maxLength];
                     selectedWeightRange = [minWeight, maxWeight];
 
