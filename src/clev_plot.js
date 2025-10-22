@@ -1,6 +1,7 @@
 import {dataCSV, shared_color_light, shared_color_dark, symbol_size, duration, get_visible_categories, create_svg, create_tooltip, get_counts, dot_opacity, 
     filter_by_date, filter_by_date_range, update_legend_title, habitat_colours_light, habitat_colours_dark, age_colours, status_colours, 
-    filter_by_length_range, filter_by_colour, filter_by_weight_range } from "./stuff.js";
+    filter_by_length_range, filter_by_colour, filter_by_weight_range, 
+    species_colours_light, species_colours_dark} from "./stuff.js";
 
 const container = d3.select("#clev");
 const margin = { top: 20, right: 20, bottom: 60, left: 210 };
@@ -17,7 +18,8 @@ var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 var useHabitatColors = true;
 var habitat_colours = habitat_colours_light;
-var colorList = habitat_colours;
+var species_colours = species_colours_light;
+var colorList = species_colours;
 
 var selectedCountries = [];
 var selectedVariable = "commonname";
@@ -28,7 +30,7 @@ var selectedSizeRange = [];
 var selectedWeightRange = [];
 var sexApplied = "";
 var shared_color = shared_color_light;
-var scatterVar = "age";
+var scatterVar = "commonname";
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -124,7 +126,8 @@ dataCSV.then(function (data) {
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
                 selectedVariable = scatterVar;
-                if(selectedVariable == "age") colorList = age_colours;
+                if(selectedVariable == "commonname") colorList = species_colours;
+                else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
                 radioContainer.selectAll(".radioOptions input[type='radio']")
@@ -158,7 +161,8 @@ dataCSV.then(function (data) {
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
                 selectedVariable = scatterVar;
-                if(selectedVariable == "age") colorList = age_colours;
+                if(selectedVariable == "commonname") colorList = species_colours;
+                else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
                 radioContainer.selectAll(".radioOptions input[type='radio']")
@@ -350,7 +354,8 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
-                if(selectedVariable == "age") colorList = age_colours;
+                if(selectedVariable == "commonname") colorList = species_colours;
+                else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
                 if(useHabitatColors)
@@ -425,7 +430,8 @@ dataCSV.then(function (data) {
         if(useHabitatColors) {
             selectedVariable = scatterVar;
 
-            if(selectedVariable == "age") colorList = age_colours;
+            if(selectedVariable == "commonname") colorList = species_colours;
+            else if(selectedVariable == "age") colorList = age_colours;
             else if(selectedVariable == "conservation") colorList = status_colours;
             else colorList = habitat_colours;
 
@@ -440,6 +446,7 @@ dataCSV.then(function (data) {
 
     window.addEventListener("darkMode", function(event) {
         habitat_colours = habitat_colours_dark;
+        species_colours = species_colours_dark;
         shared_color = shared_color_dark;
         d3.select("#toggleContainerClev")
             .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
@@ -448,6 +455,7 @@ dataCSV.then(function (data) {
 
     window.addEventListener("lightMode", function(event) {
         habitat_colours = habitat_colours_light;
+        species_colours = species_colours_light;
         shared_color = shared_color_light;
         d3.select("#toggleContainerClev")
             .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");

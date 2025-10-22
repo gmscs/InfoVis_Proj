@@ -98,6 +98,48 @@ export const habitat_colours_dark = {
     "Tidal Rivers": "#20B2AA"
 };
 
+export const species_colours_light = {
+    "American Crocodile": "#4a77d8",
+    "Borneo Crocodile (disputed)": "#33cc66",
+    "Central African Slender-snouted Crocodile": "#b37a00",
+    "Congo Dwarf Crocodile": "#b66a6aff",
+    "Cuban Crocodile": "#ff0000ff",
+    "Freshwater Crocodile (Johnstone's)": "#009999",
+    "Hall's New Guinea Crocodile": "#b39900",
+    "Morelet's Crocodile": "#007700",
+    "Mugger Crocodile (Marsh Crocodile)": "#e68a00",
+    "New Guinea Crocodile": "#817933ff",
+    "Nile Crocodile": "#5c4300ff",
+    "Orinoco Crocodile": "#995c1a",
+    "Philippine Crocodile": "#e64d99",
+    "Saltwater Crocodile": "#0d5734ff",
+    "Siamese Crocodile": "#55c455",
+    "West African Crocodile": "#284863ff",
+    "West African Dwarf Crocodile": "#aa8baa",
+    "West African Slender-snouted Crocodile": "#cc5500"
+};
+
+export const species_colours_dark = {
+    "American Crocodile": "#7ba5f8ff",
+    "Borneo Crocodile (disputed)": "#66FF99",
+    "Central African Slender-snouted Crocodile": "#e29d09ff",
+    "Congo Dwarf Crocodile": "#FFF68F",
+    "Cuban Crocodile": "#FF6E6E",
+    "Freshwater Crocodile (Johnstone's)": "#00CCCC",
+    "Hall's New Guinea Crocodile": "#E6C229",
+    "Morelet's Crocodile": "#00AA00",
+    "Mugger Crocodile (Marsh Crocodile)": "#FFB347",
+    "New Guinea Crocodile": "#FFEE93",
+    "Nile Crocodile": "#7FFFD4",
+    "Orinoco Crocodile": "#CD853F",
+    "Philippine Crocodile": "#FF80BF",
+    "Saltwater Crocodile": "#7CFC00",
+    "Siamese Crocodile": "#90EE90",
+    "West African Crocodile": "#92a3adff",
+    "West African Dwarf Crocodile": "#ddbdddff",
+    "West African Slender-snouted Crocodile": "#FF7F50"
+}
+
 export function get_counts(data, varName, filter = null) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
     let filteredData;

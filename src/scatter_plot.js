@@ -1,7 +1,7 @@
 import {dataCSV, symbol_size, duration, create_svg, create_tooltip, filter_by_countries, filter_by_length_range, stroke_width, 
     dot_opacity, update_legend_title, calculate_R_squared, quadratic_regression, sex_shapes, sex_symbols, habitat_colours_light, habitat_colours_dark,
      filter_by_date_range, filter_by_date, filter_by_weight_range,
-     shared_color_light, shared_color_dark, age_colours, status_colours} from "./stuff.js";
+     shared_color_light, shared_color_dark, age_colours, status_colours, species_colours_dark, species_colours_light } from "./stuff.js";
 
 const container = d3.select("#scatter");
 const margin = { top: 40, right: 40, bottom: 50, left: 40 };
@@ -25,7 +25,8 @@ var filteredData;
 var regressionLine = true;
 var sexApplied = "";
 var habitat_colours = habitat_colours_light;
-var colorList = age_colours;
+var species_colours = species_colours_light;
+var colorList = species_colours;
 
 var selectedVariable = "commonname";
 var clevFilter = null;
@@ -34,12 +35,13 @@ var selectedDateRange = [];
 var selectedSizeRange = [];
 var selectedWeightRange = [];
 var shared_color = shared_color_light;
-var selectedColourVar = "age";
+var selectedColourVar = "commonname";
 
 const colourOptions = [
+    { value: "commonname", label: "Species" },
     { value: "age", label: "Age" },
-    { value: "conservation", label: "Conservation Status" },
-    { value: "habitat", label: "Habitat" }
+    { value: "habitat", label: "Habitat" },
+    { value: "conservation", label: "Conservation Status" }
 ];
 
 svg.append("rect")
@@ -613,7 +615,8 @@ dataCSV.then(function (data) {
                 .property("checked", option.value === selectedColourVar)
                 .on("change", function() {
                     selectedColourVar = this.value;
-                    if(selectedColourVar == "age") colorList = age_colours;
+                    if(selectedColourVar == "commonname") colorList = species_colours;
+                    else if(selectedColourVar == "age") colorList = age_colours;
                     else if(selectedColourVar == "conservation") colorList = status_colours;
                     else colorList = habitat_colours;
                     window.dispatchEvent(new CustomEvent("filterByValueScatter", { detail: selectedColourVar }));
@@ -661,13 +664,10 @@ dataCSV.then(function (data) {
         if(event.detail == "age" || event.detail == "conservation" || event.detail == "habitat") {
             selectedColourVar = event.detail;
 
-            if(selectedColourVar == "age") {
-                colorList = age_colours;
-            } else if (selectedColourVar == "conservation") {
-                colorList = status_colours;
-            } else {
-                colorList = habitat_colours;
-            }
+            if(selectedColourVar == "commonname") colorList = species_colours;
+            else if(selectedColourVar == "age") colorList = age_colours;
+            else if(selectedColourVar == "conservation") colorList = status_colours;
+            else colorList = habitat_colours;
 
             radioContainer.selectAll(".colourOptions input[type='radio']")
                 .property("checked", function(d) {
