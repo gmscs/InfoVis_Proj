@@ -1,5 +1,5 @@
 import {dataCSV, duration, stroke_width, create_svg, create_tooltip, get_colour_scale, get_counts_by_country, shared_color_light, shared_color_dark, 
-    filter_by_colour, update_legend_title, filter_by_date, filter_by_weight_range,
+    filter_by_colour, update_legend_title, filter_by_date, filter_by_weight_range, country_colours,
     filter_by_date_range, filter_by_length_range} from "./stuff.js";
 
 const margin = { top: -20, right: 0, left: -10, bottom: 0 };
@@ -200,9 +200,8 @@ Promise.all([
     }
 
     function highlightSelectedCountry() {
-        let highlightColour = darkMode === true ? "white" : "black";
         mapStuff.selectAll("path")
-            .attr("stroke", d => selectedCountries.includes(d.properties.name) ? highlightColour : "none")
+            .attr("stroke", d => selectedCountries.includes(d.properties.name) ? country_colours[d.properties.name] : "none")
             .attr("stroke-width", d => selectedCountries.includes(d.properties.name) ? stroke_width : null);
     }
 
@@ -427,6 +426,7 @@ Promise.all([
                 tooltip.html(`Country: ${countryName}<br>Observations: ${count}`);
 
                 d3.select(this).classed("hovered", true);
+                d3.selectAll(".hovered").style("stroke", country_colours[countryName]);
             })
             .on("mousemove", function(event) {
                 const containerRect = container.node().getBoundingClientRect();
@@ -437,6 +437,7 @@ Promise.all([
                 tooltip.transition()
                     .duration(duration / 1000)
                     .style("opacity", 0);
+                d3.selectAll(".hovered").style("stroke", "");
                 d3.select(this).classed("hovered", false);
             })
             .on("click", function(event, d) {
@@ -492,9 +493,8 @@ Promise.all([
 
     window.addEventListener("lineCountryHighlight", function(event) {
         let highlightedCountries = event.detail;
-        let highlightColour = darkMode === true ? "white" : "black";
         mapStuff.selectAll("path")
-            .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? highlightColour : "none")
+            .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? country_colours[d.properties.name] : "none")
             .attr("stroke-width", d => highlightedCountries.includes(d.properties.name) ? stroke_width : null);
     })
 

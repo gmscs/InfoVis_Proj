@@ -1,7 +1,7 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         find_closest_date, filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
         symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
-        shared_color_light, shared_color_dark, filter_by_weight_range
+        shared_color_light, shared_color_dark, filter_by_weight_range, country_colours
     } from "./stuff.js";
 
 const container = d3.select("#line")
@@ -350,10 +350,6 @@ dataCSV.then(function (data) {
                 .call(brush);
         }
 
-        const colorScale = d3.scaleOrdinal()
-            .domain(Array.from(groups.keys()))
-            .range(globalDisplay ? [shared_color] : d3.schemeCategory10);
-
         if(showLines) {
             const line = d3.line();
 
@@ -368,7 +364,7 @@ dataCSV.then(function (data) {
                 .data(Array.from(groups.values()), d => d.z)
                 .join("path")
                     .style("mix-blend-mode", blendMode)
-                    .attr("stroke", d => colorScale(d.z))
+                    .attr("stroke", d => country_colours[d.z] || shared_color)
                     .on("click", function(event, d) {
                         const clickedCountry = d.z;
                         if(clickedCountry != "global") {
@@ -442,7 +438,7 @@ dataCSV.then(function (data) {
                     .attr("cx", d => x(d.date))
                     .attr("cy", d => y(0))
                     .attr("r", symbol_size)
-                    .attr("fill", d => colorScale(d.country))
+                    .attr("fill", d => country_colours[d.country] || shared_color)
                     .style("cursor", "pointer")
                     .style("opacity", dot_opacity)
                     .on("mouseover", function(event, d) {
