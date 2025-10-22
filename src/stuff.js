@@ -268,7 +268,7 @@ export function filter_by_length_range(data, startPos, endPos) {
     let filteredData;
     
     filteredData = data.filter(row => {
-        const lengthM = row.lengthM;
+        const lengthM = parseFloat(row.lengthM);
         return ((lengthM >= startPos) && ( lengthM <= endPos));
     });
     return filteredData;
@@ -277,7 +277,7 @@ export function filter_by_length_range(data, startPos, endPos) {
 export function filter_by_weight_range(data, startPos, endPos) {
     let filteredData;
     filteredData = data.filter(row => {
-        const weight = row.weight;
+        const weight = parseFloat(row.weight);
         return ((weight >= startPos) && ( weight <= endPos));
     });
     return filteredData;

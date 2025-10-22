@@ -385,6 +385,8 @@ dataCSV.then(function (data) {
                     selectedSizeRange = [];
                     selectedWeightRange = [];
                 }
+                console.log(selectedSizeRange, selectedWeightRange);
+                console.log(brushedDots);
                 window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
                     detail: [selectedSizeRange, selectedWeightRange]
                 }));
