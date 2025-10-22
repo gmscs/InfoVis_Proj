@@ -286,6 +286,15 @@ export function filter_by_length_range(data, startPos, endPos) {
     return filteredData;
 }
 
+export function filter_by_weight_range(data, startPos, endPos) {
+    let filteredData;
+    filteredData = data.filter(row => {
+        const weight = row.weight;
+        return ((weight >= startPos) && ( weight <= endPos));
+    });
+    return filteredData;
+}
+
 export function find_closest_date(data, x, xVal) {
     const bisect = d3.bisector(d => d.date).left;
     const index = bisect(data, x.invert(xVal), 1);
