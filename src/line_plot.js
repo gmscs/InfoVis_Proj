@@ -200,7 +200,7 @@ dataCSV.then(function (data) {
                 .style("background-color", showLines ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleLines")
                 .style("transform", showLines ? "translateX(0px)" : "translateX(-20px)");
-            updateVis();
+            updateVis(true);
         })
         .append("div")
         .attr("id", "toggleCircleLines")
@@ -224,10 +224,10 @@ dataCSV.then(function (data) {
                 .style("background-color", showLines ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleLines")
                 .style("transform", showLines ? "translateX(0px)" : "translateX(-20px)");
-            updateVis();
+            updateVis(true);
         });
 
-    function updateVis() {
+    function updateVis(onlyLines = false) {
         height = container.node().getBoundingClientRect().height;
         width = container.node().getBoundingClientRect().width;
         let filterText = "";
@@ -263,37 +263,24 @@ dataCSV.then(function (data) {
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
 
-        update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
-        
-        labelStuff.select(".activeFilterLabel")
-            .attr("x", -36)
-            .attr("y", height - 73)
-            .text("");
-
-        const label = labelStuff.select(".activeFilterLabel");
-        let filterBool = false;
-        if (selectedDate.length > 0) {
-            filterBool = true;
-            if(selectedDate[0] != null) filterText = selectedDate[0] + "/" + selectedDate[1];
-            else filterText = "" + selectedDate[1];
-            label.append("tspan")
-                .text("♻ ")
-                .attr("fill", shared_color)
-                .style("font-size", 20)
-                .style("baseline-shift", "-3px");
-            label.append("tspan")
-                .text("Active filter: ")
-            label.append("tspan")
-                .text(" " + filterText)
+        if (!onlyLines) {
+            update_legend_title(legendTitle, innerWidth, innerHeight, -10, 4, "Observations over Time");
         }
-        if (selectedDateRange.length > 0) {
-            let month0 = selectedDateRange[0].getMonth() + 1;
-            let month1 = selectedDateRange[1].getMonth() + 1;
-            filterText =  month0 + "/" + selectedDateRange[0].getFullYear() + " - " + month1 + "/" + selectedDateRange[1].getFullYear();
-            if(filterBool) {
-                label.append("tspan")
-                    .text(" " + filterText)
-            } else {
+        
+        if (!onlyLines) {
+            labelStuff.select(".activeFilterLabel")
+                .attr("x", -36)
+                .attr("y", height - 73)
+                .text("");
+        }
+
+        if (!onlyLines) {
+            const label = labelStuff.select(".activeFilterLabel");
+            let filterBool = false;
+            if (selectedDate.length > 0) {
+                filterBool = true;
+                if(selectedDate[0] != null) filterText = selectedDate[0] + "/" + selectedDate[1];
+                else filterText = "" + selectedDate[1];
                 label.append("tspan")
                     .text("♻ ")
                     .attr("fill", shared_color)
@@ -304,21 +291,42 @@ dataCSV.then(function (data) {
                 label.append("tspan")
                     .text(" " + filterText)
             }
-        }
-        else if (filterText === "") {
-            label.append("tspan")
-                .text("♻ ")
-                .style("font-size", 20)
-                .style("baseline-shift", "-3px");
-            label.append("tspan")
-                .text("Active filter: ")
+            if (selectedDateRange.length > 0) {
+                let month0 = selectedDateRange[0].getMonth() + 1;
+                let month1 = selectedDateRange[1].getMonth() + 1;
+                filterText =  month0 + "/" + selectedDateRange[0].getFullYear() + " - " + month1 + "/" + selectedDateRange[1].getFullYear();
+                if(filterBool) {
+                    label.append("tspan")
+                        .text(" " + filterText)
+                } else {
+                    label.append("tspan")
+                        .text("♻ ")
+                        .attr("fill", shared_color)
+                        .style("font-size", 20)
+                        .style("baseline-shift", "-3px");
+                    label.append("tspan")
+                        .text("Active filter: ")
+                    label.append("tspan")
+                        .text(" " + filterText)
+                }
+            }
+            else if (filterText === "") {
+                label.append("tspan")
+                    .text("♻ ")
+                    .style("font-size", 20)
+                    .style("baseline-shift", "-3px");
+                label.append("tspan")
+                    .text("Active filter: ")
 
-            label.append("tspan")
-                .text("None")
+                label.append("tspan")
+                    .text("None")
+            }
         }
 
         svg.selectAll(".lines").remove();
-        svg.selectAll(".dot").remove();
+        if (!onlyLines) {
+            svg.selectAll(".dot").remove();
+        }
 
         let filteredDateObservations = globalDisplay
             ? dateObservations.filter(d => d.country === "global")
@@ -332,13 +340,15 @@ dataCSV.then(function (data) {
         const points = filteredDateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
         const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
         
-        const brush = d3.brushX()
-            .extent([[0, 0], [innerWidth, innerHeight]])
-            .on("end", brushed);
-        svg.select(".brush").remove();
-        svg.append("g")
-            .attr("class", "brush")
-            .call(brush);
+        if (!onlyLines) {
+            const brush = d3.brushX()
+                .extent([[0, 0], [innerWidth, innerHeight]])
+                .on("end", brushed);
+            svg.select(".brush").remove();
+            svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+        }
 
         const colorScale = d3.scaleOrdinal()
             .domain(Array.from(groups.keys()))
@@ -347,7 +357,7 @@ dataCSV.then(function (data) {
         if(showLines) {
             const line = d3.line();
 
-            svg.append("g")
+            const lineSelection = svg.append("g")
                 .attr("class", "lines")
                 .attr("fill", "none")
                 .attr("stroke-width", stroke_width)
@@ -355,7 +365,7 @@ dataCSV.then(function (data) {
                 .attr("stroke-linecap", "round")
                 .style("cursor", "pointer")
                 .selectAll("path")
-                .data(groups.values())
+                .data(Array.from(groups.values()), d => d.z)
                 .join("path")
                     .style("mix-blend-mode", blendMode)
                     .attr("stroke", d => colorScale(d.z))
@@ -380,26 +390,35 @@ dataCSV.then(function (data) {
                         if(selectedCountries.length === 0)
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
-                    .attr("d", d => {
-                    const points = d.map(point => [point[0], y(0)]);
-                    return line(points);
-                    })
-                    .transition()
-                    .duration(duration)
-                    .attr("d", line);
+                    .attr("d", d => line(d.map(point => [point[0], point[1]])))
+                .each(function() {
+                        const totalLength = this.getTotalLength();
+                        d3.select(this)
+                            .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+                            .attr("stroke-dashoffset", totalLength)
+                            .transition()
+                    .delay(onlyLines ? 0 : duration)
+                            .duration(duration)
+                            .ease(d3.easeLinear)
+                            .attr("stroke-dashoffset", 0);
+                    });
         }
             
-        svg.select(".x.axis")
-            .attr("transform", `translate(0,${innerHeight})`)
-            .transition()
-            .duration(duration)
-            .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+        if (!onlyLines) {
+            svg.select(".x.axis")
+                .attr("transform", `translate(0,${innerHeight})`)
+                .transition()
+                .duration(duration)
+                .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+        }
 
-        svg.selectAll(".y.axis")
-            .attr("transform", `translate(0,0)`)
-            .transition()
-            .duration(duration)
-            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
+        if (!onlyLines) {
+            svg.selectAll(".y.axis")
+                .attr("transform", `translate(0,0)`)
+                .transition()
+                .duration(duration)
+                .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
+        }
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
@@ -409,106 +428,108 @@ dataCSV.then(function (data) {
             dotMap.get(key).push(d);
         });
 
-        svg.selectAll(".dot")
-            .data(filteredDateObservations, d => d.date)
-            .join(
-                enter => enter.append("circle")
-                .attr("class", "dot")
-                .attr("cx", d => x(d.date))
-                .attr("cy", d => y(0))
-                .attr("r", symbol_size)
-                .attr("fill", d => colorScale(d.country))
-                .style("cursor", "pointer")
-                .style("opacity", dot_opacity)
-                .on("mouseover", function(event, d) {
-                    tooltip.style("opacity", .9);
-                })
-                .on("mousemove", function(event, d) {
-                    tooltip.transition().duration(duration / 5).style("opacity", .9);
-                    const key = `${x(d.date)},${y(d.observations)}`;
-                    const overlappingDots = dotMap.get(key);
+        if (!onlyLines) {
+            svg.selectAll(".dot")
+                .data(filteredDateObservations, d => d.date)
+                .join(
+                    enter => enter.append("circle")
+                    .attr("class", "dot")
+                    .attr("cx", d => x(d.date))
+                    .attr("cy", d => y(0))
+                    .attr("r", symbol_size)
+                    .attr("fill", d => colorScale(d.country))
+                    .style("cursor", "pointer")
+                    .style("opacity", dot_opacity)
+                    .on("mouseover", function(event, d) {
+                        tooltip.style("opacity", .9);
+                    })
+                    .on("mousemove", function(event, d) {
+                        tooltip.transition().duration(duration / 5).style("opacity", .9);
+                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const overlappingDots = dotMap.get(key);
 
-                    const formatDate = selectedGranularity === 'year' 
-                        ? d3.timeFormat("%Y")
-                        : selectedGranularity === 'month'
-                        ? d3.timeFormat("%b %Y")
-                        : d3.timeFormat("%d %b %Y");
-                    const containerRect = container.node().getBoundingClientRect();
-                    
-                    let tooltip_text;
-                    if (overlappingDots.length > 1) {
-                        tooltip_text = `${overlappingDots.length} Countries:<br/><br/>`;
+                        const formatDate = selectedGranularity === 'year' 
+                            ? d3.timeFormat("%Y")
+                            : selectedGranularity === 'month'
+                            ? d3.timeFormat("%b %Y")
+                            : d3.timeFormat("%d %b %Y");
+                        const containerRect = container.node().getBoundingClientRect();
+                        
+                        let tooltip_text;
+                        if (overlappingDots.length > 1) {
+                            tooltip_text = `${overlappingDots.length} Countries:<br/><br/>`;
+                            overlappingDots.forEach(dot => {
+                            tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
+                            });
+                        } else {
+                            tooltip_text = `Country: ${d.country}<br/>Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`;
+                        }
+                        
+                        tooltip.html(tooltip_text);
+                        const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                        let leftPos = event.pageX - containerRect.left + 10;
+                        if (leftPos + tooltipWidth > containerRect.width) {
+                            leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                        }
+                        tooltip.style("left", leftPos + "px")
+                            .style("top", (event.pageY - containerRect.top + 10) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this)
+                            .attr("r", symbol_size)
+                            .style("opacity", dot_opacity);
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
+                    })
+                    .on("mouseover", function(event, d) {
+                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const overlappingDots = dotMap.get(key);
+                        let hoveredCountries = [];
                         overlappingDots.forEach(dot => {
-                        tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
+                            hoveredCountries.push(dot.country);
                         });
-                    } else {
-                        tooltip_text = `Country: ${d.country}<br/>Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`;
-                    }
-                    
-                    tooltip.html(tooltip_text);
-                    const tooltipWidth = tooltip.node().getBoundingClientRect().width;
-                    let leftPos = event.pageX - containerRect.left + 10;
-                    if (leftPos + tooltipWidth > containerRect.width) {
-                        leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
-                    }
-                    tooltip.style("left", leftPos + "px")
-                        .style("top", (event.pageY - containerRect.top + 10) + "px");
-                })
-                .on("mouseout", function(d) {
-                    d3.select(this)
-                        .attr("r", symbol_size)
-                        .style("opacity", dot_opacity);
-                    tooltip.transition()
-                        .duration(duration / 2)
-                        .style("opacity", 0);
-                    if(selectedCountries.length === 0)
-                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
-                })
-                .on("mouseover", function(event, d) {
-                    const key = `${x(d.date)},${y(d.observations)}`;
-                    const overlappingDots = dotMap.get(key);
-                    let hoveredCountries = [];
-                    overlappingDots.forEach(dot => {
-                        hoveredCountries.push(dot.country);
-                    });
-                    d3.select(this)
-                        .attr("r", symbol_size * 1.5)
-                        .style("opacity", 1);
-                    if(selectedCountries.length === 0)
-                        window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
-                })
-                .on("click", function(event, d) {
-                    if(selectedGranularity === "year") {
-                        const clickedDate = d;
-                        selectedGranularity = "month";
-                        radioContainer.selectAll(".granularityOptions input[value='month']")
-                            .property("checked", true);
-                        selectedDate = [null, clickedDate.date.getFullYear()]
-                        window.dispatchEvent(new CustomEvent("dateChanged", { 
-                            detail: selectedDate
-                        }));
-                    }
-                    else if(selectedGranularity === "month") {
-                        const clickedDate = d;
-                        selectedGranularity = "day";
-                        radioContainer.selectAll(".granularityOptions input[value='day']")
-                            .property("checked", true);
-                        selectedDate = [clickedDate.date.getMonth() + 1, clickedDate.date.getFullYear()]
-                        window.dispatchEvent(new CustomEvent("dateChanged", { 
-                            detail: selectedDate 
-                        }));
-                    }
-                    tooltip.transition()
-                        .duration(duration / 2)
-                        .style("opacity", 0);
-                    updateVis();
-                }),
-                update => update,
-                exit => exit.remove()
-            )
-            .transition().duration(duration)
-                .attr("cx", d => x(d.date))
-                .attr("cy", d => y(d.observations));
+                        d3.select(this)
+                            .attr("r", symbol_size * 1.5)
+                            .style("opacity", 1);
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
+                    })
+                    .on("click", function(event, d) {
+                        if(selectedGranularity === "year") {
+                            const clickedDate = d;
+                            selectedGranularity = "month";
+                            radioContainer.selectAll(".granularityOptions input[value='month']")
+                                .property("checked", true);
+                            selectedDate = [null, clickedDate.date.getFullYear()]
+                            window.dispatchEvent(new CustomEvent("dateChanged", { 
+                                detail: selectedDate
+                            }));
+                        }
+                        else if(selectedGranularity === "month") {
+                            const clickedDate = d;
+                            selectedGranularity = "day";
+                            radioContainer.selectAll(".granularityOptions input[value='day']")
+                                .property("checked", true);
+                            selectedDate = [clickedDate.date.getMonth() + 1, clickedDate.date.getFullYear()]
+                            window.dispatchEvent(new CustomEvent("dateChanged", { 
+                                detail: selectedDate 
+                            }));
+                        }
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                        updateVis();
+                    }),
+                    update => update,
+                    exit => exit.remove()
+                )
+                .transition().duration(duration)
+                    .attr("cx", d => x(d.date))
+                    .attr("cy", d => y(d.observations));
+        }
     }
 
     radioContainer.selectAll(".granularityOptions")
