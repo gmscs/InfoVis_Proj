@@ -347,8 +347,19 @@ dataCSV.then(function (data) {
             });
             if (brushedDots.length > 0) {
                 const brushedDates = brushedDots.map(d => d.date);
-                const minDate = new Date(Math.min(...brushedDates));
-                const maxDate = new Date(Math.max(...brushedDates));
+                let minDate = new Date(Math.min(...brushedDates));
+                let maxDate = new Date(Math.max(...brushedDates));
+                if (selectedGranularity === 'year') {
+                    minDate = new Date(minDate.getFullYear(), 0, 1, 0, 0, 0, 0);
+                    maxDate = new Date(maxDate.getFullYear(), 11, 31, 23, 59, 59, 999);
+                } else if (selectedGranularity === 'month') {
+                    minDate = new Date(minDate.getFullYear(), minDate.getMonth(), 1, 0, 0, 0, 0);
+                    maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 0, 23, 59, 59, 999);
+                } else {
+                    minDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 0, 0, 0, 0);
+                    maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 23, 59, 59, 999);
+                }
+
                 selectedDateRange = [minDate, maxDate];
 
                 const brushedObservations = brushedDots.map(d => d.observations);
@@ -360,6 +371,7 @@ dataCSV.then(function (data) {
                 selectedObservationRange = [];
             }
             console.log(brushedDots);
+            console.log(selectedDateRange, selectedObservationRange);
             window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
                 detail: [selectedDateRange, selectedObservationRange]
             }));

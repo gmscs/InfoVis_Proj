@@ -247,21 +247,24 @@ export function filter_by_date(data, filterMonth, filterYear) {
 }
 
 export function filter_by_date_range(data, filterStartDate, filterEndDate) {
-    let filteredData;
+    if (!filterStartDate || !filterEndDate) return data;
 
-    filteredData = data.filter(row => {
+    const startTime = filterStartDate.getTime();
+    const endTime = filterEndDate.getTime();
+
+    return data.filter(row => {
         const dateParts = row.date.split('-');
-        const month = dateParts[1];
-        const year = dateParts[2];
-
-        const startMonth = filterStartDate.getMonth();
-        const startYear = filterStartDate.getFullYear();
-
-        const endYear = filterEndDate.getFullYear();
-
-        return ((month >= startMonth) && (year >= startYear && year <= endYear));
+        const day = parseInt(dateParts[0], 10);
+        const month = parseInt(dateParts[1], 10);
+        const year = parseInt(dateParts[2], 10);
+        
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+        
+        const rowDate = new Date(year, month - 1, day);
+        const rowTime = rowDate.getTime();
+        
+        return rowTime >= startTime && rowTime <= endTime;
     });
-    return filteredData;
 }
 
 export function filter_by_observations_range(data, minObs, maxObs) {
