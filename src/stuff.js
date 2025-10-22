@@ -264,6 +264,15 @@ export function filter_by_date_range(data, filterStartDate, filterEndDate) {
     return filteredData;
 }
 
+export function filter_by_observations_range(data, minObs, maxObs) {
+    let filteredData;
+    filteredData = data.filter(row => {
+        const observations = row.observations;
+        return ((observations >= minObs) && (observations <= maxObs));
+    });
+    return filteredData;
+}
+
 export function filter_by_length_range(data, startPos, endPos) {
     let filteredData;
     

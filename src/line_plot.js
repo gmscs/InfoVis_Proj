@@ -1,7 +1,8 @@
 import {dataCSV, stroke_width, duration, create_svg, create_tooltip, filter_by_countries, 
         filter_by_date, filter_by_date_range, get_date_observations_by_granularity, 
         symbol_size, dot_opacity, update_legend_title, filter_by_length_range,
-        shared_color_light, shared_color_dark} from "./stuff.js";
+        shared_color_light, shared_color_dark,
+        filter_by_observations_range} from "./stuff.js";
 
 const container = d3.select("#line")
 const margin = { top: 60, right: 20, bottom: 50, left: 40 };
@@ -21,6 +22,7 @@ var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
+var selectedObservationRange = [];
 var selectedSizeRange = [];
 var sexApplied = "";
 var globalDisplay = true;
@@ -112,10 +114,11 @@ dataCSV.then(function (data) {
     function resetChart() {
         selectedDate = [];
         selectedDateRange = [];
+        selectedObservationRange = [];
         selectedGranularity = "month";
 
         window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
-            detail: []
+            detail: [[], []]
         }));
         window.dispatchEvent(new CustomEvent("dateChanged", { 
             detail: selectedDate 
@@ -124,8 +127,6 @@ dataCSV.then(function (data) {
             .property("checked", true);
         updateVis();
     }
-    
-   
 
     checkboxContainer.append("button")
         .attr("id", "toggleContainer")
@@ -305,9 +306,25 @@ dataCSV.then(function (data) {
         let filteredDateObservations = globalDisplay
             ? dateObservations.filter(d => d.country === "global")
             : dateObservations.filter(d => d.country !== "global");
+
+        if (selectedObservationRange.length > 0) {
+            const temp = filter_by_observations_range(filteredDateObservations, selectedObservationRange[0], selectedObservationRange[1]);
+            if (temp.length > 0) {
+                filteredDateObservations = temp;
+            } else {
+                window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+                    detail: [selectedDateRange, []]
+                }));
+            }
+        }
         
         x = d3.scaleUtc(d3.extent(filteredDateObservations, d => d.date), [0, width - margin.left - margin.right]);
-        y = d3.scaleLinear([0, d3.max(filteredDateObservations, d => d.observations) + 1], [height - margin.top - margin.bottom, 0]);
+        
+        const minObs = Math.max(0, d3.min(filteredDateObservations, d => d.observations) - 1);
+        const maxObs = d3.max(filteredDateObservations, d => d.observations) + 1;
+        y = d3.scaleLinear([minObs, maxObs], [height - margin.top - margin.bottom, 0]);
+
+        const allYTicks = d3.range(Math.ceil(minObs), Math.floor(maxObs) + 1);
 
         const uniqueObservations = Array.from(new Set(filteredDateObservations.map(d => d.observations)));
 
@@ -317,6 +334,42 @@ dataCSV.then(function (data) {
         const colorScale = d3.scaleOrdinal()
             .domain(Array.from(groups.keys()))
             .range(globalDisplay ? [shared_color] : d3.schemeCategory10);
+
+        const brush = d3.brush()
+        .extent([[0, 0], [innerWidth, innerHeight]])
+        .on("end", ({selection}) => {
+            if (!selection) return;
+            const [[x0, y0], [x1, y1]] = selection;
+            brushedDots = filteredDateObservations.filter(d => {
+                const cx = x(d.date);
+                const cy = y(d.observations);
+                return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
+            });
+            if (brushedDots.length > 0) {
+                const brushedDates = brushedDots.map(d => d.date);
+                const minDate = new Date(Math.min(...brushedDates));
+                const maxDate = new Date(Math.max(...brushedDates));
+                selectedDateRange = [minDate, maxDate];
+
+                const brushedObservations = brushedDots.map(d => d.observations);
+                const minObs = Math.min(...brushedObservations);
+                const maxObs = Math.max(...brushedObservations);
+                selectedObservationRange = [minObs, maxObs];
+            } else {
+                selectedDateRange = [];
+                selectedObservationRange = [];
+            }
+            console.log(brushedDots);
+            window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+                detail: [selectedDateRange, selectedObservationRange]
+            }));
+            updateVis();
+        });
+
+        svg.select(".brush").remove();
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
 
         if(showLines) {
             const line = d3.line();
@@ -373,7 +426,8 @@ dataCSV.then(function (data) {
             .attr("transform", `translate(0,0)`)
             .transition()
             .duration(duration)
-            .call(d3.axisLeft(y).ticks(height / 40).tickFormat(d3.format("d")).ticks(uniqueObservations.length));
+            .call(d3.axisLeft(y).tickValues(allYTicks).tickFormat(d3.format("d")));
+
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
@@ -484,34 +538,8 @@ dataCSV.then(function (data) {
                 .attr("cx", d => x(d.date))
                 .attr("cy", d => y(d.observations));
 
-        const brush = d3.brush()
-        .extent([[0, 0], [innerWidth, innerHeight]])
-        .on("end", ({selection}) => {
-            if (!selection) return;
-            const [[x0, y0], [x1, y1]] = selection;
-            brushedDots = filteredDateObservations.filter(d => {
-                const cx = x(d.date);
-                const cy = y(d.observations);
-                return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
-            });
-            if (brushedDots.length > 0) {
-                const brushedDates = brushedDots.map(d => d.date);
-                const minDate = new Date(Math.min(...brushedDates));
-                const maxDate = new Date(Math.max(...brushedDates));
-                selectedDateRange = [minDate, maxDate];
-            } else {
-                selectedDateRange = [];
-            }
-            console.log(selectedDateRange);
-            window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
-                detail: selectedDateRange
-            }));
-            updateVis();
-        });
-        svg.select(".brush").remove();
-        svg.append("g")
-            .attr("class", "brush")
-            .call(brush);
+        
+        
     }
 
     radioContainer.selectAll(".radioOption")

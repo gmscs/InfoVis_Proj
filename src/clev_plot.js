@@ -348,7 +348,7 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {
-        selectedDateRange = event.detail;
+        selectedDateRange = event.detail[0];
         updateVis();
     });
 

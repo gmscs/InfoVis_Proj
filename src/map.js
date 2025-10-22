@@ -50,6 +50,7 @@ var selectedVariable = "commonname";
 var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
+var selectedObservationRange = [];
 var selectedSizeRange = [];
 var selectedColour = null;
 var colourScale = null;
@@ -470,7 +471,8 @@ Promise.all([
     });
 
     window.addEventListener("dateChangedBrushed", function(event) {
-        selectedDateRange = event.detail;
+        selectedDateRange = event.detail[0];
+        selectedObservationRange = event.detail[1];
 
         updateMap("datechangedBrushed");
     });
