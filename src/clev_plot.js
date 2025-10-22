@@ -385,10 +385,22 @@ dataCSV.then(function (data) {
         updateVis();
     });
 
-    window.addEventListener("countryChanged", (event) => {
-        selectedCountries = event.detail;
-        updateVis();
-    });
+        window.addEventListener("countryChanged", (event) => {
+            const eventDetail = event.detail;
+        
+            // Handle both old format (array) and new format (object with countries and change)
+            if (Array.isArray(eventDetail)) {
+                // Old format - full update
+                selectedCountries = eventDetail;
+                updateVis();
+            } else {
+                // New format - check if incremental makes sense for this chart
+                const { countries } = eventDetail;
+                selectedCountries = countries;
+                // For clev plot, a full update is typically fine since it's categorical
+                updateVis();
+            }
+        });
 
     window.addEventListener("filterByColour", function(event) {
         selectedCountries = event.detail;

@@ -373,7 +373,9 @@ dataCSV.then(function (data) {
                         const clickedCountry = d.z;
                         if(clickedCountry != "global") {
                             selectedCountries = [clickedCountry];
-                            window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                            window.dispatchEvent(new CustomEvent("countryChanged", { 
+                                detail: { countries: selectedCountries, change: { type: 'reset', country: null } }
+                            }));
                             filteredData = filter_by_countries(data, selectedCountries);
                             updateVis();
                         }
@@ -561,6 +563,249 @@ dataCSV.then(function (data) {
                 .text(option.label);
         });
 
+    function updateVisIncremental(changeType, country) {
+        // Apply all filters to data
+        let filteredData = Array.from(data);
+        if (selectedCountries.length > 0) {
+            filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
+        }
+
+        const dateObservations = get_date_observations_by_granularity(filteredData, selectedGranularity);
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        let filteredDateObservations = globalDisplay
+            ? dateObservations.filter(d => d.country === "global")
+            : dateObservations.filter(d => d.country !== "global");
+
+        // Check if domain changed (affects axes)
+        const newXDomain = d3.extent(filteredDateObservations, d => d.date);
+        const newYMax = d3.max(filteredDateObservations, d => d.observations);
+        const oldXDomain = x.domain();
+        const oldYMax = y.domain()[1];
+
+        const domainChanged = (newXDomain[0].getTime() !== oldXDomain[0].getTime() ||
+                              newXDomain[1].getTime() !== oldXDomain[1].getTime() ||
+                              newYMax !== oldYMax);
+
+        if (domainChanged) {
+            // Domain changed, need full update for axes
+            updateVis();
+            return;
+        }
+
+        // Domain unchanged - proceed with incremental update
+        const points = filteredDateObservations.map((d) => [x(d.date), y(d.observations), d.country]);
+        const groups = d3.rollup(points, v => Object.assign(v, {z : v[0][2]}), d => d[2]);
+        
+        const colorScale = d3.scaleOrdinal()
+            .domain(Array.from(groups.keys()))
+            .range(globalDisplay ? [shared_color] : d3.schemeCategory10);
+
+        if (showLines) {
+            const line = d3.line();
+
+            // Update lines incrementally
+            svg.select(".lines")
+                .selectAll("path")
+                .data(Array.from(groups.values()), d => d.z)
+                .join(
+                    enter => enter.append("path")
+                        .style("mix-blend-mode", blendMode)
+                        .attr("stroke", d => colorScale(d.z))
+                        .attr("fill", "none")
+                        .attr("stroke-width", stroke_width)
+                        .attr("stroke-linejoin", "round")
+                        .attr("stroke-linecap", "round")
+                        .style("cursor", "pointer")
+                        .on("click", function(event, d) {
+                            const clickedCountry = d.z;
+                            if(clickedCountry != "global") {
+                                selectedCountries = [clickedCountry];
+                                window.dispatchEvent(new CustomEvent("countryChanged", { 
+                                    detail: { countries: selectedCountries, change: { type: 'reset', country: null } }
+                                }));
+                                filteredData = filter_by_countries(data, selectedCountries);
+                                updateVis();
+                            }
+                        })
+                        .on("mouseover", function(event, d) {
+                            svg.selectAll(".lines path")
+                                .style("opacity", 0.2);
+                            d3.select(this)
+                                .style("opacity", 1)
+                                .attr("stroke-width", stroke_width * 2);
+                            if(selectedCountries.length === 0)
+                                window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
+                        })
+                        .on("mouseout", function() {
+                            svg.selectAll(".lines path")
+                                .style("opacity", 1);
+                            d3.select(this)
+                                .attr("stroke-width", stroke_width);
+                            if(selectedCountries.length === 0)
+                                window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
+                        })
+                        .attr("d", d => line(d.map(point => [point[0], point[1]])))
+                        .each(function() {
+                            const totalLength = this.getTotalLength();
+                            d3.select(this)
+                                .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+                                .attr("stroke-dashoffset", totalLength)
+                                .transition()
+                                .duration(duration)
+                                .ease(d3.easeLinear)
+                                .attr("stroke-dashoffset", 0);
+                        }),
+                    update => update
+                        .attr("stroke", d => colorScale(d.z))
+                        .attr("d", d => line(d.map(point => [point[0], point[1]]))),
+                    exit => exit.transition()
+                        .duration(duration / 2)
+                        .style("opacity", 0)
+                        .remove()
+                );
+        }
+
+        // Update dots incrementally
+        const dotMap = new Map();
+        filteredDateObservations.forEach(d => {
+            const key = `${x(d.date)},${y(d.observations)}`;
+            if (!dotMap.has(key))
+                dotMap.set(key, []);
+            dotMap.get(key).push(d);
+        });
+
+        svg.selectAll(".dot")
+            .data(filteredDateObservations, d => `${d.country}-${d.date.getTime()}`)
+            .join(
+                enter => enter.append("circle")
+                    .attr("class", "dot")
+                    .attr("cx", d => x(d.date))
+                    .attr("cy", d => y(d.observations))
+                    .attr("r", 0)
+                    .attr("fill", d => colorScale(d.country))
+                    .style("cursor", "pointer")
+                    .style("opacity", 0)
+                    .call(enter => enter.transition()
+                        .duration(duration)
+                        .attr("r", symbol_size)
+                        .style("opacity", dot_opacity))
+                    .on("mouseover", function(event, d) {
+                        tooltip.style("opacity", .9);
+                    })
+                    .on("mousemove", function(event, d) {
+                        tooltip.transition().duration(duration / 5).style("opacity", .9);
+                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const overlappingDots = dotMap.get(key);
+
+                        const formatDate = selectedGranularity === 'year' 
+                            ? d3.timeFormat("%Y")
+                            : selectedGranularity === 'month'
+                            ? d3.timeFormat("%b %Y")
+                            : d3.timeFormat("%d %b %Y");
+                        const containerRect = container.node().getBoundingClientRect();
+                        
+                        let tooltip_text;
+                        if (overlappingDots.length > 1) {
+                            tooltip_text = `${overlappingDots.length} Countries:<br/><br/>`;
+                            overlappingDots.forEach(dot => {
+                                tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
+                            });
+                        } else {
+                            tooltip_text = `Country: ${d.country}<br/>Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`;
+                        }
+                        
+                        tooltip.html(tooltip_text);
+                        const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                        let leftPos = event.pageX - containerRect.left + 10;
+                        if (leftPos + tooltipWidth > containerRect.width) {
+                            leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                        }
+                        tooltip.style("left", leftPos + "px")
+                            .style("top", (event.pageY - containerRect.top + 10) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this)
+                            .attr("r", symbol_size)
+                            .style("opacity", dot_opacity);
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
+                    })
+                    .on("mouseover", function(event, d) {
+                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const overlappingDots = dotMap.get(key);
+                        let hoveredCountries = [];
+                        overlappingDots.forEach(dot => {
+                            hoveredCountries.push(dot.country);
+                        });
+                        d3.select(this)
+                            .attr("r", symbol_size * 1.5)
+                            .style("opacity", 1);
+                        if(selectedCountries.length === 0)
+                            window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: hoveredCountries }));
+                    })
+                    .on("click", function(event, d) {
+                        if(selectedGranularity === "year") {
+                            const clickedDate = d;
+                            selectedGranularity = "month";
+                            radioContainer.selectAll(".granularityOptions input[value='month']")
+                                .property("checked", true);
+                            selectedDate = [null, clickedDate.date.getFullYear()]
+                            window.dispatchEvent(new CustomEvent("dateChanged", { 
+                                detail: selectedDate
+                            }));
+                        }
+                        else if(selectedGranularity === "month") {
+                            const clickedDate = d;
+                            selectedGranularity = "day";
+                            radioContainer.selectAll(".granularityOptions input[value='day']")
+                                .property("checked", true);
+                            selectedDate = [clickedDate.date.getMonth() + 1, clickedDate.date.getFullYear()]
+                            window.dispatchEvent(new CustomEvent("dateChanged", { 
+                                detail: selectedDate 
+                            }));
+                        }
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                        updateVis();
+                    }),
+                update => update
+                    .attr("fill", d => colorScale(d.country))
+                    .transition()
+                    .duration(duration)
+                    .attr("cx", d => x(d.date))
+                    .attr("cy", d => y(d.observations)),
+                exit => exit.transition()
+                    .duration(duration / 2)
+                    .attr("r", 0)
+                    .style("opacity", 0)
+                    .remove()
+            );
+    }
+
     window.addEventListener("filterByValue", function(event) {
         const { value, attribute } = event.detail;
         selectedVariable = attribute;
@@ -588,9 +833,29 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("countryChanged", (event) => {
-        selectedCountries = event.detail;
-
-        updateVis();
+        const eventDetail = event.detail;
+        
+        // Handle both old format (array) and new format (object with countries and change)
+        if (Array.isArray(eventDetail)) {
+            // Old format - full update
+            selectedCountries = eventDetail;
+            updateVis();
+        } else {
+            // New format - incremental update
+            const { countries, change } = eventDetail;
+            selectedCountries = countries;
+            
+            if (change && change.type === 'reset') {
+                // Full redraw on reset
+                updateVis();
+            } else if (change && (change.type === 'added' || change.type === 'removed')) {
+                // Incremental update
+                updateVisIncremental(change.type, change.country);
+            } else {
+                // Fallback to full update
+                updateVis();
+            }
+        }
     });
 
     window.addEventListener("darkMode", function(event) {

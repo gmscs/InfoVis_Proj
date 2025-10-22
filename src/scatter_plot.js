@@ -595,8 +595,215 @@ dataCSV.then(function (data) {
                 return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
             }
         })
-        .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
+                .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
+
+    function updateVisIncremental(changeType, country) {
+        const newWidth = container.node().getBoundingClientRect().width;
+        const newHeight = container.node().getBoundingClientRect().height;
+        const innerWidth = newWidth - margin.left - margin.right;
+        const innerHeight = newHeight - margin.top - margin.bottom - 16;
+
+        // Apply all filters
+        let filteredData = Array.from(data);
+        if (selectedCountries.length > 0) {
+            filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        }
+        if (sexApplied != "") {
+            filteredData = filteredData.filter(row => row["sex"] === sexApplied);
+        }
+        if (selectedDate.length > 0) {
+            filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
+        }
+        if (selectedDateRange.length > 0) {
+            filteredData = filter_by_date_range(filteredData, selectedDateRange[0], selectedDateRange[1]);
+        }
+        if (selectedSizeRange.length > 0) {
+            filteredData = filter_by_length_range(filteredData, selectedSizeRange[0], selectedSizeRange[1]);
+        }
+        if (selectedWeightRange.length > 0) {
+            filteredData = filter_by_weight_range(filteredData, selectedWeightRange[0], selectedWeightRange[1]);
+        }
+
+        // Compute new domains
+        const newXDomain = d3.extent(filteredData, d => d.lengthM);
+        const newYMax = d3.max(filteredData, d => d.weight * 1.1);
+
+        // Update scales and axes smoothly if needed
+        const oldXDomain = x.domain();
+        const oldYMax = y.domain()[1];
+        const xChanged = (+newXDomain[0] !== +oldXDomain[0]) || (+newXDomain[1] !== +oldXDomain[1]);
+        const yChanged = (+newYMax !== +oldYMax);
+
+        if (xChanged) x.domain(newXDomain).range([0, innerWidth]);
+        if (yChanged) y.domain([0, newYMax]).range([innerHeight, 0]);
+
+        if (xChanged || yChanged) {
+            svg.select(".x.axis")
+                .attr("transform", `translate(0,${innerHeight})`)
+                .transition()
+                .duration(duration)
+                .call(d3.axisBottom(x));
+
+            svg.selectAll(".y.axis")
+                .transition()
+                .duration(duration)
+                .call(d3.axisLeft(y));
+        }
+
+        // Update dots incrementally
+        const dotMap = new Map();
+        filteredData.forEach(d => {
+            const key = `${x(d.lengthM)},${y(d.weight)}`;
+            if (!dotMap.has(key))
+                dotMap.set(key, []);
+            dotMap.get(key).push(d);
+        });
+
+        svg.selectAll(".dot")
+            .data(filteredData, d => `${d.commonname}-${d.lengthM}-${d.weight}-${d.country}`)
+            .join(
+                enter => enter.append("path")
+                    .attr("class", "dot")
+                    .attr("r", symbol_size)
+                    .style("fill", d => colorList[d[selectedColourVar]])
+                    .style("opacity", 0)
+                    .style("cursor", "pointer")
+                    .attr("d", d => {
+                        const shape = sex_shapes[d.sex];
+                        if (shape === "circle") {
+                            return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
+                        } else if (shape === "triangle") {
+                            return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
+                        } else if (shape === "cross") {
+                            return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
+                        }
+                    })
+                    .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`)
+                    .on("mouseover", function(event, d) {
+                        tooltip.style("opacity", .9);
+                        d3.select(this)
+                            .attr("r", symbol_size * 1.5)
+                            .style("opacity", 1);
+                    })
+                    .on("mousemove", function(event, d) {
+                        tooltip.transition().duration(duration / 5).style("opacity", .9);
+                        const key = `${x(d.lengthM)},${y(d.weight)}`;
+                        const overlappingDots = dotMap.get(key);
+
+                        const containerRect = container.node().getBoundingClientRect();
+                        
+                        let tooltip_text;
+                        if (overlappingDots.length > 1) {
+                            tooltip_text = `${overlappingDots.length} Species:<br/><br/>`;
+                            overlappingDots.forEach(dot => {
+                                let info = "";
+                                if(selectedColourVar == "habitat") {
+                                    info = `Species: ${dot.commonname}<br/>
+                                        Age: ${dot.age}<br/>
+                                        Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                        Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                        Status: ${d.conservation}<br/>
+                                        ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                                } else if (selectedColourVar == "age") {
+                                    info = `Species: ${dot.commonname}<br/>
+                                        Age: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                        Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                        Habitat: ${dot.habitat}<br/>
+                                        Status: ${dot.conservation}<br/>
+                                        ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                                } else {
+                                    info = `Species: ${dot.commonname}<br/>
+                                        Age: ${dot.age}<br/>
+                                        Sex: ${sex_symbols[dot.sex]} ${dot.sex}<br/>
+                                        Habitat: ${dot.habitat}<br/>
+                                        Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
+                                        ${dot.lengthM}m, ${dot.weight}kg<br/><br/>`;
+                                }
+                                tooltip_text += info;
+                            });
+                        } else {
+                            if(selectedColourVar == "habitat") {
+                                tooltip_text = `Species: ${d.commonname}<br/>
+                                    Age: ${d.age}<br/>
+                                    Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                                    Habitat: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                                    Status: ${d.conservation}<br/>
+                                    ${d.lengthM}m, ${d.weight}kg<br/>`;
+                            } else if (selectedColourVar == "age") {
+                                tooltip_text = `Species: ${d.commonname}<br/>
+                                    Age: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                                    Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                                    Habitat: ${d.habitat}<br/>
+                                    Status: ${d.conservation}<br/>
+                                    ${d.lengthM}m, ${d.weight}kg<br/>`;
+                            } else {
+                                tooltip_text = `Species: ${d.commonname}<br/>
+                                    Age: ${d.age}<br/>
+                                    Sex: ${sex_symbols[d.sex]} ${d.sex}<br/>
+                                    Habitat: ${d.habitat}<br/>
+                                    Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
+                                    ${d.lengthM}m, ${d.weight}kg<br/>`;
+                            }
+                        }
+                        
+                        tooltip.html(tooltip_text);
+                        const tooltipRect = tooltip.node().getBoundingClientRect();
+                        const tooltipHeight = tooltipRect.height;
+                        const tooltipWidth = tooltipRect.width;
+                        let leftPos = event.pageX - containerRect.left + 10;
+                        if (leftPos + tooltipWidth > containerRect.width) {
+                            leftPos = event.pageX - containerRect.left - tooltipWidth - 10;
+                        }
+
+                        const mouseY = event.pageY - containerRect.top;
+                        const spaceBelow = containerRect.height - mouseY;
+                        const flipTooltip = spaceBelow < tooltipHeight;
+
+                        let topPos = flipTooltip ? mouseY - tooltipHeight : mouseY + 20;
+
+                        tooltip.style("left", leftPos + "px")
+                            .style("top", topPos + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this)
+                            .attr("r", symbol_size)
+                            .style("opacity", dot_opacity);
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                    })
+                    .on("click", function(d) {
+                        const clickedSpecies = d.target.__data__.commonname;
+                        tooltip.transition()
+                            .duration(duration / 2)
+                            .style("opacity", 0);
+                        window.dispatchEvent(new CustomEvent("filterByValue", {
+                            detail: { value: clickedSpecies, attribute: "commonname"}
+                        }));
+                    })
+                    .call(enter => enter.transition()
+                        .duration(duration)
+                        .style("opacity", dot_opacity)),
+                update => update
+                    .transition()
+                    .duration(duration)
+                    .style("fill", d => colorList[d[selectedColourVar]])
+                    .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`),
+                exit => exit.transition()
+                    .duration(duration / 2)
+                    .style("opacity", 0)
+                    .remove()
+            );
+    }
+
+        window.addEventListener("dateChanged", function(event) {
+            selectedDate = event.detail;
+            updateVis();
+        });
 
     radioContainer.selectAll(".colourOptions")
         .data(colourOptions)
@@ -679,9 +886,29 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("countryChanged", (event) => {
-        selectedCountries = event.detail;
-
-        updateVis();
+        const eventDetail = event.detail;
+        
+        // Handle both old format (array) and new format (object with countries and change)
+        if (Array.isArray(eventDetail)) {
+            // Old format - full update
+            selectedCountries = eventDetail;
+            updateVis();
+        } else {
+            // New format - incremental update
+            const { countries, change } = eventDetail;
+            selectedCountries = countries;
+            
+            if (change && change.type === 'reset') {
+                // Full redraw on reset
+                updateVis();
+            } else if (change && (change.type === 'added' || change.type === 'removed')) {
+                // Incremental update
+                updateVisIncremental(change.type, change.country);
+            } else {
+                // Fallback to full update
+                updateVis();
+            }
+        }
     });
 
     window.addEventListener("filterByColour", function(event) {

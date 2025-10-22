@@ -109,7 +109,9 @@ Promise.all([
         selectedColour = null;
         
         colourLegend.selectAll("g.legend-item").style("opacity", 1);
-        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+        window.dispatchEvent(new CustomEvent("countryChanged", { 
+            detail: { countries: selectedCountries, change: { type: 'reset', country: null } }
+        }));
 
         svg.call(zoom.transform,zoomDefault)
         highlightSelectedCountry();
@@ -145,15 +147,25 @@ Promise.all([
                     (selectedCountries.includes(d) || (d === "All Countries" && selectedCountries.length === 0)) ? "#bed8e7" : "white");
             })
             .on("click", function(event, d) {
+                let changeType = null;
+                let changedCountry = null;
+                
                 if (d === "All Countries") {
                     selectedCountries = [];
+                    changeType = 'reset';
                 } else if (!selectedCountries.includes(d)) {
                     selectedCountries.push(d);
+                    changeType = 'added';
+                    changedCountry = d;
                 } else {
                     selectedCountries = selectedCountries.filter(c => c !== d);
+                    changeType = 'removed';
+                    changedCountry = d;
                 }
                 highlightSelectedCountry();
-                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                window.dispatchEvent(new CustomEvent("countryChanged", { 
+                    detail: { countries: selectedCountries, change: { type: changeType, country: changedCountry } }
+                }));
                 updateCountryList(searchInput.property("value"));
             })
             .merge(options)
@@ -441,18 +453,27 @@ Promise.all([
             })
             .on("click", function(event, d) {
             if(countries.includes(d.properties.name)) {
+                let changeType = null;
+                let changedCountry = d.properties.name;
+                
                 if(selectedCountries.includes(d.properties.name)) {
                     selectedCountries = selectedCountries.filter(c => c !== d.properties.name);
+                    changeType = 'removed';
                     if(selectedCountries == []) {
-                        window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                        window.dispatchEvent(new CustomEvent("countryChanged", { 
+                            detail: { countries: selectedCountries, change: { type: changeType, country: changedCountry } }
+                        }));
                     }
                 } else {
                     selectedCountries.push(d.properties.name);
+                    changeType = 'added';
                 }
                 highlightSelectedCountry();
                 updateDropdownOptions();
                 updateCountryList();
-                window.dispatchEvent(new CustomEvent("countryChanged", { detail: selectedCountries }));
+                window.dispatchEvent(new CustomEvent("countryChanged", { 
+                    detail: { countries: selectedCountries, change: { type: changeType, country: changedCountry } }
+                }));
             }
         })
             
@@ -486,7 +507,9 @@ Promise.all([
     });
 
     window.addEventListener("countryChanged", function(event) {
-        selectedCountries = event.detail;
+        const detail = event.detail;
+        // Backward compatible: accept either an array of countries or an object with { countries, change }
+        selectedCountries = Array.isArray(detail) ? detail : (detail && detail.countries ? detail.countries : []);
         updateMap("lineCountrySelect");
     })
 
