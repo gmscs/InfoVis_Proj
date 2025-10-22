@@ -289,10 +289,11 @@ dataCSV.then(function (data) {
                 .style("fill", d => useHabitatColors ? colorList[d] || shared_color : shared_color)
                 .style("opacity", d => (d == clevFilter) ? 1 : dot_opacity)
                 .style("cursor", "pointer")
-                .on("mouseover", function (d) {
+                .on("mouseover", function (event, d) {
                     tooltip.style("opacity", 2).style("s");
                     d3.select(this).attr("r", symbol_size * 1.5);
                     d3.select(this).style("opacity", 1);
+                    window.dispatchEvent(new CustomEvent("highlightByValue", { detail: { value: d, variable: selectedVariable } }));
                 })
                 .on("mousemove", mousemoveFunc)
                 .on("mouseleave", function (d) {
@@ -304,6 +305,7 @@ dataCSV.then(function (data) {
                         d3.select(this).attr("r", symbol_size * 1.5);
                         d3.select(this).style("opacity", 1);
                     }
+                    window.dispatchEvent(new CustomEvent("resetHighlight"));
                 })
                 .on("click", function(event, d) {
                     let filterEvent;

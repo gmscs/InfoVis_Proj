@@ -676,6 +676,38 @@ dataCSV.then(function (data) {
         updateVis();
     });
 
+    window.addEventListener("highlightByValue", function(event) {
+        const { value, variable } = event.detail;
+        svg.selectAll(".dot")
+            .style("opacity", d => d[variable] === value ? 1 : dot_opacity)
+            .attr("d", d => {
+                const shape = sex_shapes[d.sex];
+                const newSize = d[variable] === value ? symbol_size * 20 : symbol_size * 10;
+                if (shape === "circle") {
+                    return d3.symbol().type(d3.symbolCircle).size(newSize)();
+                } else if (shape === "triangle") {
+                    return d3.symbol().type(d3.symbolTriangle).size(newSize)();
+                } else if (shape === "cross") {
+                    return d3.symbol().type(d3.symbolCross).size(newSize)();
+                }
+            }); 
+    });
+
+    window.addEventListener("resetHighlight", function() {
+        svg.selectAll(".dot")
+            .style("opacity", dot_opacity)
+            .attr("d", d => {
+            const shape = sex_shapes[d.sex];
+            if (shape === "circle") {
+                return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
+            } else if (shape === "triangle") {
+                return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
+            } else if (shape === "cross") {
+                return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
+            }
+        });
+    });
+
     window.addEventListener("scatterChange", function(event) {
         if(event.detail == "age" || event.detail == "conservation" || event.detail == "habitat") {
             selectedColourVar = event.detail;
