@@ -484,27 +484,34 @@ dataCSV.then(function (data) {
                 .attr("cx", d => x(d.date))
                 .attr("cy", d => y(d.observations));
 
-            svg.call(d3.brush().on("end", ({selection}) => {
-                if (!selection) return;
-                const [[x0, y0], [x1, y1]] = selection;
-                brushedDots = filteredDateObservations.filter(d => {
-                    const cx = x(d.date);
-                    const cy = y(d.observations);
-                    return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
-                });
-                if (brushedDots.length > 0) {
-                    const brushedDates = brushedDots.map(d => d.date);
-                    const minDate = new Date(Math.min(...brushedDates));
-                    const maxDate = new Date(Math.max(...brushedDates));
-                    selectedDateRange = [minDate, maxDate];
-                } else {
-                    selectedDateRange = [];
-                }
-                console.log(selectedDateRange);
-                window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
-                    detail: selectedDateRange
-                }));
+        const brush = d3.brush()
+        .extent([[0, 0], [innerWidth, innerHeight]])
+        .on("end", ({selection}) => {
+            if (!selection) return;
+            const [[x0, y0], [x1, y1]] = selection;
+            brushedDots = filteredDateObservations.filter(d => {
+                const cx = x(d.date);
+                const cy = y(d.observations);
+                return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
+            });
+            if (brushedDots.length > 0) {
+                const brushedDates = brushedDots.map(d => d.date);
+                const minDate = new Date(Math.min(...brushedDates));
+                const maxDate = new Date(Math.max(...brushedDates));
+                selectedDateRange = [minDate, maxDate];
+            } else {
+                selectedDateRange = [];
+            }
+            console.log(selectedDateRange);
+            window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
+                detail: selectedDateRange
             }));
+            updateVis();
+        });
+        svg.select(".brush").remove();
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
     }
 
     radioContainer.selectAll(".radioOption")
