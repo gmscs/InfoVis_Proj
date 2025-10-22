@@ -416,8 +416,12 @@ dataCSV.then(function (data) {
             let sign = [];
             sign[0] = Math.sign(b) === -1 ? " - " : " + ";
             sign[1] = Math.sign(c) === -1 ? " - " : " + ";
+
+            const formula = (type === "Quadratic")
+                ? `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x${sign[1]}${Math.abs(c.toFixed(2))}x²`
+                : `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x`;
                 
-            svg.append("path")
+            const path = svg.append("path")
                 .datum(lineData)
                 .attr("class", "regression-line")
                 .attr("fill", "none")
@@ -426,7 +430,7 @@ dataCSV.then(function (data) {
                 .attr("d", line)
                 .on("mouseover", function() {
                     tooltip.style("opacity", .9);
-                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x${sign[1]}${Math.abs(c.toFixed(2))}x²`);
+                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: ${formula}`);
                     d3.select(this).attr("stroke-width", stroke_width * 2);
                 })
                 .on("mousemove", function(event) {
@@ -445,6 +449,16 @@ dataCSV.then(function (data) {
                     tooltip.style("opacity", 0);
                     d3.select(this).attr("stroke-width", stroke_width);
                 });
+
+            const totalLength = path.node().getTotalLength();
+            path
+                .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .delay(duration)
+                .duration(duration)
+                .ease(d3.easeCubicInOut)
+                .attr("stroke-dashoffset", 0);
         }
 
         const dotMap = new Map();
