@@ -251,7 +251,7 @@ dataCSV.then(function (data) {
 
         label.append("tspan")
             .text("♻ ")
-            .attr("fill", shared_color)
+            .attr("fill", parts.length ? shared_color : "")
             .style("font-size", 20)
             .style("baseline-shift", "-3px");
         label.append("tspan").text("Active filter: ");
