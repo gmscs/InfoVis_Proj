@@ -539,7 +539,8 @@ dataCSV.then(function (data) {
                     .attr("cx", d => x(d.date))
                     .attr("cy", d => y(d.observations));
         }
-        linesGroup.raise();
+        if(showLines) linesGroup.raise();
+        else dotsGroup.raise();
     }
 
     radioContainer.selectAll(".granularityOptions")
