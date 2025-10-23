@@ -236,50 +236,27 @@ dataCSV.then(function (data) {
             .attr("x", -36)
             .attr("y", newHeight - 53)
             .text("");
-        
-        let filterBool = false;
+
         const label = labelStuffReset.select(".activeFilterLabel");
-        if (sexApplied != "") { 
-            filterText = sexApplied;
-            filterBool = true;
-            label.append("tspan")
-                .text("♻ ")
-                .attr("fill", shared_color)
-                .style("font-size", 20)
-                .style("baseline-shift", "-3px");
-            label.append("tspan")
-                .text("Active filter: ")
-            label.append("tspan")
-                .text(" " + filterText)
+        const parts = [];
+        if (sexApplied && sexApplied !== "") {
+            parts.push(sexApplied);
         }
-        if (selectedSizeRange.length > 0) { 
-            filterText = " " + selectedSizeRange[0] + "m - " + selectedSizeRange[1] + "m";
-            if(filterBool) {
-                label.append("tspan")
-                    .text(" " + filterText)
-                    .attr("fill", "black");
-            } else {
-                label.append("tspan")
-                    .text("♻ ")
-                    .attr("fill", shared_color)
-                    .style("font-size", 20)
-                    .style("baseline-shift", "-3px");
-                label.append("tspan")
-                    .text("Active filter: ")
-                label.append("tspan")
-                    .text(" " + filterText)
-            }
+        if (selectedSizeRange.length > 0) {
+            parts.push(`Length: ${selectedSizeRange[0]}m - ${selectedSizeRange[1]}m`);
         }
-        else if (filterText === "") {
-            label.append("tspan")
-                .text("♻ ")
-                .style("font-size", 20)
-                .style("baseline-shift", "-3px");
-            label.append("tspan")
-                .text("Active filter: ")
-            label.append("tspan")
-                .text("None")
+        if (selectedWeightRange.length > 0) {
+            parts.push(`Weight: ${selectedWeightRange[0]}kg - ${selectedWeightRange[1]}kg`);
         }
+
+        label.append("tspan")
+            .text("♻ ")
+            .attr("fill", shared_color)
+            .style("font-size", 20)
+            .style("baseline-shift", "-3px");
+        label.append("tspan").text("Active filter: ");
+        label.append("tspan")
+            .text(parts.length ? parts.join(" | ") : "None");
 
         
         labelStuff.select(".fem_legend")
