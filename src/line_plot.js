@@ -9,6 +9,9 @@ const margin = { top: 60, right: 20, bottom: 50, left: 40 };
 const padding = 20;
 const svg = create_svg(container, margin);
 
+const linesGroup = svg.append("g").attr("class", "lines-group");
+const dotsGroup = svg.append("g").attr("class", "dots-group");
+
 //defaults
 let selectedCountries = [];
 let selectedGranularity = "month";
@@ -351,7 +354,7 @@ dataCSV.then(function (data) {
         if(showLines) {
             const line = d3.line();
 
-            const lineSelection = svg.append("g")
+            const lineSelection = linesGroup.append("g")
                 .attr("class", "lines")
                 .attr("fill", "none")
                 .attr("stroke-width", stroke_width)
@@ -373,6 +376,7 @@ dataCSV.then(function (data) {
                         }
                     })
                     .on("mouseover", function(event, d) {
+                        linesGroup.raise();
                         svg.selectAll(".lines path")
                             .style("opacity", 0.2);
                         d3.select(this)
@@ -382,6 +386,7 @@ dataCSV.then(function (data) {
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: [d[0][2]] }));
                     })
                     .on("mouseout", function() {
+                        dotsGroup.raise();
                         svg.selectAll(".lines path")
                             .style("opacity", 1);
                         d3.select(this)
@@ -421,14 +426,14 @@ dataCSV.then(function (data) {
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
-            const key = `${x(d.date)},${y(d.observations)}`;
+            const key = `${d.country}-${d.date.getTime()}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
             dotMap.get(key).push(d);
         });
 
         if (!onlyLines) {
-            svg.selectAll(".dot")
+            dotsGroup.selectAll(".dot")
                 .data(filteredDateObservations, d => `${d.country}-${d.date.getTime()}`)
                 .join(
                     enter => enter.append("circle")
@@ -444,7 +449,7 @@ dataCSV.then(function (data) {
                     })
                     .on("mousemove", function(event, d) {
                         tooltip.transition().duration(duration / 5).style("opacity", .9);
-                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const key = `${d.country}-${d.date.getTime()}`;
                         const overlappingDots = dotMap.get(key);
 
                         const formatDate = selectedGranularity === 'year' 
@@ -484,7 +489,7 @@ dataCSV.then(function (data) {
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
                     .on("mouseover", function(event, d) {
-                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const key = `${d.country}-${d.date.getTime()}`;
                         const overlappingDots = dotMap.get(key);
                         let hoveredCountries = [];
                         overlappingDots.forEach(dot => {
@@ -535,6 +540,7 @@ dataCSV.then(function (data) {
                     .attr("cx", d => x(d.date))
                     .attr("cy", d => y(d.observations));
         }
+        linesGroup.raise();
     }
 
     radioContainer.selectAll(".granularityOptions")
