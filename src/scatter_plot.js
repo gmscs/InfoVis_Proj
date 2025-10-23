@@ -32,7 +32,7 @@ var species_colours = species_colours_light;
 var colorList = species_colours;
 
 var selectedVariable = "commonname";
-var clevFilter = [];
+var clevFilter = null;
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
@@ -213,8 +213,8 @@ dataCSV.then(function (data) {
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
-        if (clevFilter.length > 0) {
-            filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
+        if (clevFilter != null) {
+            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -468,7 +468,7 @@ dataCSV.then(function (data) {
 
         const dotMap = new Map();
         filteredData.forEach(d => {
-            const key = `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`;
+            const key = `${x(d.lengthM)},${y(d.weight)}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
             dotMap.get(key).push(d);
@@ -493,7 +493,7 @@ dataCSV.then(function (data) {
                     return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
                 }
             })
-            .attr("transform", d => `translate(${innerWidth / 2},${innerHeight / 2})`)
+            .attr("transform", d => `translate(${x(d.lengthM || 0)},${innerHeight})`)
             .on("mouseover", function(event, d) {
                 dotsGroup.raise();
                 tooltip.style("opacity", .9);
@@ -503,7 +503,7 @@ dataCSV.then(function (data) {
             })
             .on("mousemove", function(event, d) {
                 tooltip.transition().duration(duration / 5).style("opacity", .9);
-                const key = `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`;
+                const key = `${x(d.lengthM)},${y(d.weight)}`;
                 const overlappingDots = dotMap.get(key);
 
                 const containerRect = container.node().getBoundingClientRect();
@@ -611,7 +611,7 @@ dataCSV.then(function (data) {
                     .duration(duration / 2)
                     .style("opacity", 0);
                 window.dispatchEvent(new CustomEvent("filterByValue", {
-                    detail: { values: [clickedSpecies], attribute: "commonname"}
+                    detail: { value: clickedSpecies, attribute: "commonname"}
                 }));
             }),
         update => update
@@ -629,7 +629,6 @@ dataCSV.then(function (data) {
         exit => exit.transition()
             .duration(duration)
             .style("opacity", 0)
-            .attr("transform", d => `translate(${innerWidth / 2},${innerHeight / 2})`)
             .remove()
         )
         .transition()
@@ -693,9 +692,9 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("filterByValue", function(event) {
-        const { values, attribute } = event.detail;
+        const { value, attribute } = event.detail;
         selectedVariable = attribute;
-        clevFilter = values;
+        clevFilter = value;
 
         updateVis();
     });
