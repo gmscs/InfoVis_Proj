@@ -7,6 +7,9 @@ const container = d3.select("#scatter");
 const margin = { top: 40, right: 40, bottom: 50, left: 40 };
 const svg = create_svg(container, margin);
 
+const linesGroup = svg.append("g").attr("class", "lines-group");
+const dotsGroup = svg.append("g").attr("class", "dots-group");
+
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
 
@@ -407,7 +410,7 @@ dataCSV.then(function (data) {
             .duration(duration)
             .call(d3.axisLeft(y));
 
-        svg.selectAll(".regression-line").remove(); 
+        linesGroup.selectAll(".regression-line").remove(); 
         if(regressionLine) {
             const line = d3.line()
                 .x(d => x(d.lengthM))
@@ -421,7 +424,7 @@ dataCSV.then(function (data) {
                 ? `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x${sign[1]}${Math.abs(c.toFixed(2))}x²`
                 : `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x`;
                 
-            const path = svg.append("path")
+            const path = linesGroup.append("path")
                 .datum(lineData)
                 .attr("class", "regression-line")
                 .attr("fill", "none")
@@ -429,6 +432,7 @@ dataCSV.then(function (data) {
                 .attr("stroke-width", stroke_width)
                 .attr("d", line)
                 .on("mouseover", function() {
+                    linesGroup.raise();
                     tooltip.style("opacity", .9);
                     tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: ${formula}`);
                     d3.select(this).attr("stroke-width", stroke_width * 2);
@@ -446,6 +450,7 @@ dataCSV.then(function (data) {
                         .style("top", (event.pageY - containerRect.top + 10) + "px");
                 })
                 .on("mouseout", function() {
+                    dotsGroup.raise();
                     tooltip.style("opacity", 0);
                     d3.select(this).attr("stroke-width", stroke_width);
                 });
@@ -469,7 +474,7 @@ dataCSV.then(function (data) {
             dotMap.get(key).push(d);
         });
 
-        svg.selectAll(".dot")
+        dotsGroup.selectAll(".dot")
         .data(filteredData, d => `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`)
         .join(
             enter => enter.append("path")
@@ -490,6 +495,7 @@ dataCSV.then(function (data) {
             })
             .attr("transform", d => `translate(${innerWidth / 2},${innerHeight / 2})`)
             .on("mouseover", function(event, d) {
+                dotsGroup.raise();
                 tooltip.style("opacity", .9);
                 d3.select(this)
                     .attr("r", symbol_size * 1.5)
@@ -591,6 +597,7 @@ dataCSV.then(function (data) {
                     .style("top", topPos + "px");
             })
             .on("mouseout", function(d) {
+                linesGroup.raise();
                 d3.select(this)
                     .attr("r", symbol_size)
                     .style("opacity", dot_opacity);
@@ -629,6 +636,8 @@ dataCSV.then(function (data) {
         .duration(duration)
         .style("opacity", dot_opacity)
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
+
+        dotsGroup.raise();
     }
 
     radioContainer.selectAll(".colourOptions")
