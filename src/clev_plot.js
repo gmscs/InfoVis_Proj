@@ -85,6 +85,8 @@ dataCSV.then(function (data) {
     function resetChart() {
         clevFilter = [];
         selectedVariable = "commonname";
+        radioContainer.selectAll(".radioOptions input[value='commonname']")
+            .property("checked", true);
         svg.selectAll(".dot")
             .attr("r", symbol_size)
             .style("opacity", dot_opacity);
