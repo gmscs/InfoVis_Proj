@@ -22,7 +22,7 @@ var shared_color = shared_color_light;
 var blendMode = "multiply";
 
 var selectedVariable = "commonname";
-var clevFilter = null;
+var clevFilter = [];
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
@@ -238,8 +238,8 @@ dataCSV.then(function (data) {
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
-        if (clevFilter != null) {
-            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        if (clevFilter.length > 0) {
+            filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -426,7 +426,7 @@ dataCSV.then(function (data) {
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
-            const key = `${x(d.date)},${y(d.observations)}`;
+            const key = `${d.country}-${d.date.getTime()}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
             dotMap.get(key).push(d);
@@ -449,7 +449,7 @@ dataCSV.then(function (data) {
                     })
                     .on("mousemove", function(event, d) {
                         tooltip.transition().duration(duration / 5).style("opacity", .9);
-                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const key = `${d.country}-${d.date.getTime()}`;
                         const overlappingDots = dotMap.get(key);
 
                         const formatDate = selectedGranularity === 'year' 
@@ -463,10 +463,10 @@ dataCSV.then(function (data) {
                         if (overlappingDots.length > 1) {
                             tooltip_text = `${overlappingDots.length} Countries:<br/><br/>`;
                             overlappingDots.forEach(dot => {
-                            tooltip_text += `Country: ${dot.country}<br/>Date: ${formatDate(dot.date)}<br/>Observations: ${dot.observations}<br/><br/>`;
+                                tooltip_text += `Date: ${formatDate(dot.date)}<br/>Country: ${dot.country}<br/>Observations: ${dot.observations}<br/><br/>`;
                             });
                         } else {
-                            tooltip_text = `Country: ${d.country}<br/>Date: ${formatDate(d.date)}<br/>Observations: ${d.observations}`;
+                            tooltip_text = `Date: ${formatDate(d.date)}<br/>Country: ${d.country}<br/>Observations: ${d.observations}`;
                         }
                         
                         tooltip.html(tooltip_text);
@@ -489,7 +489,7 @@ dataCSV.then(function (data) {
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
                     .on("mouseover", function(event, d) {
-                        const key = `${x(d.date)},${y(d.observations)}`;
+                        const key = `${d.country}-${d.date.getTime()}`;
                         const overlappingDots = dotMap.get(key);
                         let hoveredCountries = [];
                         overlappingDots.forEach(dot => {
@@ -568,9 +568,9 @@ dataCSV.then(function (data) {
         });
 
     window.addEventListener("filterByValue", function(event) {
-        const { value, attribute } = event.detail;
+        const { values, attribute } = event.detail;
         selectedVariable = attribute;
-        clevFilter = value;
+        clevFilter = values;
 
         updateVis();
     });

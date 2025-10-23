@@ -189,15 +189,11 @@ export const country_colours = {
 };
 
 
-export function get_counts(data, varName, filter = null) {
+export function get_counts(data, varName, filter = []) {
     const allKeys = Array.from(new Set(data.map(d => d[varName])));
     let filteredData;
-    if (filter != null) {
-        filteredData = data.filter(row =>
-            Object.values(row).some(val =>
-                String(val) == filter
-            )
-        );
+    if (filter.length > 0) {
+        filteredData = data.filter(row => filter.includes(row[varName]));
     } else filteredData = data;
 
     const countMap = d3.rollup(filteredData, v => v.length, d => d[varName]);

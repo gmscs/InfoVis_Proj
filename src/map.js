@@ -47,7 +47,7 @@ let isFocused = false;
 
 var selectedCountries = [];
 var selectedVariable = "commonname";
-var clevFilter = null;
+var clevFilter = [];
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
@@ -211,8 +211,8 @@ Promise.all([
         // Data Stuff Here
         let filterText = "";
         let filteredData = Array.from(dataCSV);
-        if (clevFilter != null) {
-            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        if (clevFilter.length > 0) {
+            filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -501,9 +501,9 @@ Promise.all([
     })
 
     window.addEventListener("filterByValue", function(event) {
-        const { value, attribute } = event.detail;
+        const { values, attribute } = event.detail;
         selectedVariable = attribute;
-        clevFilter = value;
+        clevFilter = values;
 
         updateMap("clevValueChanged");
     });

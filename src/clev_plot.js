@@ -11,7 +11,6 @@ const svg = create_svg(container, margin);
 const labelStuff = svg.append("g")
     .attr("class", "labelStuff");
 
-let selectedDot = null;
 let selectedLabel = "Species";
 
 var width = container.node().getBoundingClientRect().width;
@@ -23,7 +22,7 @@ var colorList = species_colours;
 
 var selectedCountries = [];
 var selectedVariable = "commonname";
-var clevFilter = null;
+var clevFilter = [];
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
@@ -84,14 +83,14 @@ dataCSV.then(function (data) {
         })
     
     function resetChart() {
-        clevFilter = null;
+        clevFilter = [];
         selectedVariable = "commonname";
         svg.selectAll(".dot")
             .attr("r", symbol_size)
             .style("opacity", dot_opacity);
 
         window.dispatchEvent(new CustomEvent("filterByValue", {
-            detail: { value: clevFilter, attribute: selectedVariable}
+            detail: { values: clevFilter, attribute: selectedVariable }
         }));
         updateVis();
     }
@@ -227,14 +226,20 @@ dataCSV.then(function (data) {
             .text("");
         
         const label = labelStuff.select(".activeFilterLabel");
-        if(clevFilter != null) {
+        let varText = "";
+        if(selectedVariable == "commonname") varText = "Species";
+        else if(selectedVariable == "age") varText = "Age";
+        else if(selectedVariable == "sex") varText = "Sex";
+        else if(selectedVariable == "habitat") varText = "Habitat";
+        else varText = "Conservation Status";
+        if(clevFilter.length > 0) {
             label.append("tspan")
                 .text("♻ ")
                 .attr("fill", shared_color)
                 .style("font-size", 20)
                 .style("baseline-shift", "-3px");
             label.append("tspan")
-                .text("Active filter: " + clevFilter)
+                .text("Active filter: " + clevFilter.length + " " + varText)
         } else {
             label.append("tspan")
                 .text("♻ ")
@@ -285,9 +290,9 @@ dataCSV.then(function (data) {
             .join(
               enter => enter.append("circle")
                 .attr("class","dot")
-                .attr("r", d => (d == clevFilter) ? symbol_size * 1.5 : symbol_size)
+                .attr("r", d => (clevFilter.includes(d)) ? symbol_size * 1.5 : symbol_size)
                 .style("fill", d => useHabitatColors ? colorList[d] || shared_color : shared_color)
-                .style("opacity", d => (d == clevFilter) ? 1 : dot_opacity)
+                .style("opacity", d => (clevFilter.includes(d)) ? 1 : dot_opacity)
                 .style("cursor", "pointer")
                 .on("mouseover", function (event, d) {
                     tooltip.style("opacity", 2).style("s");
@@ -298,7 +303,7 @@ dataCSV.then(function (data) {
                 .on("mousemove", mousemoveFunc)
                 .on("mouseleave", function (d) {
                     tooltip.transition().duration(duration / 5).style("opacity", 0);
-                    if(selectedDot != d.target.__data__) {
+                    if(!clevFilter.includes(d.target.__data__)) {
                         d3.select(this).attr("r", symbol_size);
                         d3.select(this).style("opacity", dot_opacity);
                     } else {
@@ -308,27 +313,17 @@ dataCSV.then(function (data) {
                     window.dispatchEvent(new CustomEvent("resetHighlight"));
                 })
                 .on("click", function(event, d) {
-                    let filterEvent;
-                    const prevDot = selectedDot;
-                    selectedDot = d;
-                    if (selectedDot != null && prevDot == selectedDot) {
-                        svg.selectAll(".dot").style("opacity", dot_opacity);
-                        selectedDot = null;
-                        clevFilter = null;
-                        filterEvent = new CustomEvent("filterByValue", {
-                            detail: { value: clevFilter, attribute: selectedVariable}
-                        });
+                    if (clevFilter.includes(d)) {
+                        clevFilter = clevFilter.filter(item => item !== d);
+                    } else {
+                        clevFilter.push(d);
                     }
-                    else if(selectedDot != null) {
-                        svg.selectAll(".dot")
-                            .style("opacity", d => d === selectedDot ? 1 : dot_opacity)
-                            .attr("r", d => (d == selectedDot) ? symbol_size * 1.5 : symbol_size);
-                        clevFilter = d;
-                        filterEvent = new CustomEvent("filterByValue", {
-                            detail: { value: clevFilter, attribute: selectedVariable}
-                        });
-                    }
-                    window.dispatchEvent(filterEvent);
+
+                    svg.selectAll(".dot")
+                        .style("opacity", c => clevFilter.includes(c) ? 1 : dot_opacity)
+                        .attr("r", c => clevFilter.includes(c) ? symbol_size * 1.5 : symbol_size);
+
+                    window.dispatchEvent(new CustomEvent("filterByValue", { detail: { values: clevFilter, attribute: selectedVariable } }));
                     updateVis();
                 }),
               update => update
@@ -356,12 +351,14 @@ dataCSV.then(function (data) {
             .on("change", function() {
                 selectedVariable = this.value;
                 selectedLabel = d.label;
+                clevFilter = [];
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
                 if(useHabitatColors)
                     window.dispatchEvent(new CustomEvent("scatterChange", { detail: selectedVariable }));
+                window.dispatchEvent(new CustomEvent("filterByValue", { detail: { values: clevFilter, attribute: selectedVariable } }));
                 updateVis();
             });
             div.append("label")
@@ -416,9 +413,9 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("filterByValue", function(event) {
-        const { value, attribute } = event.detail;
-        clevFilter = value;
+        const { values, attribute } = event.detail;
         selectedVariable = attribute;
+        clevFilter = values;
 
         radioContainer.selectAll(".radioOptions input[type='radio']")
             .property("checked", function(d) {
