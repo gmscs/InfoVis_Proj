@@ -324,9 +324,7 @@ dataCSV.then(function (data) {
         }
 
         svg.selectAll(".lines").remove();
-        if (!onlyLines) {
-            svg.selectAll(".dot").remove();
-        }
+
 
         let filteredDateObservations = globalDisplay
             ? dateObservations.filter(d => d.country === "global")
@@ -431,7 +429,7 @@ dataCSV.then(function (data) {
 
         if (!onlyLines) {
             svg.selectAll(".dot")
-                .data(filteredDateObservations, d => d.date)
+                .data(filteredDateObservations, d => `${d.country}-${d.date.getTime()}`)
                 .join(
                     enter => enter.append("circle")
                     .attr("class", "dot")
@@ -524,10 +522,16 @@ dataCSV.then(function (data) {
                             .style("opacity", 0);
                         updateVis();
                     }),
-                    update => update,
-                    exit => exit.remove()
+                    update => update
+                        .attr("fill", d => country_colours[d.country] || shared_color),
+                    exit => exit.transition()
+                        .duration(duration)
+                        .style("opacity", 0)
+                        .attr("cy", d => y(0))
+                        .remove()
                 )
                 .transition().duration(duration)
+                    .style("opacity", dot_opacity)
                     .attr("cx", d => x(d.date))
                     .attr("cy", d => y(d.observations));
         }

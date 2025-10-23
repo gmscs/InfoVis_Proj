@@ -358,8 +358,6 @@ dataCSV.then(function (data) {
             .domain([0, d3.max(filteredData, d => d.weight * 1.1)])
             .range([innerHeight, 0]);
 
-        svg.selectAll(".dot").remove();
-
         const brush = d3.brush()
             .extent([[0, 5], [innerWidth, innerHeight - 1]])
             .on("end", ({selection}) => {
@@ -472,14 +470,25 @@ dataCSV.then(function (data) {
         });
 
         svg.selectAll(".dot")
-        .data(filteredData)
+        .data(filteredData, d => `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`)
         .join(
             enter => enter.append("path")
             .attr("class", "dot")
             .attr("r", symbol_size)
             .style("fill", d => colorList[d[selectedColourVar]])
-            .style("opacity", dot_opacity)
+            .style("opacity", 0)
             .style("cursor", "pointer")
+            .attr("d", d => {
+                const shape = sex_shapes[d.sex];
+                if (shape === "circle") {
+                    return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
+                } else if (shape === "triangle") {
+                    return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
+                } else if (shape === "cross") {
+                    return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
+                }
+            })
+            .attr("transform", d => `translate(${innerWidth / 2},${innerHeight / 2})`)
             .on("mouseover", function(event, d) {
                 tooltip.style("opacity", .9);
                 d3.select(this)
@@ -598,21 +607,27 @@ dataCSV.then(function (data) {
                     detail: { value: clickedSpecies, attribute: "commonname"}
                 }));
             }),
-        update => update,
-        exit => exit.remove()
+        update => update
+            .style("fill", d => colorList[d[selectedColourVar]])
+            .attr("d", d => {
+                const shape = sex_shapes[d.sex];
+                if (shape === "circle") {
+                    return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
+                } else if (shape === "triangle") {
+                    return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
+                } else if (shape === "cross") {
+                    return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
+                }
+            }),
+        exit => exit.transition()
+            .duration(duration)
+            .style("opacity", 0)
+            .attr("transform", d => `translate(${innerWidth / 2},${innerHeight / 2})`)
+            .remove()
         )
         .transition()
         .duration(duration)
-        .attr("d", d => {
-            const shape = sex_shapes[d.sex];
-            if (shape === "circle") {
-                return d3.symbol().type(d3.symbolCircle).size(symbol_size * 10)();
-            } else if (shape === "triangle") {
-                return d3.symbol().type(d3.symbolTriangle).size(symbol_size * 10)();
-            } else if (shape === "cross") {
-                return d3.symbol().type(d3.symbolCross).size(symbol_size * 10)();
-            }
-        })
+        .style("opacity", dot_opacity)
         .attr("transform", d => `translate(${x(d.lengthM || 0)},${y(d.weight)})`);
     }
 
