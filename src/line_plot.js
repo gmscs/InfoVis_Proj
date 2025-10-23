@@ -426,7 +426,7 @@ dataCSV.then(function (data) {
 
         const dotMap = new Map();
         filteredDateObservations.forEach(d => {
-            const key = `${d.country}-${d.date.getTime()}`;
+            const key = `${x(d.date)},${y(d.observations)}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
             dotMap.get(key).push(d);
@@ -449,7 +449,7 @@ dataCSV.then(function (data) {
                     })
                     .on("mousemove", function(event, d) {
                         tooltip.transition().duration(duration / 5).style("opacity", .9);
-                        const key = `${d.country}-${d.date.getTime()}`;
+                        const key = `${x(d.date)},${y(d.observations)}`;
                         const overlappingDots = dotMap.get(key);
 
                         const formatDate = selectedGranularity === 'year' 
@@ -489,7 +489,7 @@ dataCSV.then(function (data) {
                             window.dispatchEvent(new CustomEvent("lineCountryHighlight", { detail: "global" }));
                     })
                     .on("mouseover", function(event, d) {
-                        const key = `${d.country}-${d.date.getTime()}`;
+                        const key = `${x(d.date)},${y(d.observations)}`;
                         const overlappingDots = dotMap.get(key);
                         let hoveredCountries = [];
                         overlappingDots.forEach(dot => {
