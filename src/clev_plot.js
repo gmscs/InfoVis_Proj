@@ -124,6 +124,7 @@ dataCSV.then(function (data) {
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
+                console.log(clevFilter);
                 selectedVariable = scatterVar;
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
@@ -414,21 +415,11 @@ dataCSV.then(function (data) {
 
     window.addEventListener("filterByValue", function(event) {
         const { values, attribute } = event.detail;
-        selectedVariable = attribute;
+        scatterVar = attribute;
         clevFilter = values;
 
-        radioContainer.selectAll(".radioOptions input[type='radio']")
-            .property("checked", function(d) {
-                return d.value === selectedVariable;
-            });
-        updateVis();
-    });
-
-    window.addEventListener("filterByValueScatter", function(event) {
-        scatterVar = event.detail;
         if(useHabitatColors) {
             selectedVariable = scatterVar;
-
             if(selectedVariable == "commonname") colorList = species_colours;
             else if(selectedVariable == "age") colorList = age_colours;
             else if(selectedVariable == "conservation") colorList = status_colours;
@@ -438,9 +429,9 @@ dataCSV.then(function (data) {
                 .property("checked", function(d) {
                     return d.value === selectedVariable;
                 });
-            
-            updateVis();
         }
+            
+        updateVis();
     });
 
     window.addEventListener("darkMode", function(event) {

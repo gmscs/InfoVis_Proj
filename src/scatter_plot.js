@@ -612,7 +612,7 @@ dataCSV.then(function (data) {
                     .duration(duration / 2)
                     .style("opacity", 0);
                 window.dispatchEvent(new CustomEvent("filterByValue", {
-                    detail: { values: [clickedSpecies], attribute: selectedColourVar }
+                    detail: { values: clevFilter, attribute: selectedColourVar }
                 }));
             }),
         update => update
@@ -655,11 +655,14 @@ dataCSV.then(function (data) {
                 .property("checked", option.value === selectedColourVar)
                 .on("change", function() {
                     selectedColourVar = this.value;
+                    clevFilter = [];
                     if(selectedColourVar == "commonname") colorList = species_colours;
                     else if(selectedColourVar == "age") colorList = age_colours;
                     else if(selectedColourVar == "conservation") colorList = status_colours;
                     else colorList = habitat_colours;
-                    window.dispatchEvent(new CustomEvent("filterByValueScatter", { detail: selectedColourVar }));
+                    window.dispatchEvent(new CustomEvent("filterByValue", {
+                        detail: { values: clevFilter, attribute: selectedColourVar }
+                    }));
                     updateVis();
                 });
             div.append("label")
