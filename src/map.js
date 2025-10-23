@@ -427,6 +427,7 @@ Promise.all([
 
                 d3.select(this).classed("hovered", true);
                 d3.selectAll(".hovered").style("stroke", country_colours[countryName]);
+                window.dispatchEvent(new CustomEvent("lineCountryHighlight2", { detail: [countryName] }));
             })
             .on("mousemove", function(event) {
                 const containerRect = container.node().getBoundingClientRect();
@@ -439,6 +440,7 @@ Promise.all([
                     .style("opacity", 0);
                 d3.selectAll(".hovered").style("stroke", "");
                 d3.select(this).classed("hovered", false);
+                window.dispatchEvent(new CustomEvent("lineCountryHighlight2", { detail: [] }))
             })
             .on("click", function(event, d) {
             if(countries.includes(d.properties.name)) {
@@ -495,7 +497,7 @@ Promise.all([
         let highlightedCountries = event.detail;
         mapStuff.selectAll("path")
             .attr("stroke", d => highlightedCountries.includes(d.properties.name) ? country_colours[d.properties.name] : "none")
-            .attr("stroke-width", d => highlightedCountries.includes(d.properties.name) ? stroke_width : null);
+            .attr("stroke-width", d => highlightedCountries.includes(d.properties.name) ? stroke_width * 2: null);
     })
 
     window.addEventListener("filterByValue", function(event) {

@@ -609,6 +609,19 @@ dataCSV.then(function (data) {
         updateVis();
     });
 
+    window.addEventListener("lineCountryHighlight2", function(event) {
+        const highlightedCountries = event.detail;
+        if(!globalDisplay) {
+            if (highlightedCountries.length === 0) {
+                svg.selectAll(".lines path").style("opacity", 1).attr("stroke-width", stroke_width);
+            } else {
+                svg.selectAll(".lines path")
+                    .style("opacity", d => highlightedCountries.includes(d.z) ? 1 : 0.2)
+                    .attr("stroke-width", d => highlightedCountries.includes(d.z) ? stroke_width * 2 : stroke_width);
+            }
+        }
+    });
+
     window.addEventListener("globalReset", resetChart);
     
     const whyWouldYouDoThisToMe = new ResizeObserver(() => {
