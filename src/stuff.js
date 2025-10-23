@@ -403,18 +403,79 @@ export function find_closest_length(data, x, xVal) {
 
 export function get_date_observations_by_granularity(data, granularity = 'month') {
     const dateCountMap = new Map();
+    const countries = new Set();
+    let minDate = new Date('9999-12-31');
+    let maxDate = new Date('0001-01-01');
+
     data.forEach(row => {
-        const date = row.date;
-        const country = row.country;
-        if (date && country) {
-            const dateParts = date.split('-');
-            const day = dateParts[0];
-            const month = dateParts[1];
-            const year = dateParts[2];
-            
+        if (row.date && row.country) {
+            countries.add(row.country);
+            const [day, month, year] = row.date.split('-');
+            const dateObj = new Date(`${year}-${month}-${day}`);
+            if (dateObj < minDate) minDate = dateObj;
+            if (dateObj > maxDate) maxDate = dateObj;
+        }
+    });
+
+    const allDates = [];
+    const currentDate = new Date(minDate);
+    while (currentDate <= maxDate) {
+        let key, dateObj;
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+
+        switch (granularity) {
+            case 'day':
+                key = `${day}-${month}-${year}`;
+                dateObj = new Date(`${year}-${month}-${day}`);
+                break;
+            case 'month':
+                key = `${month}-${year}`;
+                dateObj = new Date(`${year}-${month}-01`);
+                break;
+            case 'year':
+                key = year;
+                dateObj = new Date(`${year}-01-01`);
+                break;
+            default:
+                key = `${month}-${year}`;
+                dateObj = new Date(`${year}-${month}-01`);
+        }
+
+        allDates.push({ key, dateObj });
+        currentDate.setDate(currentDate.getDate() + (granularity === 'day' ? 1 : granularity === 'month' ? 31 : 365));
+        if (granularity === 'month') {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentDate.setDate(1);
+        } else if (granularity === 'year') {
+            currentDate.setFullYear(currentDate.getFullYear() + 1);
+            currentDate.setMonth(0);
+            currentDate.setDate(1);
+        }
+    }
+
+    countries.forEach(country => {
+        allDates.forEach(({ key, dateObj }) => {
+            const mapKey = `${country}|${key}`;
+            if (!dateCountMap.has(mapKey)) {
+                dateCountMap.set(mapKey, { country, date: dateObj, observations: 0 });
+            }
+        });
+    });
+
+    allDates.forEach(({ key, dateObj }) => {
+        const globalKey = `global|${key}`;
+        if (!dateCountMap.has(globalKey)) {
+            dateCountMap.set(globalKey, { country: 'global', date: dateObj, observations: 0 });
+        }
+    });
+
+    data.forEach(row => {
+        if (row.date && row.country) {
+            const [day, month, year] = row.date.split('-');
             let key, dateObj;
-            
-            switch(granularity) {
+            switch (granularity) {
                 case 'day':
                     key = `${day}-${month}-${year}`;
                     dateObj = new Date(`${year}-${month}-${day}`);
@@ -431,26 +492,22 @@ export function get_date_observations_by_granularity(data, granularity = 'month'
                     key = `${month}-${year}`;
                     dateObj = new Date(`${year}-${month}-01`);
             }
-            
-            const mapKey = `${country}|${key}`
-            if (!dateCountMap.has(mapKey)) {
-                dateCountMap.set(mapKey, { country, date: dateObj, observations: 0 });
+            const mapKey = `${row.country}|${key}`;
+            if (dateCountMap.has(mapKey)) {
+                dateCountMap.get(mapKey).observations += 1;
             }
-            dateCountMap.get(mapKey).observations += 1;
-
             const globalKey = `global|${key}`;
-            if (!dateCountMap.has(globalKey)) {
-                dateCountMap.set(globalKey, { country: 'global', date: dateObj, observations: 0 });
+            if (dateCountMap.has(globalKey)) {
+                dateCountMap.get(globalKey).observations += 1;
             }
-            dateCountMap.get(globalKey).observations += 1;
         }
     });
-    
+
     const dateObservations = Array.from(dateCountMap.values());
     dateObservations.sort((a, b) => a.date - b.date || a.country.localeCompare(b.country));
-
     return dateObservations;
 }
+
 
 export function update_legend_title(legendTitle, width, height, paddingX, paddingY, text) {
     legendTitle

@@ -32,7 +32,7 @@ var species_colours = species_colours_light;
 var colorList = species_colours;
 
 var selectedVariable = "commonname";
-var clevFilter = null;
+var clevFilter = [];
 var selectedDate = [];
 var selectedDateRange = [];
 var selectedSizeRange = [];
@@ -213,8 +213,8 @@ dataCSV.then(function (data) {
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
         }
-        if (clevFilter != null) {
-            filteredData = filteredData.filter(row => row[selectedVariable] === clevFilter);
+        if (clevFilter.length > 0) {
+            filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -468,7 +468,7 @@ dataCSV.then(function (data) {
 
         const dotMap = new Map();
         filteredData.forEach(d => {
-            const key = `${x(d.lengthM)},${y(d.weight)}`;
+            const key = `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`;
             if (!dotMap.has(key))
                 dotMap.set(key, []);
             dotMap.get(key).push(d);
@@ -503,7 +503,7 @@ dataCSV.then(function (data) {
             })
             .on("mousemove", function(event, d) {
                 tooltip.transition().duration(duration / 5).style("opacity", .9);
-                const key = `${x(d.lengthM)},${y(d.weight)}`;
+                const key = `${d.commonname}-${d.lengthM}-${d.weight}-${d.date}`;
                 const overlappingDots = dotMap.get(key);
 
                 const containerRect = container.node().getBoundingClientRect();
@@ -606,12 +606,13 @@ dataCSV.then(function (data) {
                     .style("opacity", 0);
             })
             .on("click", function(d) {
-                const clickedSpecies = d.target.__data__.commonname;
+                const clickedSpecies = d.target.__data__[selectedColourVar];
+                clevFilter = [clickedSpecies];
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);
                 window.dispatchEvent(new CustomEvent("filterByValue", {
-                    detail: { value: clickedSpecies, attribute: "commonname"}
+                    detail: { values: [clickedSpecies], attribute: selectedColourVar }
                 }));
             }),
         update => update
@@ -692,9 +693,9 @@ dataCSV.then(function (data) {
     });
 
     window.addEventListener("filterByValue", function(event) {
-        const { value, attribute } = event.detail;
+        const { values, attribute } = event.detail;
         selectedVariable = attribute;
-        clevFilter = value;
+        clevFilter = values;
 
         updateVis();
     });

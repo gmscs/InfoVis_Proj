@@ -14,9 +14,8 @@ const dotsGroup = svg.append("g").attr("class", "dots-group");
 
 //defaults
 let selectedCountries = [];
-let selectedGranularity = "month";
+let selectedGranularity = "year";
 let dateObservations;
-let selectedChart = "line";
 var filteredData;
 var shared_color = shared_color_light;
 var blendMode = "multiply";
