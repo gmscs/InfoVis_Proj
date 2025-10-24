@@ -118,7 +118,7 @@ dataCSV.then(function (data) {
     function resetChart() {
         selectedDate = [];
         selectedDateRange = [];
-        selectedGranularity = "month";
+        selectedGranularity = "year";
 
         window.dispatchEvent(new CustomEvent("dateChangedBrushed", {
             detail: []
