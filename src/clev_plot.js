@@ -29,7 +29,8 @@ var selectedSizeRange = [];
 var selectedWeightRange = [];
 var sexApplied = "";
 var shared_color = shared_color_light;
-var scatterVar = "commonname";
+var scatterFilter = [];
+var selectedColourVar;
 
 const legendTitle = svg.append("text")
     .attr("class", "legend-title");
@@ -126,8 +127,7 @@ dataCSV.then(function (data) {
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
-                console.log(clevFilter);
-                selectedVariable = scatterVar;
+                selectedVariable = selectedColourVar;
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
@@ -162,7 +162,7 @@ dataCSV.then(function (data) {
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
-                selectedVariable = scatterVar;
+                selectedVariable = selectedColourVar;
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
@@ -184,6 +184,9 @@ dataCSV.then(function (data) {
         }
         if (selectedCountries.length > 0) {
             filteredData = filteredData.filter(row => selectedCountries.includes(row.country));
+        }
+        if (scatterFilter.length > 0) {
+            filteredData = filteredData.filter(row => scatterFilter.includes(row[selectedColourVar]));
         }
         if (selectedDate.length > 0) {
             filteredData = filter_by_date(filteredData, selectedDate[0], selectedDate[1]);
@@ -415,13 +418,18 @@ dataCSV.then(function (data) {
         updateVis();
     });
 
-    window.addEventListener("filterByValue", function(event) {
+    window.addEventListener("filterByValueScatter", function(event) {
         const { values, attribute } = event.detail;
-        scatterVar = attribute;
-        clevFilter = values;
+        scatterFilter = values;
+        selectedColourVar = attribute;
+            
+        updateVis();
+    });
 
+    window.addEventListener("changeAtt", function(event) {
         if(useHabitatColors) {
-            selectedVariable = scatterVar;
+            selectedVariable = event.detail;
+
             if(selectedVariable == "commonname") colorList = species_colours;
             else if(selectedVariable == "age") colorList = age_colours;
             else if(selectedVariable == "conservation") colorList = status_colours;
@@ -432,9 +440,7 @@ dataCSV.then(function (data) {
                     return d.value === selectedVariable;
                 });
         }
-            
-        updateVis();
-    });
+    })
 
     window.addEventListener("darkMode", function(event) {
         habitat_colours = habitat_colours_dark;

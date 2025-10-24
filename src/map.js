@@ -56,6 +56,8 @@ var selectedColour = null;
 var colourScale = null;
 var sexApplied = "";
 var shared_color = shared_color_light;
+var scatterFilter = [];
+var selectedColourVar;
 
 var darkMode = false;
 
@@ -213,6 +215,9 @@ Promise.all([
         let filteredData = Array.from(dataCSV);
         if (clevFilter.length > 0) {
             filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
+        }
+        if (scatterFilter.length > 0) {
+            filteredData = filteredData.filter(row => scatterFilter.includes(row[selectedColourVar]));
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -506,6 +511,14 @@ Promise.all([
         clevFilter = values;
 
         updateMap("clevValueChanged");
+    });
+
+    window.addEventListener("filterByValueScatter", function(event) {
+        const { values, attribute } = event.detail;
+        scatterFilter = values;
+        selectedColourVar = attribute;
+            
+        updateMap();
     });
 
     window.addEventListener("globalReset", resetChart);

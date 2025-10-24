@@ -29,6 +29,8 @@ var selectedWeightRange = [];
 var sexApplied = "";
 var globalDisplay = true;
 var showLines = true;
+var scatterFilter = [];
+var selectedColourVar;
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
@@ -239,6 +241,9 @@ dataCSV.then(function (data) {
         }
         if (clevFilter.length > 0) {
             filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
+        }
+        if (scatterFilter.length > 0) {
+            filteredData = filteredData.filter(row => scatterFilter.includes(row[selectedColourVar]));
         }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
@@ -572,6 +577,14 @@ dataCSV.then(function (data) {
         selectedVariable = attribute;
         clevFilter = values;
 
+        updateVis();
+    });
+
+    window.addEventListener("filterByValueScatter", function(event) {
+        const { values, attribute } = event.detail;
+        scatterFilter = values;
+        selectedColourVar = attribute;
+            
         updateVis();
     });
 

@@ -39,6 +39,7 @@ var selectedSizeRange = [];
 var selectedWeightRange = [];
 var shared_color = shared_color_light;
 var selectedColourVar = "commonname";
+var scatterFilter = [];
 
 const colourOptions = [
     { value: "commonname", label: "Species" },
@@ -188,6 +189,7 @@ dataCSV.then(function (data) {
     function resetChart() {
         selectedSizeRange = [];
         selectedWeightRange = [];
+        scatterFilter = [];
         sexApplied = "";
         labelStuff.selectAll(".legend")
             .style("opacity", 1);
@@ -195,6 +197,9 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("sexChanged", { detail: sexApplied }));
         window.dispatchEvent(new CustomEvent("sizeChangedBrushed", {
             detail: [selectedSizeRange, selectedWeightRange]
+        }));
+        window.dispatchEvent(new CustomEvent("filterByValueScatter", {
+            detail: { values: scatterFilter, attribute: selectedColourVar }
         }));
         updateVis();
     }
@@ -231,6 +236,9 @@ dataCSV.then(function (data) {
         if (clevFilter.length > 0) {
             filteredData = filteredData.filter(row => clevFilter.includes(row[selectedVariable]));
         }
+        if (scatterFilter.length > 0) {
+            filteredData = filteredData.filter(row => scatterFilter.includes(row[selectedColourVar]));
+        }
         if (sexApplied != "") {
             filteredData = filteredData.filter(row => row["sex"] === sexApplied);
         }
@@ -262,6 +270,9 @@ dataCSV.then(function (data) {
         }
         if (selectedWeightRange.length > 0) {
             parts.push(`Weight: ${selectedWeightRange[0]}kg - ${selectedWeightRange[1]}kg`);
+        }
+        if (scatterFilter.length > 0) {
+            parts.push(`${scatterFilter[0]}`);
         }
 
         label.append("tspan")
@@ -616,13 +627,14 @@ dataCSV.then(function (data) {
             })
             .on("click", function(d) {
                 const clickedSpecies = d.target.__data__[selectedColourVar];
-                clevFilter = [clickedSpecies];
+                scatterFilter = [clickedSpecies];
                 tooltip.transition()
                     .duration(duration / 2)
                     .style("opacity", 0);
-                window.dispatchEvent(new CustomEvent("filterByValue", {
-                    detail: { values: clevFilter, attribute: selectedColourVar }
+                window.dispatchEvent(new CustomEvent("filterByValueScatter", {
+                    detail: { values: scatterFilter, attribute: selectedColourVar }
                 }));
+                updateVis()
             }),
         update => update
             .style("fill", d => colorList[d[selectedColourVar]])
@@ -664,14 +676,15 @@ dataCSV.then(function (data) {
                 .property("checked", option.value === selectedColourVar)
                 .on("change", function() {
                     selectedColourVar = this.value;
-                    clevFilter = [];
+                    scatterFilter = [];
                     if(selectedColourVar == "commonname") colorList = species_colours;
                     else if(selectedColourVar == "age") colorList = age_colours;
                     else if(selectedColourVar == "conservation") colorList = status_colours;
                     else colorList = habitat_colours;
-                    window.dispatchEvent(new CustomEvent("filterByValue", {
-                        detail: { values: clevFilter, attribute: selectedColourVar }
+                    window.dispatchEvent(new CustomEvent("filterByValueScatter", {
+                        detail: { values: scatterFilter, attribute: selectedColourVar }
                     }));
+                    window.dispatchEvent(new CustomEvent("changeAtt", { detail: selectedColourVar }));
                     updateVis();
                 });
             div.append("label")
