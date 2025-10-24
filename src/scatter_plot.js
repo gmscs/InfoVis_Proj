@@ -199,6 +199,21 @@ dataCSV.then(function (data) {
         updateVis();
     }
 
+    function calculatePercentages(data, variable) {
+        const counts = {};
+        data.forEach(d => {
+            const key = d[variable];
+            counts[key] = (counts[key] || 0) + 1;
+        });
+        const total = data.length;
+        const percentages = {};
+        for (const key in counts) {
+            percentages[key] = ((counts[key] / total) * 100).toFixed(1);
+        }
+        return percentages;
+    }
+
+
     function updateVis() {
         const newWidth = container.node().getBoundingClientRect().width;
         const newHeight = container.node().getBoundingClientRect().height;
@@ -400,6 +415,8 @@ dataCSV.then(function (data) {
             const formula = (type === "Quadratic")
                 ? `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x${sign[1]}${Math.abs(c.toFixed(2))}x²`
                 : `y = ${a.toFixed(2)}${sign[0]}${Math.abs(b.toFixed(2))}x`;
+            
+            var percentages = calculatePercentages(filteredData, selectedColourVar);
                 
             const path = linesGroup.append("path")
                 .datum(lineData)
@@ -411,7 +428,12 @@ dataCSV.then(function (data) {
                 .on("mouseover", function() {
                     linesGroup.raise();
                     tooltip.style("opacity", .9);
-                    tooltip.html(`R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: ${formula}`);
+                    let tooltip_text = `R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: ${formula}<br/>`;
+                    tooltip_text += `<br/><strong>Percentage:</strong><br/>`;
+                    for (const [key, value] of Object.entries(percentages)) {
+                        tooltip_text += `${key}: ${value}%<br/>`;
+                    }
+                    tooltip.html(tooltip_text);
                     d3.select(this).attr("stroke-width", stroke_width * 2);
                 })
                 .on("mousemove", function(event) {
@@ -484,12 +506,15 @@ dataCSV.then(function (data) {
                 const overlappingDots = dotMap.get(key);
 
                 const containerRect = container.node().getBoundingClientRect();
-                
+                var percentages = calculatePercentages(filteredData, selectedColourVar);
+                var itemName;
+
                 let tooltip_text;
                 if (overlappingDots.length > 1) {
                     tooltip_text = `${overlappingDots.length} Species:<br/><br/>`;
                     overlappingDots.forEach(dot => {
                         let info = "";
+                        itemName = dot[selectedColourVar];
                         if(selectedColourVar == "commonname") {
                             info = `Species: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[dot[selectedColourVar]]}; margin-right: 5px;"></span>${dot[selectedColourVar]}<br/>
                                 Age: ${dot.age}<br/>
@@ -523,6 +548,7 @@ dataCSV.then(function (data) {
                         tooltip_text += info;
                     });
                 } else {
+                    itemName = d[selectedColourVar];
                     if(selectedColourVar == "commonname") {
                         tooltip_text = `Species: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
                             Age: ${d.age}<br/>
@@ -553,6 +579,12 @@ dataCSV.then(function (data) {
                             Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
                             ${d.lengthM}m, ${d.weight}kg<br/>`;
                     }
+                }
+
+                tooltip_text += `<br/><strong>Percentage:</strong><br/>`;
+                for (const [key, value] of Object.entries(percentages)) {
+                    if(key == itemName)
+                        tooltip_text += `${key}: ${value}%<br/>`;
                 }
                 
                 tooltip.html(tooltip_text);
