@@ -464,6 +464,7 @@ dataCSV.then(function (data) {
 
     window.addEventListener("changeAtt", function(event) {
         if(useHabitatColors) {
+            clevFilter = [];
             selectedVariable = event.detail;
 
             if(selectedVariable == "commonname") colorList = species_colours;
@@ -475,6 +476,7 @@ dataCSV.then(function (data) {
                 .property("checked", function(d) {
                     return d.value === selectedVariable;
                 });
+            updateVis();
         }
     })
 
