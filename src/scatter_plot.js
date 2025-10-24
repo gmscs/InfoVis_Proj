@@ -767,6 +767,7 @@ dataCSV.then(function (data) {
     window.addEventListener("scatterChange", function(event) {
         if(event.detail == "commonname" || event.detail == "age" || event.detail == "conservation" || event.detail == "habitat") {
             selectedColourVar = event.detail;
+            scatterFilter = [];
 
             if(selectedColourVar == "commonname") colorList = species_colours;
             else if(selectedColourVar == "age") colorList = age_colours;
