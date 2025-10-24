@@ -126,7 +126,7 @@ dataCSV.then(function (data) {
         window.dispatchEvent(new CustomEvent("dateChanged", { 
             detail: selectedDate 
         }));
-        radioContainer.selectAll(".granularityOptions input[value='month']")
+        radioContainer.selectAll(".granularityOptions input[value='year']")
             .property("checked", true);
         updateVis();
     }
