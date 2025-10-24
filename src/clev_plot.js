@@ -120,6 +120,18 @@ dataCSV.then(function (data) {
         .style("position", "relative")
         .style("cursor", "pointer")
         .style("top", "3px")
+        .on("mouseover", function() {
+            tooltip.style("opacity", 1);
+        })
+        .on("mousemove", (event) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Turning this on will reset this chart's filters")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function() {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
         .on("click", function() {
             useHabitatColors = !useHabitatColors;
             d3.select(this)
@@ -127,15 +139,21 @@ dataCSV.then(function (data) {
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
-                selectedVariable = selectedColourVar;
+                clevFilter = [];
+                if(selectedColourVar) { 
+                    selectedVariable = selectedColourVar;
+                    radioContainer.selectAll(".radioOptions input[type='radio']")
+                    .property("checked", function(d) {
+                        return d.value === selectedColourVar;
+                    });
+                }
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
-                radioContainer.selectAll(".radioOptions input[type='radio']")
-                .property("checked", function(d) {
-                    return d.value === selectedVariable;
-                });
+                window.dispatchEvent(new CustomEvent("filterByValue", {
+                    detail: { values: clevFilter, attribute: selectedVariable }
+                }));
             }
             updateVis();
         })
@@ -155,6 +173,18 @@ dataCSV.then(function (data) {
         .style("cursor", "pointer")
         .style("padding-top", "6px")
         .text("Scatter Plot Legend")
+        .on("mouseover", function() {
+            tooltip.style("opacity", 1);
+        })
+        .on("mousemove", (event) => {
+            const containerRect = container.node().getBoundingClientRect();
+            tooltip.html("Turning this on will reset this chart's filters")
+                .style("left", (event.pageX - containerRect.left + 10) + "px")
+                .style("top", (event.pageY - containerRect.top + 10) + "px");
+        })
+        .on("mouseleave", function() {
+            tooltip.transition().duration(duration / 5).style("opacity", 0);
+        })
         .on("click", function() {
             useHabitatColors = !useHabitatColors;
             d3.select("#toggleContainerClev")
@@ -162,15 +192,21 @@ dataCSV.then(function (data) {
             d3.select("#toggleCircleClev")
                 .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
             if(useHabitatColors) {
-                selectedVariable = selectedColourVar;
+                clevFilter = [];
+                if(selectedColourVar) { 
+                    selectedVariable = selectedColourVar;
+                    radioContainer.selectAll(".radioOptions input[type='radio']")
+                    .property("checked", function(d) {
+                        return d.value === selectedColourVar;
+                    });
+                }
                 if(selectedVariable == "commonname") colorList = species_colours;
                 else if(selectedVariable == "age") colorList = age_colours;
                 else if(selectedVariable == "conservation") colorList = status_colours;
                 else colorList = habitat_colours;
-                radioContainer.selectAll(".radioOptions input[type='radio']")
-                .property("checked", function(d) {
-                    return d.value === selectedVariable;
-                });
+                window.dispatchEvent(new CustomEvent("filterByValue", {
+                    detail: { values: clevFilter, attribute: selectedVariable }
+                }));
             }
             updateVis();
         });
