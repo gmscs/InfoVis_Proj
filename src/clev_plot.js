@@ -15,7 +15,7 @@ let selectedLabel = "Species";
 
 var width = container.node().getBoundingClientRect().width;
 var height = container.node().getBoundingClientRect().height;
-var useHabitatColors = true;
+var useHabitatColors = false;
 var habitat_colours = habitat_colours_light;
 var species_colours = species_colours_light;
 var colorList = species_colours;
@@ -137,7 +137,7 @@ dataCSV.then(function (data) {
             d3.select(this)
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
-                .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
+                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
             if(useHabitatColors) {
                 clevFilter = [];
                 if(selectedColourVar) { 
@@ -190,7 +190,7 @@ dataCSV.then(function (data) {
             d3.select("#toggleContainerClev")
                 .style("background-color", useHabitatColors ? shared_color : "#c1c1c1");
             d3.select("#toggleCircleClev")
-                .style("transform", useHabitatColors ? "translateX(0px)" : "translateX(-20px)");
+                .style("transform", useHabitatColors ? "translateX(20px)" : "translateX(0px)");
             if(useHabitatColors) {
                 clevFilter = [];
                 if(selectedColourVar) { 

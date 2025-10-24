@@ -440,7 +440,7 @@ dataCSV.then(function (data) {
                     linesGroup.raise();
                     tooltip.style("opacity", .9);
                     let tooltip_text = `R²: ${rSquared.toFixed(4)}</br>Regression: ${type}</br>Form: ${formula}<br/>`;
-                    tooltip_text += `<br/><strong>Percentage:</strong><br/>`;
+                    tooltip_text += `<br/><strong>Percentage Values:</strong><br/>`;
                     for (const [key, value] of Object.entries(percentages)) {
                         tooltip_text += `${key}: ${value}%<br/>`;
                     }
@@ -524,7 +524,6 @@ dataCSV.then(function (data) {
                 const overlappingDots = dotMap.get(key);
 
                 const containerRect = container.node().getBoundingClientRect();
-                var percentages = calculatePercentages(filteredData, selectedColourVar);
                 var itemName;
 
                 let tooltip_text;
@@ -597,12 +596,6 @@ dataCSV.then(function (data) {
                             Status: <span style="display: inline-block; width: 10px; height: 10px; background-color: ${colorList[d[selectedColourVar]]}; margin-right: 5px;"></span>${d[selectedColourVar]}<br/>
                             ${d.lengthM}m, ${d.weight}kg<br/>`;
                     }
-                }
-
-                tooltip_text += `<br/><strong>Percentage:</strong><br/>`;
-                for (const [key, value] of Object.entries(percentages)) {
-                    if(key == itemName)
-                        tooltip_text += `${key}: ${value}%<br/>`;
                 }
                 
                 tooltip.html(tooltip_text);
